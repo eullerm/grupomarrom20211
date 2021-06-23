@@ -18,10 +18,9 @@ class _LandingState extends State<Landing> {
 
   _body(context) {
     return Container(
-      padding: EdgeInsets.all(16),
       child: Center(
         child: Stack(
-          children: [
+          children: <Widget>[
             Background(),
             Text("Geocard"),
           ],

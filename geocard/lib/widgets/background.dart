@@ -10,20 +10,11 @@ class Background extends StatelessWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("images/Background.png"),
+          image: AssetImage("./assets/Background.png"),
           fit: BoxFit.cover,
         ),
       ),
       padding: EdgeInsets.only(top: 50.0),
-      child: Text(
-        "Cute Cats of\nEducity",
-        style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
-            fontSize: 38.0,
-            height: 1.4,
-            fontWeight: FontWeight.w600),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 }
