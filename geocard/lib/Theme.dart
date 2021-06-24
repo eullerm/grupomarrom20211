@@ -54,8 +54,8 @@ class TextStyles {
   );
 
   static const TextStyle buttonTitle = const TextStyle(
-    fontFamily: 'Poppins',
+    fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
-    fontSize: 18.0,
+    fontSize: 20.0,
   );
 }
