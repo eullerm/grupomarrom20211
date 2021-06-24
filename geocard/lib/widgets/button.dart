@@ -8,16 +8,19 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: 150,
       child: ButtonTheme(
         child: ElevatedButton(
           onPressed: () {},
           child: _text(this.title),
           style: ElevatedButton.styleFrom(
-            primary: Color(0x00F9EAC3),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+            elevation: 4,
+            shadowColor: Colors.black,
+            primary: C.buttonColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
           ),
         ),
       ),

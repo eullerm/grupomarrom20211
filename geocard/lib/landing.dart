@@ -30,13 +30,18 @@ class _LandingState extends State<Landing> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  "Geocard",
+                  "GEOCARD",
                   style: TextStyles.appTitle,
                 ),
-                Button(title: "Play"),
-                Button(title: "How to play"),
-                Button(title: "Créditos"),
-                Button(title: "Cartas"),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Button(title: "Jogar"),
+                    Button(title: "Como jogar"),
+                    Button(title: "Cartas"),
+                    Button(title: "Créditos"),
+                  ],
+                ),
               ],
             ),
           ),

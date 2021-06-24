@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
-class Colors {
-  const Colors();
+class C {
+  const C();
 
   static const Color appBarTitle = const Color(0xFFFFFFFF);
   static const Color appBarIconColor = const Color(0xFFFFFFFF);
   static const Color appBarDetailBackground = const Color(0x00FFFFFF);
-  static const Color buttonColor = const Color(0x051102);
+  static const Color buttonColor = const Color(0xAAF1FAEE);
+  static const Color buttonText = const Color(0xFF000000);
+  static const Color appText = const Color(0xFFC0C0C0);
 }
 
 class Dimens {
   const Dimens();
 
-  static const planetWidth = 100.0;
-  static const planetHeight = 100.0;
+  static const flagWidth = 100.0;
+  static const flagHeight = 100.0;
 }
 
 class TextStyles {
@@ -48,12 +50,21 @@ class TextStyles {
   );
 
   static const TextStyle appTitle = const TextStyle(
+    color: C.appText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
     fontSize: 50.0,
+    shadows: <Shadow>[
+      Shadow(
+        offset: Offset(5.0, 5.0),
+        blurRadius: 3.0,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ],
   );
 
   static const TextStyle buttonTitle = const TextStyle(
+    color: C.buttonText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
     fontSize: 20.0,
