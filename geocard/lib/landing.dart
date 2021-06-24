@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
+import 'package:geocard/widgets/button.dart';
 
 class Landing extends StatefulWidget {
   Landing();
@@ -18,13 +20,27 @@ class _LandingState extends State<Landing> {
 
   _body(context) {
     return Container(
-      child: Center(
-        child: Stack(
-          children: <Widget>[
-            Background(),
-            Text("Geocard"),
-          ],
-        ),
+      child: Stack(
+        children: <Widget>[
+          Background(),
+          Container(
+            padding: EdgeInsets.all(16.0),
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(
+                  "Geocard",
+                  style: TextStyles.appTitle,
+                ),
+                Button(title: "Play"),
+                Button(title: "How to play"),
+                Button(title: "Créditos"),
+                Button(title: "Cartas"),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

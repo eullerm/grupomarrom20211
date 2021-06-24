@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
@@ -15,6 +17,12 @@ class Background extends StatelessWidget {
         ),
       ),
       padding: EdgeInsets.only(top: 50.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
+        child: Container(
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
+        ),
+      ),
     );
   }
 }
