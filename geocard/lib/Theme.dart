@@ -66,14 +66,19 @@ class TextStyles {
   static const TextStyle screenTitle = const TextStyle(
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
-    fontWeight: FontWeight.w300,
     fontSize: 40.0,
+    shadows: <Shadow>[
+      Shadow(
+        offset: Offset(2.0, 2.0),
+        blurRadius: 3.0,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ],
   );
 
   static const TextStyle buttonTitle = const TextStyle(
     color: AppColorScheme.buttonText,
     fontFamily: 'ElanITCStdBook',
-    fontWeight: FontWeight.w300,
     fontSize: 20.0,
   );
 
@@ -81,5 +86,12 @@ class TextStyles {
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
     fontSize: 20.0,
+    shadows: <Shadow>[
+      Shadow(
+        offset: Offset(2.0, 2.0),
+        blurRadius: 3.0,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ],
   );
 }

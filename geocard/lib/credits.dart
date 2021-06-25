@@ -29,34 +29,47 @@ class _CreditsState extends State<Credits> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Text(
-                  "Créditos",
-                  style: TextStyles.screenTitle,
+                // Título
+                Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Créditos",
+                        style: TextStyles.screenTitle,
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(
-                      "Arthur Zampirolli",
-                      style: TextStyles.plainText,
-                    ),
-                    Text(
-                      "Euller Macena",
-                      style: TextStyles.plainText,
-                    ),
-                    Text(
-                      "Hiaggo Machado",
-                      style: TextStyles.plainText,
-                    ),
-                    Text(
-                      "João Matheus",
-                      style: TextStyles.plainText,
-                    ),
-                    Text(
-                      "Malkai Oliveira",
-                      style: TextStyles.plainText,
-                    ),
-                  ],
+                //Nomes
+                Container(
+                  height: MediaQuery.of(context).size.height / 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Text(
+                        "Arthur Zampirolli",
+                        style: TextStyles.plainText,
+                      ),
+                      Text(
+                        "Euller Macena",
+                        style: TextStyles.plainText,
+                      ),
+                      Text(
+                        "Hiaggo Machado",
+                        style: TextStyles.plainText,
+                      ),
+                      Text(
+                        "João Matheus",
+                        style: TextStyles.plainText,
+                      ),
+                      Text(
+                        "Malkai Oliveira",
+                        style: TextStyles.plainText,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
