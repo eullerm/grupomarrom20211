@@ -63,10 +63,23 @@ class TextStyles {
     ],
   );
 
+  static const TextStyle screenTitle = const TextStyle(
+    color: C.appText,
+    fontFamily: 'ElanITCStdBook',
+    fontWeight: FontWeight.w300,
+    fontSize: 40.0,
+  );
+
   static const TextStyle buttonTitle = const TextStyle(
     color: C.buttonText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
+    fontSize: 20.0,
+  );
+
+  static const TextStyle plainText = const TextStyle(
+    color: C.appText,
+    fontFamily: 'ElanITCStdBook',
     fontSize: 20.0,
   );
 }

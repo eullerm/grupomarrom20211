@@ -12,7 +12,7 @@ class Background extends StatelessWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("./assets/Background.png"),
+          image: AssetImage("./assets/images/Background.png"),
           fit: BoxFit.cover,
         ),
       ),
