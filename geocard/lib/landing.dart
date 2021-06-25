@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/button.dart';
+import 'package:geocard/widgets/time.dart';
 
 class Landing extends StatefulWidget {
   Landing();
