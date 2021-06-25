@@ -18,7 +18,7 @@ class Button extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             if (pop)
-              context.router.pop();
+              context.router.popUntilRouteWithName('$screen');
             else
               context.router.pushNamed('$screen');
             //Navigator.push(

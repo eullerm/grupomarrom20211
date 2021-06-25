@@ -69,7 +69,7 @@ class _CreditsState extends State<Credits> {
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
                       ),
-                      Button(title: "Voltar", screen: "/", pop: true)
+                      Button(title: "Voltar", screen: "Landing", pop: true)
                     ],
                   ),
                 ),
