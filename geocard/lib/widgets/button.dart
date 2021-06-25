@@ -7,7 +7,8 @@ class Button extends StatelessWidget {
   final String title;
   //final Widget widgetPage;
   final String screen;
-  Button({required this.title, required this.screen});
+  final bool pop;
+  Button({required this.title, required this.screen, this.pop = false});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,10 @@ class Button extends StatelessWidget {
       child: ButtonTheme(
         child: ElevatedButton(
           onPressed: () async {
-            context.router.pushNamed('/$screen');
+            if (pop)
+              context.router.pop();
+            else
+              context.router.pushNamed('$screen');
             //Navigator.push(
             //  context, MaterialPageRoute(builder: (context) => widgetPage));
           },

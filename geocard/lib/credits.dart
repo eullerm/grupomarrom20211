@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
+import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/time.dart';
 import 'package:geocard/widgets/background.dart';
 
@@ -68,6 +69,7 @@ class _CreditsState extends State<Credits> {
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
                       ),
+                      Button(title: "Voltar", screen: "/", pop: true)
                     ],
                   ),
                 ),
