@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class C {
-  const C();
+class AppColorScheme {
+  const AppColorScheme();
 
   static const Color appBarTitle = const Color(0xFFFFFFFF);
   static const Color appBarIconColor = const Color(0xFFFFFFFF);
@@ -50,13 +50,13 @@ class TextStyles {
   );
 
   static const TextStyle appTitle = const TextStyle(
-    color: C.appText,
+    color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
     fontSize: 50.0,
     shadows: <Shadow>[
       Shadow(
-        offset: Offset(5.0, 5.0),
+        offset: Offset(2.0, 2.0),
         blurRadius: 3.0,
         color: Color.fromARGB(255, 0, 0, 0),
       ),
@@ -64,21 +64,21 @@ class TextStyles {
   );
 
   static const TextStyle screenTitle = const TextStyle(
-    color: C.appText,
+    color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
     fontSize: 40.0,
   );
 
   static const TextStyle buttonTitle = const TextStyle(
-    color: C.buttonText,
+    color: AppColorScheme.buttonText,
     fontFamily: 'ElanITCStdBook',
     fontWeight: FontWeight.w300,
     fontSize: 20.0,
   );
 
   static const TextStyle plainText = const TextStyle(
-    color: C.appText,
+    color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
     fontSize: 20.0,
   );

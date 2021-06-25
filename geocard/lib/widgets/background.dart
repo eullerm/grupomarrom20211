@@ -3,7 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
-  Background();
+  final String background;
+  Background({
+    required this.background,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,17 +15,11 @@ class Background extends StatelessWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("./assets/images/Background.png"),
+          image: AssetImage(this.background),
           fit: BoxFit.cover,
         ),
       ),
       padding: EdgeInsets.only(top: 50.0),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-        ),
-      ),
     );
   }
 }

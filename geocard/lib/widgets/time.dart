@@ -24,8 +24,6 @@ class _OtpTimerState extends State<OtpTimer> {
         currentSeconds = timer.tick;
         if (timer.tick >= timerMaxSeconds) {
           timer.cancel();
-          currentSeconds = 0;
-          if (mounted) startTimeout();
         }
       });
     });

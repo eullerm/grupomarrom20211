@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
+import 'package:geocard/credits.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/time.dart';
@@ -23,7 +24,7 @@ class _LandingState extends State<Landing> {
     return Container(
       child: Stack(
         children: <Widget>[
-          Background(),
+          Background(background: "./assets/images/Background.png"),
           Container(
             padding: EdgeInsets.all(16.0),
             width: double.infinity,
@@ -37,10 +38,11 @@ class _LandingState extends State<Landing> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    Button(title: "Jogar"),
-                    Button(title: "Como jogar"),
-                    Button(title: "Cartas"),
-                    Button(title: "Créditos"),
+                    // OtpTimer(),
+                    Button(title: "Jogar", widgetPage: Landing()),
+                    Button(title: "Como jogar", widgetPage: Landing()),
+                    Button(title: "Cartas", widgetPage: Landing()),
+                    Button(title: "Créditos", widgetPage: Credits()),
                   ],
                 ),
               ],
