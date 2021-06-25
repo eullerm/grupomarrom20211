@@ -4,6 +4,8 @@ import 'package:geocard/credits.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/time.dart';
+import 'package:geocard/AutoRoute/AutoRoute.dart';
+import 'package:geocard/AutoRoute/AutoRoute.gr.dart';
 
 class Landing extends StatefulWidget {
   Landing();
@@ -39,10 +41,10 @@ class _LandingState extends State<Landing> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     // OtpTimer(),
-                    Button(title: "Jogar", widgetPage: Landing()),
-                    Button(title: "Como jogar", widgetPage: Landing()),
-                    Button(title: "Cartas", widgetPage: Landing()),
-                    Button(title: "Créditos", widgetPage: Credits()),
+                    Button(title: "Jogar", screen: ""),
+                    Button(title: "Como jogar", screen: "Credits"),
+                    Button(title: "Cartas", screen: "Credits"),
+                    Button(title: "Créditos", screen: "Credits"),
                   ],
                 ),
               ],

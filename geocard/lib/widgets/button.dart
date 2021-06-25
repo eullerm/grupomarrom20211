@@ -1,12 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:geocard/credits.dart';
 
 class Button extends StatelessWidget {
   final String title;
-  final Widget widgetPage;
-
-  Button({required this.title, required this.widgetPage});
+  //final Widget widgetPage;
+  final String screen;
+  Button({required this.title, required this.screen});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +15,10 @@ class Button extends StatelessWidget {
       width: 150,
       child: ButtonTheme(
         child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => widgetPage));
+          onPressed: () async {
+            context.router.pushNamed('/$screen');
+            //Navigator.push(
+            //  context, MaterialPageRoute(builder: (context) => widgetPage));
           },
           child: _text(this.title),
           style: ElevatedButton.styleFrom(
