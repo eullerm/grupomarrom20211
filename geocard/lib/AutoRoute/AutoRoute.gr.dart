@@ -7,6 +7,7 @@
 import 'package:auto_route/auto_route.dart' as _i1;
 import 'package:flutter/material.dart' as _i2;
 
+import '../contries.dart' as _i5;
 import '../credits.dart' as _i4;
 import '../landing.dart' as _i3;
 
@@ -25,13 +26,19 @@ class AppRouter extends _i1.RootStackRouter {
         routeData: routeData,
         builder: (_) {
           return _i4.Credits();
+        }),
+    Contries.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return _i5.Contries();
         })
   };
 
   @override
   List<_i1.RouteConfig> get routes => [
         _i1.RouteConfig(Landing.name, path: '/'),
-        _i1.RouteConfig(Credits.name, path: '/Credits')
+        _i1.RouteConfig(Credits.name, path: '/Credits'),
+        _i1.RouteConfig(Contries.name, path: '/Contries')
       ];
 }
 
@@ -45,4 +52,10 @@ class Credits extends _i1.PageRouteInfo {
   const Credits() : super(name, path: '/Credits');
 
   static const String name = 'Credits';
+}
+
+class Contries extends _i1.PageRouteInfo {
+  const Contries() : super(name, path: '/Contries');
+
+  static const String name = 'Contries';
 }

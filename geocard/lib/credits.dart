@@ -3,6 +3,7 @@ import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/time.dart';
 import 'package:geocard/widgets/background.dart';
+import 'package:geocard/widgets/title.dart';
 
 class Credits extends StatefulWidget {
   Credits();
@@ -31,18 +32,10 @@ class _CreditsState extends State<Credits> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 // Título
-                Container(
-                  height: MediaQuery.of(context).size.height / 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Créditos",
-                        style: TextStyles.screenTitle,
-                      ),
-                    ],
-                  ),
-                ),
+                TextTitle(
+                  title: "Créditos",
+                  textStyle: TextStyles.screenTitle,
+                ).withArrowBack(context, screen: "Landing"),
                 //Nomes
                 Container(
                   height: MediaQuery.of(context).size.height / 2,
@@ -69,7 +62,6 @@ class _CreditsState extends State<Credits> {
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
                       ),
-                      Button(title: "Voltar", screen: "Landing", pop: true)
                     ],
                   ),
                 ),

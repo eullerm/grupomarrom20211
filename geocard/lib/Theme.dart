@@ -52,13 +52,12 @@ class TextStyles {
   static const TextStyle appTitle = const TextStyle(
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
-    fontWeight: FontWeight.w300,
     fontSize: 50.0,
     shadows: <Shadow>[
       Shadow(
         offset: Offset(2.0, 2.0),
         blurRadius: 3.0,
-        color: Color.fromARGB(255, 0, 0, 0),
+        color: Color(0xFF000000),
       ),
     ],
   );
@@ -71,7 +70,7 @@ class TextStyles {
       Shadow(
         offset: Offset(2.0, 2.0),
         blurRadius: 3.0,
-        color: Color.fromARGB(255, 0, 0, 0),
+        color: Color(0xFF000000),
       ),
     ],
   );
@@ -90,7 +89,7 @@ class TextStyles {
       Shadow(
         offset: Offset(2.0, 2.0),
         blurRadius: 3.0,
-        color: Color.fromARGB(255, 0, 0, 0),
+        color: Color(0xFF000000),
       ),
     ],
   );

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
-import 'package:geocard/credits.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/button.dart';
-import 'package:geocard/widgets/time.dart';
-import 'package:geocard/AutoRoute/AutoRoute.dart';
-import 'package:geocard/AutoRoute/AutoRoute.gr.dart';
+import 'package:geocard/widgets/title.dart';
 
 class Landing extends StatefulWidget {
   Landing();
@@ -36,15 +33,7 @@ class _LandingState extends State<Landing> {
                 // Título
                 Container(
                   height: MediaQuery.of(context).size.height / 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "GEOCARD",
-                        style: TextStyles.appTitle,
-                      ),
-                    ],
-                  ),
+                  child: TextTitle(title: "GEOCARD"),
                 ),
                 //Botões
                 Container(
@@ -55,7 +44,8 @@ class _LandingState extends State<Landing> {
                       Button(title: "Jogar", screen: "/").withShadow(context),
                       Button(title: "Como jogar", screen: "/")
                           .withShadow(context),
-                      Button(title: "Cartas", screen: "/").withShadow(context),
+                      Button(title: "Cartas", screen: "/Contries")
+                          .withShadow(context),
                       Button(title: "Créditos", screen: "/Credits")
                           .withShadow(context),
                     ],
