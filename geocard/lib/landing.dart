@@ -52,10 +52,12 @@ class _LandingState extends State<Landing> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Button(title: "Jogar", screen: "/"),
-                      Button(title: "Como jogar", screen: "/"),
-                      Button(title: "Cartas", screen: "/"),
-                      Button(title: "Créditos", screen: "/Credits"),
+                      Button(title: "Jogar", screen: "/").withShadow(context),
+                      Button(title: "Como jogar", screen: "/")
+                          .withShadow(context),
+                      Button(title: "Cartas", screen: "/").withShadow(context),
+                      Button(title: "Créditos", screen: "/Credits")
+                          .withShadow(context),
                     ],
                   ),
                 ),
