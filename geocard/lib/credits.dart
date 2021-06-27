@@ -38,24 +38,28 @@ class _CreditsState extends State<Credits> {
                 Container(
                   height: MediaQuery.of(context).size.height / 2,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         "Arthur Zampirolli",
                         style: TextStyles.plainText,
                       ),
+                      SizedBox(height: 10),
                       Text(
                         "Euller Macena",
                         style: TextStyles.plainText,
                       ),
+                      SizedBox(height: 10),
                       Text(
                         "Hiaggo Machado",
                         style: TextStyles.plainText,
                       ),
+                      SizedBox(height: 10),
                       Text(
                         "João Matheus",
                         style: TextStyles.plainText,
                       ),
+                      SizedBox(height: 10),
                       Text(
                         "Malkai Oliveira",
                         style: TextStyles.plainText,

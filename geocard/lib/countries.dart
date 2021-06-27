@@ -39,25 +39,33 @@ _body(BuildContext context) {
                 textStyle: TextStyles.screenTitle,
               ).withArrowBack(context, screen: "Landing"),
               // Cards
-              Divider(
-                color: AppColorScheme.appText,
-                height: 0,
-                thickness: 0.5,
-              ),
               Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                      _cards(),
-                    ],
+                child: ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [Colors.white, Colors.white.withOpacity(0.05)],
+                      stops: [0.95, 1],
+                      tileMode: TileMode.mirror,
+                    ).createShader(bounds);
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 12),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        _cards(),
+                        SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
               ),
