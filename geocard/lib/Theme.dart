@@ -9,6 +9,8 @@ class AppColorScheme {
   static const Color buttonColor = const Color(0xAAF1FAEE);
   static const Color buttonText = const Color(0xFF000000);
   static const Color appText = const Color(0xFFC0C0C0);
+  static const Color iconColor = const Color(0xFF000000);
+  static const Color cardColor = const Color(0xFFC0C0C0);
 }
 
 class Dimens {
@@ -21,28 +23,28 @@ class Dimens {
 class TextStyles {
   const TextStyles();
 
-  static const TextStyle appBarTitle = const TextStyle(
-    //color: Colors.appBarTitle,
-    fontFamily: 'Poppins',
-    fontWeight: FontWeight.w600,
-    fontSize: 36.0,
-  );
-
-  static const TextStyle planetTitle = const TextStyle(
+  static const TextStyle contryTitle = const TextStyle(
     //color: Colors.planetTitle,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w600,
     fontSize: 24.0,
   );
 
-  static const TextStyle planetLocation = const TextStyle(
+  static const TextStyle contryLocation = const TextStyle(
     //color: Colors.planetLocation,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w300,
     fontSize: 14.0,
   );
 
-  static const TextStyle planetDistance = const TextStyle(
+  static const TextStyle contrySize = const TextStyle(
+    //color: Colors.planetDistance,
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w300,
+    fontSize: 12.0,
+  );
+
+  static const TextStyle countryPopulation = const TextStyle(
     //color: Colors.planetDistance,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w300,

@@ -7,7 +7,8 @@
 import 'package:auto_route/auto_route.dart' as _i1;
 import 'package:flutter/material.dart' as _i2;
 
-import '../contries.dart' as _i5;
+import '../countries.dart' as _i5;
+import '../countryDetail.dart' as _i6;
 import '../credits.dart' as _i4;
 import '../landing.dart' as _i3;
 
@@ -27,10 +28,15 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (_) {
           return _i4.Credits();
         }),
-    Contries.name: (routeData) => _i1.MaterialPageX<dynamic>(
+    Countries.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return _i5.Contries();
+          return _i5.Countries();
+        }),
+    CountryDetail.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return _i6.CountryDetail();
         })
   };
 
@@ -38,7 +44,8 @@ class AppRouter extends _i1.RootStackRouter {
   List<_i1.RouteConfig> get routes => [
         _i1.RouteConfig(Landing.name, path: '/'),
         _i1.RouteConfig(Credits.name, path: '/Credits'),
-        _i1.RouteConfig(Contries.name, path: '/Contries')
+        _i1.RouteConfig(Countries.name, path: '/Countries'),
+        _i1.RouteConfig(CountryDetail.name, path: '/country-detail')
       ];
 }
 
@@ -54,8 +61,14 @@ class Credits extends _i1.PageRouteInfo {
   static const String name = 'Credits';
 }
 
-class Contries extends _i1.PageRouteInfo {
-  const Contries() : super(name, path: '/Contries');
+class Countries extends _i1.PageRouteInfo {
+  const Countries() : super(name, path: '/Countries');
 
-  static const String name = 'Contries';
+  static const String name = 'Countries';
+}
+
+class CountryDetail extends _i1.PageRouteInfo {
+  const CountryDetail() : super(name, path: '/country-detail');
+
+  static const String name = 'CountryDetail';
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/title.dart';
@@ -44,7 +43,7 @@ class _LandingState extends State<Landing> {
                       Button(title: "Jogar", screen: "/").withShadow(context),
                       Button(title: "Como jogar", screen: "/")
                           .withShadow(context),
-                      Button(title: "Cartas", screen: "/Contries")
+                      Button(title: "Cartas", screen: "/Countries")
                           .withShadow(context),
                       Button(title: "Créditos", screen: "/Credits")
                           .withShadow(context),
