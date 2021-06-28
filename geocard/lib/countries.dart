@@ -46,7 +46,7 @@ _body(BuildContext context) {
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: [Colors.white, Colors.white.withOpacity(0.05)],
-                      stops: [0.95, 1],
+                      stops: [0.98, 1],
                       tileMode: TileMode.mirror,
                     ).createShader(bounds);
                   },

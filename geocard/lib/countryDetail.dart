@@ -42,17 +42,25 @@ class _CountryDetailState extends State<CountryDetail> {
                   child: SingleChildScrollView(
                     child: Container(
                       height: MediaQuery.of(context).size.height + 70,
-                      //alignment: FractionalOffset(0.0, 0.3),
-                      //color: Colors.black,
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: 150),
                           CardInfo(isDetailPage: true),
-                          SizedBox(height: 20),
+                          SizedBox(height: 8),
+                          /*Divider(
+                            color: AppColorScheme.appText,
+                            height: 0,
+                            thickness: 2,
+                          ),*/
                           Flexible(
                             child: SingleChildScrollView(
-                              child: Text(
-                                  "datadatadatadatadata\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata"),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(height: 20),
+                                  Text(
+                                      "datadatadatadatadata\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata"),
+                                ],
+                              ),
                             ),
                           ),
                         ],
