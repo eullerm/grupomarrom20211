@@ -23,21 +23,21 @@ class Dimens {
 class TextStyles {
   const TextStyles();
 
-  static const TextStyle contryTitle = const TextStyle(
+  static const TextStyle countryTitle = const TextStyle(
     //color: Colors.planetTitle,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w600,
     fontSize: 24.0,
   );
 
-  static const TextStyle contryLocation = const TextStyle(
+  static const TextStyle countryLocation = const TextStyle(
     //color: Colors.planetLocation,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w300,
     fontSize: 14.0,
   );
 
-  static const TextStyle contrySize = const TextStyle(
+  static const TextStyle countrySize = const TextStyle(
     //color: Colors.planetDistance,
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w300,

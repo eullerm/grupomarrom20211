@@ -21,7 +21,7 @@ _cardFlag(bool isDetailPage) {
       tag: 'planet-icon-0',
       child: ClipOval(
         child: Image(
-          image: AssetImage("./assets/images/Background.png"),
+          image: AssetImage("./assets/images/flags/Alemanha.png"),
           height: Dimens.flagHeight,
           width: Dimens.flagWidth,
         ),
@@ -49,7 +49,7 @@ _cardInfo(bool isDetailPage) {
     child: Container(
       margin: isDetailPage
           ? EdgeInsets.only(top: 50.0, left: 16.0, right: 16, bottom: 16)
-          : EdgeInsets.only(top: 16.0, left: 72.0),
+          : EdgeInsets.only(top: 16.0, left: 60.0),
       constraints: BoxConstraints.expand(),
       child: Column(
         mainAxisAlignment:
@@ -57,8 +57,11 @@ _cardInfo(bool isDetailPage) {
         crossAxisAlignment:
             isDetailPage ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Contry.name", style: TextStyles.contryTitle),
-          Text("Contry.location", style: TextStyles.contryLocation),
+          Text("country.name", style: TextStyles.countryTitle),
+          Text(
+            "country.location",
+            style: TextStyles.countryLocation,
+          ),
           Container(
             color: Color(0xFF000000),
             width: 24.0,
@@ -75,7 +78,8 @@ _cardInfo(bool isDetailPage) {
                   children: <Widget>[
                     Icon(Icons.straighten,
                         size: 14.0, color: AppColorScheme.iconColor),
-                    Text("Contry.size", style: TextStyles.contrySize),
+                    SizedBox(width: 6),
+                    Text("7.5 Km²", style: TextStyles.countrySize),
                   ],
                 ),
               ),
@@ -85,8 +89,10 @@ _cardInfo(bool isDetailPage) {
                   children: <Widget>[
                     Icon(Icons.people,
                         size: 14.0, color: AppColorScheme.iconColor),
-                    Text("Country.population",
-                        style: TextStyles.countryPopulation),
+                    SizedBox(width: 6),
+                    Text("434M",
+                        style: TextStyles.countryPopulation,
+                        overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
