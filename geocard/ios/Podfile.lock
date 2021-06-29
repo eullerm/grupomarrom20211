@@ -1,29 +1,16 @@
 PODS:
   - Flutter (1.0.0)
-  - ObjectBox (1.6.0)
-  - objectbox_flutter_libs (0.0.1):
-    - Flutter
-    - ObjectBox (= 1.6.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - objectbox_flutter_libs (from `.symlinks/plugins/objectbox_flutter_libs/ios`)
-
-SPEC REPOS:
-  trunk:
-    - ObjectBox
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  objectbox_flutter_libs:
-    :path: ".symlinks/plugins/objectbox_flutter_libs/ios"
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  ObjectBox: a181cc5fb47e0a6ec60754d34dc49f40dc17829e
-  objectbox_flutter_libs: 511c59b863bc45abc7f6f338499e4a50e9aa5f1d
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: 21b64fbb12492d731c9be90cbe0f2d328bef4b49
 
 COCOAPODS: 1.10.1

@@ -1,49 +1,15 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
+import 'package:geocard/const/cards.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/cardInfo.dart';
 import 'package:geocard/widgets/title.dart';
 
 class CountryDetail extends StatefulWidget {
-  final String aux;
+  final int id;
 
-  final Map country = {
-    "name": "Alemanha",
-    "location": "Europa",
-    "area": "357.386 Km²",
-    "population": "83,02 M",
-    "capital": "Berlim",
-    "language": "Alemão",
-    "coin": "Euro",
-    "government": "República democrática parlamentarista",
-    "leader": "Angela Merkel (desde 2005)",
-    "typeOfLeader": "Chanceler",
-    "division": [
-      'Baden-Wurttemberg',
-      'Baixa Saxônia',
-      'Baviera',
-      'Berlim',
-      'Brandemburgo',
-      'Bremen',
-      'Eslésvico-Holsácia',
-      'Hamburgo',
-      'Hesse',
-      'Mecklemburgo-Pomerânia Ocidental',
-      'Renânia do Norte-Vestfália',
-      'Renânia-Palatinado',
-      'Sarre',
-      'Saxônia',
-      'Saxônia-Anhalt',
-      'Turíngia'
-    ],
-    "typeOfDivision": "Estados",
-    "pib": "3,861 trilhões USD (2019)",
-    "pibPerCapita": "46.445,25 USD ‎(2019)",
-    "growthRate": "0,6% mudança anual ‎(2019)",
-    "publicDebt": "59,8% do PIB ‎(2019)",
-  };
-  CountryDetail({@PathParam('bookId') required this.aux});
+  CountryDetail({@PathParam('id') required this.id});
 
   @override
   _CountryDetailState createState() => _CountryDetailState();
@@ -52,11 +18,12 @@ class CountryDetail extends StatefulWidget {
 class _CountryDetailState extends State<CountryDetail> {
   ScrollController scrollControllerOverview = ScrollController();
   ScrollController scrollControllerCardInfo = ScrollController();
+  Map country = {};
 
   @override
   void initState() {
-    print(this.widget.aux);
     super.initState();
+    country = CARDS[this.widget.id];
     scrollControllerOverview.addListener(() {
       setState(() {
         if (scrollControllerOverview.offset >=
@@ -126,7 +93,7 @@ class _CountryDetailState extends State<CountryDetail> {
                               height: 150),
                           CardInfo(
                             isDetailPage: true,
-                            cards: this.widget.country,
+                            card: this.country,
                           ),
                           SizedBox(height: 8),
                           Flexible(

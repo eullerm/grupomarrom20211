@@ -38,9 +38,8 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (data) {
           final pathParams = data.pathParams;
           final args = data.argsAs<CountryDetailArgs>(
-              orElse: () =>
-                  CountryDetailArgs(aux: pathParams.getString('bookId')));
-          return _i6.CountryDetail(aux: args.aux);
+              orElse: () => CountryDetailArgs(id: pathParams.getInt('id')));
+          return _i6.CountryDetail(id: args.id);
         })
   };
 
@@ -49,7 +48,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Landing.name, path: '/'),
         _i1.RouteConfig(Credits.name, path: '/Credits'),
         _i1.RouteConfig(Countries.name, path: '/Countries'),
-        _i1.RouteConfig(CountryDetail.name, path: '/country-detail')
+        _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id')
       ];
 }
 
@@ -72,14 +71,17 @@ class Countries extends _i1.PageRouteInfo {
 }
 
 class CountryDetail extends _i1.PageRouteInfo<CountryDetailArgs> {
-  CountryDetail({required String aux})
-      : super(name, path: '/country-detail', args: CountryDetailArgs(aux: aux));
+  CountryDetail({required int id})
+      : super(name,
+            path: '/CountryDetail/:id',
+            args: CountryDetailArgs(id: id),
+            rawPathParams: {'id': id});
 
   static const String name = 'CountryDetail';
 }
 
 class CountryDetailArgs {
-  const CountryDetailArgs({required this.aux});
+  const CountryDetailArgs({required this.id});
 
-  final String aux;
+  final int id;
 }

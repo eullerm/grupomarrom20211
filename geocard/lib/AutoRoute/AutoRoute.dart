@@ -10,7 +10,7 @@ import 'package:geocard/countryDetail.dart';
     AutoRoute(page: Landing, initial: true),
     AutoRoute(page: Credits),
     AutoRoute(page: Countries),
-    AutoRoute(page: CountryDetail),
+    AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
   ],
 )
 class $AppRouter {}

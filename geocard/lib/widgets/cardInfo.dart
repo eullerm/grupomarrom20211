@@ -6,13 +6,13 @@ import 'package:geocard/widgets/genericText.dart';
 
 class CardInfo extends StatelessWidget {
   final bool isDetailPage;
-  final Map cards;
-  const CardInfo({Key? key, this.isDetailPage = false, required this.cards})
+  final Map card;
+  const CardInfo({Key? key, this.isDetailPage = false, required this.card})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _card(context, this.isDetailPage, this.cards);
+    return _card(context, this.isDetailPage, this.card);
   }
 }
 
@@ -134,13 +134,13 @@ _cardInfo(bool isDetailPage, String name, String location, String area,
   ]);
 }
 
-_card(BuildContext context, bool isDetailPage, Map cards) {
+_card(BuildContext context, bool isDetailPage, Map card) {
   return GestureDetector(
     onTap: () {
       if (!isDetailPage) {
-        context.pushRoute(CountryDetail(aux: cards["name"]));
-
-        context.router.pushNamed('/country-detail');
+        context.router.pushNamed(
+          "/CountryDetail/${card['id']}",
+        );
       }
     },
     child: Container(
@@ -148,9 +148,9 @@ _card(BuildContext context, bool isDetailPage, Map cards) {
       padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Stack(
         children: <Widget>[
-          _cardInfo(isDetailPage, cards["name"], cards["location"],
-              cards["area"], cards["population"], context),
-          _cardFlag(isDetailPage, cards["name"]),
+          _cardInfo(isDetailPage, card["name"], card["location"], card["area"],
+              card["population"], context),
+          _cardFlag(isDetailPage, card["name"]),
         ],
       ),
     ),

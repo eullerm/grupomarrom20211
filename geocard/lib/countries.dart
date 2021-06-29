@@ -7,7 +7,6 @@ import 'package:geocard/widgets/title.dart';
 import 'const/cards.dart';
 
 class Countries extends StatefulWidget {
-  String? text;
   Countries();
 
   @override
@@ -72,6 +71,6 @@ _body(BuildContext context) {
 
 _cards() {
   return Column(
-    children: CARDS.map<Widget>((value) => CardInfo(cards: value)).toList(),
+    children: CARDS.map<Widget>((value) => CardInfo(card: value)).toList(),
   );
 }

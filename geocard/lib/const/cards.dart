@@ -1,5 +1,6 @@
 final List CARDS = [
   {
+    "id": 0,
     "name": "Alemanha",
     "location": "Europa",
     "area": "357.386 Km²",
@@ -35,6 +36,7 @@ final List CARDS = [
     "publicDebt": "59,8% do PIB ‎(2019)",
   },
   {
+    "id": 1,
     "name": "Japão",
     "location": "Ásia",
     "area": "377.975 km²",
@@ -63,6 +65,7 @@ final List CARDS = [
     "publicDebt": "",
   },
   {
+    "id": 2,
     "name": "Brasil",
     "location": "Ámerica do Sul",
     "area": "8.516.000 km²",
