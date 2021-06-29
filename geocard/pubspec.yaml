@@ -31,10 +31,10 @@ dependencies:
   auto_route: ^2.2.0
   auto_route_generator: ^2.1.0
   objectbox: ^1.0.0
-  objectbox_flutter_libs: any
+  
 
 dev_dependencies:
-  objectbox_generator: any
+  
   build_runner: ^2.0.5
   flutter_test:
     sdk: flutter

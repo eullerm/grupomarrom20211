@@ -35,8 +35,12 @@ class AppRouter extends _i1.RootStackRouter {
         }),
     CountryDetail.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
-        builder: (_) {
-          return _i6.CountryDetail();
+        builder: (data) {
+          final pathParams = data.pathParams;
+          final args = data.argsAs<CountryDetailArgs>(
+              orElse: () =>
+                  CountryDetailArgs(aux: pathParams.getString('bookId')));
+          return _i6.CountryDetail(aux: args.aux);
         })
   };
 
@@ -67,8 +71,15 @@ class Countries extends _i1.PageRouteInfo {
   static const String name = 'Countries';
 }
 
-class CountryDetail extends _i1.PageRouteInfo {
-  const CountryDetail() : super(name, path: '/country-detail');
+class CountryDetail extends _i1.PageRouteInfo<CountryDetailArgs> {
+  CountryDetail({required String aux})
+      : super(name, path: '/country-detail', args: CountryDetailArgs(aux: aux));
 
   static const String name = 'CountryDetail';
+}
+
+class CountryDetailArgs {
+  const CountryDetailArgs({required this.aux});
+
+  final String aux;
 }

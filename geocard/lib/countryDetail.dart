@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
@@ -5,6 +6,8 @@ import 'package:geocard/widgets/cardInfo.dart';
 import 'package:geocard/widgets/title.dart';
 
 class CountryDetail extends StatefulWidget {
+  final String aux;
+
   final Map country = {
     "name": "Alemanha",
     "location": "Europa",
@@ -40,7 +43,7 @@ class CountryDetail extends StatefulWidget {
     "growthRate": "0,6% mudança anual ‎(2019)",
     "publicDebt": "59,8% do PIB ‎(2019)",
   };
-  CountryDetail();
+  CountryDetail({@PathParam('bookId') required this.aux});
 
   @override
   _CountryDetailState createState() => _CountryDetailState();
@@ -52,6 +55,7 @@ class _CountryDetailState extends State<CountryDetail> {
 
   @override
   void initState() {
+    print(this.widget.aux);
     super.initState();
     scrollControllerOverview.addListener(() {
       setState(() {

@@ -7,6 +7,7 @@ import 'package:geocard/widgets/title.dart';
 import 'const/cards.dart';
 
 class Countries extends StatefulWidget {
+  String? text;
   Countries();
 
   @override

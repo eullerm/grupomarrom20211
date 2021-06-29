@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:geocard/AutoRoute/AutoRoute.gr.dart';
 
 class CardInfo extends StatelessWidget {
   final bool isDetailPage;
@@ -111,7 +112,7 @@ _card(BuildContext context, bool isDetailPage, Map cards) {
   return GestureDetector(
     onTap: () {
       if (!isDetailPage) {
-        context.router.pushNamed('/country-detail');
+        context.pushRoute(CountryDetail(aux: cards["name"]));
       }
     },
     child: Container(
