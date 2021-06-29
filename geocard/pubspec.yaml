@@ -55,6 +55,7 @@ flutter:
     - assets/images/Background.png
     - assets/images/Background-old.png
     - assets/images/flags/
+    # - assets/images/maps
   
   fonts:
     
