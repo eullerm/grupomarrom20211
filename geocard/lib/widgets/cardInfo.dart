@@ -4,24 +4,26 @@ import 'package:auto_route/auto_route.dart';
 
 class CardInfo extends StatelessWidget {
   final bool isDetailPage;
-  const CardInfo({Key? key, this.isDetailPage = false}) : super(key: key);
+  final Map cards;
+  const CardInfo({Key? key, this.isDetailPage = false, required this.cards})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _card(context, this.isDetailPage);
+    return _card(context, this.isDetailPage, this.cards);
   }
 }
 
-_cardFlag(bool isDetailPage) {
+_cardFlag(bool isDetailPage, String name) {
   return Container(
     alignment:
         isDetailPage ? FractionalOffset(0.5, 0) : FractionalOffset(0.0, 0.5),
     margin: isDetailPage ? EdgeInsets.all(0) : EdgeInsets.only(left: 24.0),
     child: Hero(
-      tag: 'planet-icon-0',
+      tag: 'planet-icon-$name',
       child: ClipOval(
         child: Image(
-          image: AssetImage("./assets/images/flags/Alemanha.png"),
+          image: AssetImage("./assets/images/flags/$name.png"),
           height: Dimens.flagHeight,
           width: Dimens.flagWidth,
         ),
@@ -30,7 +32,8 @@ _cardFlag(bool isDetailPage) {
   );
 }
 
-_cardInfo(bool isDetailPage) {
+_cardInfo(bool isDetailPage, String name, String location, String area,
+    String population) {
   return Container(
     margin: isDetailPage
         ? EdgeInsets.only(top: 50.0)
@@ -57,9 +60,9 @@ _cardInfo(bool isDetailPage) {
         crossAxisAlignment:
             isDetailPage ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: <Widget>[
-          Text("country.name", style: TextStyles.countryTitle),
+          Text("$name", style: TextStyles.countryTitle),
           Text(
-            "country.location",
+            "$location",
             style: TextStyles.countryLocation,
           ),
           Container(
@@ -79,7 +82,7 @@ _cardInfo(bool isDetailPage) {
                     Icon(Icons.straighten,
                         size: 14.0, color: AppColorScheme.iconColor),
                     SizedBox(width: 6),
-                    Text("7.5 Km²", style: TextStyles.countrySize),
+                    Text('$area', style: TextStyles.countrySize),
                   ],
                 ),
               ),
@@ -90,7 +93,7 @@ _cardInfo(bool isDetailPage) {
                     Icon(Icons.people,
                         size: 14.0, color: AppColorScheme.iconColor),
                     SizedBox(width: 6),
-                    Text("434M",
+                    Text("$population",
                         style: TextStyles.countryPopulation,
                         overflow: TextOverflow.ellipsis),
                   ],
@@ -104,7 +107,7 @@ _cardInfo(bool isDetailPage) {
   );
 }
 
-_card(BuildContext context, bool isDetailPage) {
+_card(BuildContext context, bool isDetailPage, Map cards) {
   return GestureDetector(
     onTap: () {
       if (!isDetailPage) {
@@ -116,8 +119,9 @@ _card(BuildContext context, bool isDetailPage) {
       padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Stack(
         children: <Widget>[
-          _cardInfo(isDetailPage),
-          _cardFlag(isDetailPage),
+          _cardInfo(isDetailPage, cards["name"], cards["location"],
+              cards["area"], cards["population"]),
+          _cardFlag(isDetailPage, cards["name"]),
         ],
       ),
     ),

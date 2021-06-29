@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
-import 'package:geocard/widgets/button.dart';
 import 'package:geocard/widgets/cardInfo.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:geocard/widgets/title.dart';
+
+import 'const/cards.dart';
 
 class Countries extends StatefulWidget {
   Countries();
@@ -55,14 +55,6 @@ _body(BuildContext context) {
                       children: <Widget>[
                         SizedBox(height: 12),
                         _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
-                        _cards(),
                         SizedBox(height: 16),
                       ],
                     ),
@@ -78,14 +70,7 @@ _body(BuildContext context) {
 }
 
 _cards() {
-  return CardInfo();
-
-  /*Flexible(
-    child: Container(
-      child: ListView.builder(
-        itemCount: 2,
-        itemBuilder: (_, index) => CardInfo(),
-      ),
-    ),
-  );*/
+  return Column(
+    children: CARDS.map<Widget>((value) => CardInfo(cards: value)).toList(),
+  );
 }
