@@ -37,7 +37,6 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
       panEnabled: false,
       clipBehavior: Clip.none,
       maxScale: 1.5,
-      boundaryMargin: EdgeInsets.all(double.infinity),
       child: GestureDetector(
         onHorizontalDragStart: (details) {
           controller.reset();

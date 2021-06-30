@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1041536538956",
+    "project_id": "marrom20211",
+    "storage_bucket": "marrom20211.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041536538956:android:445b1c4098419de56b57e9",
+        "android_client_info": {
+          "package_name": "br.uff.ic.dm.grupomarrom20211"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1041536538956-e3qi8je1motpl613ea0oleupg89geh6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6reLkkrtgt2imxIbVNqrCrYACiWENF2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1041536538956-e3qi8je1motpl613ea0oleupg89geh6m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
