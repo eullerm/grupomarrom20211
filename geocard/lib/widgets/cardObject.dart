@@ -33,61 +33,55 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragStart: (details) {
-        controller.reset();
+    return InteractiveViewer(
+      panEnabled: false,
+      clipBehavior: Clip.none,
+      maxScale: 1.5,
+      boundaryMargin: EdgeInsets.all(double.infinity),
+      child: GestureDetector(
+        onHorizontalDragStart: (details) {
+          controller.reset();
 
-        setState(() {
-          isFront = true;
-          horizontalDrag = 0;
-        });
-      },
-      onHorizontalDragUpdate: (details) {
-        setState(() {
-          horizontalDrag += details.delta.dx;
-          horizontalDrag %= 360;
+          setState(() {
+            isFront = true;
+            horizontalDrag = 0;
+          });
+        },
+        onHorizontalDragUpdate: (details) {
+          setState(() {
+            horizontalDrag += details.delta.dx;
+            horizontalDrag %= 360;
 
-          setImageSide();
-        });
-      },
-      onHorizontalDragEnd: (details) {
-        final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
+            setImageSide();
+          });
+        },
+        onHorizontalDragEnd: (details) {
+          final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
 
-        animation =
-            Tween<double>(begin: horizontalDrag, end: end).animate(controller)
-              ..addListener(() {
-                setState(() {
-                  horizontalDrag = animation.value;
+          animation =
+              Tween<double>(begin: horizontalDrag, end: end).animate(controller)
+                ..addListener(() {
+                  setState(() {
+                    horizontalDrag = animation.value;
 
-                  setImageSide();
+                    setImageSide();
+                  });
                 });
-              });
-        controller.forward();
-      },
-      child: Transform(
-        alignment: Alignment.center,
-        transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.001)
-          ..rotateY(horizontalDrag / 180 * pi),
-        child: isFront
-            ? InteractiveViewer(
-                panEnabled: false,
-                clipBehavior: Clip.none,
-                maxScale: 1.5,
-                boundaryMargin: EdgeInsets.all(double.infinity),
-                child: Image.asset(widget.urlFront),
-              )
-            : InteractiveViewer(
-                panEnabled: false,
-                clipBehavior: Clip.none,
-                maxScale: 1.5,
-                boundaryMargin: EdgeInsets.all(double.infinity),
-                child: Transform(
+          controller.forward();
+        },
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateY(horizontalDrag / 180 * pi),
+          child: isFront
+              ? Image.asset(widget.urlFront)
+              : Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..rotateY(pi),
                   child: Image.asset(widget.urlBack),
                 ),
-              ),
+        ),
       ),
     );
   }
