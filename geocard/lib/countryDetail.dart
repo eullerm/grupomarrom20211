@@ -19,6 +19,7 @@ class _CountryDetailState extends State<CountryDetail> {
   ScrollController scrollControllerOverview = ScrollController();
   ScrollController scrollControllerCardInfo = ScrollController();
   Map country = {};
+  double invisibleContainerHeight = 150;
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _CountryDetailState extends State<CountryDetail> {
                         children: <Widget>[
                           AnimatedContainer(
                               duration: Duration(milliseconds: 200),
-                              height: 150),
+                              height: invisibleContainerHeight),
                           CardInfo(
                             isDetailPage: true,
                             card: this.country,

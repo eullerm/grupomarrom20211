@@ -71,6 +71,14 @@ final List CARDS = [
     "area": "8.516.000 km²",
     "population": "211 M",
     "capital": "Brasília",
+  },
+  {
+    "id": 3,
+    "name": "EUA",
+    "location": "Ámerica do Norte",
+    "area": "9.834.000 km²",
+    "population": "328 M",
+    "capital": "Washington, D.C.",
   }
 ];
 

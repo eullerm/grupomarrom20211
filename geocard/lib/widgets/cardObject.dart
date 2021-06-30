@@ -32,15 +32,16 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-      /* onHorizontalDragStart: (detaisl) {
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onHorizontalDragStart: (details) {
         controller.reset();
 
         setState(() {
           isFront = true;
           horizontalDrag = 0;
         });
-      }, */
+      },
       onHorizontalDragUpdate: (details) {
         setState(() {
           horizontalDrag += details.delta.dx;
@@ -49,7 +50,7 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
           setImageSide();
         });
       },
-      /* onHorizontalDragEnd: (details) {
+      onHorizontalDragEnd: (details) {
         final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
 
         animation =
@@ -62,19 +63,34 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
                 });
               });
         controller.forward();
-      }, */
+      },
       child: Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(horizontalDrag / 180 * pi),
-          child: isFront
-              ? Image.asset(widget.urlFront)
-              : Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.001)
+          ..rotateY(horizontalDrag / 180 * pi),
+        child: isFront
+            ? InteractiveViewer(
+                panEnabled: false,
+                clipBehavior: Clip.none,
+                maxScale: 1.5,
+                boundaryMargin: EdgeInsets.all(double.infinity),
+                child: Image.asset(widget.urlFront),
+              )
+            : InteractiveViewer(
+                panEnabled: false,
+                clipBehavior: Clip.none,
+                maxScale: 1.5,
+                boundaryMargin: EdgeInsets.all(double.infinity),
+                child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..rotateY(pi),
                   child: Image.asset(widget.urlBack),
-                )));
+                ),
+              ),
+      ),
+    );
+  }
 
   void setImageSide() {
     if (horizontalDrag <= 90 || horizontalDrag >= 270) {

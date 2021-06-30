@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:geocard/AutoRoute/AutoRoute.gr.dart';
 import 'package:geocard/widgets/genericText.dart';
 
 class CardInfo extends StatelessWidget {
