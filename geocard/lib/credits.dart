@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocard/Theme.dart';
 import 'package:geocard/widgets/background.dart';
+import 'package:geocard/widgets/cardObject.dart';
 import 'package:geocard/widgets/title.dart';
 
 class Credits extends StatefulWidget {
@@ -40,7 +41,7 @@ class _CreditsState extends State<Credits> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
+                      /* Text(
                         "Arthur Zampirolli",
                         style: TextStyles.plainText,
                       ),
@@ -63,7 +64,10 @@ class _CreditsState extends State<Credits> {
                       Text(
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
-                      ),
+                      ), */
+                      CardObject(
+                          urlFront: 'assets/images/Front-test.png',
+                          urlBack: 'assets/images/Cardback.png'),
                     ],
                   ),
                 ),
