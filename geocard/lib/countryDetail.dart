@@ -120,7 +120,8 @@ class _CountryDetailState extends State<CountryDetail> {
                                       this.country["growthRate"]),
                                   SizedBox(height: 50),
                                   CardObject(
-                                      urlFront: 'assets/images/Front-test.png',
+                                      urlFront:
+                                          'assets/images/cards/${this.country['name']}.png',
                                       urlBack: 'assets/images/Cardback.png'),
                                   SizedBox(
                                     height: 8,

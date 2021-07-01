@@ -55,6 +55,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/flags/
+    - assets/images/cards/
     # - assets/images/maps
   
   fonts:

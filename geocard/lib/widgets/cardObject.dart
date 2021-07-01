@@ -31,16 +31,27 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
     _controllerReset = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
   }
 
+  @override
+  void dispose() {
+    _controllerReset.dispose();
+    super.dispose();
+  }
+
   void _onAnimateReset() {
     _transformationController.value = _animationReset!.value;
     if (!_controllerReset.isAnimating) {
-      _animationReset?.removeListener(_onAnimateReset);
+      _animationReset!.removeListener(_onAnimateReset);
       _animationReset = null;
       _controllerReset.reset();
     }
