@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "geocard",
-            "cwd": "geocard",
+            "name": "grupomarrom20211",
+            "cwd": "grupomarrom20211",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "geocard (profile mode)",
-            "cwd": "geocard",
+            "name": "grupomarrom20211 (profile mode)",
+            "cwd": "grupomarrom20211",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
