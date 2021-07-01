@@ -20,15 +20,47 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   late Animation<double> animation;
   bool isFront = true;
   double horizontalDrag = 0;
+  double maxScale = 1.5;
+  TransformationController _transformationController =
+      TransformationController();
+  var initialControllerValue;
+  Animation<Matrix4>? _animationReset;
+  late final AnimationController _controllerReset;
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
+    _controllerReset = AnimationController(
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+  }
+
+  void _onAnimateReset() {
+    _transformationController.value = _animationReset!.value;
+    if (!_controllerReset.isAnimating) {
+      _animationReset?.removeListener(_onAnimateReset);
+      _animationReset = null;
+      _controllerReset.reset();
+    }
+  }
+
+  void _animateResetInitialize() {
+    _controllerReset.reset();
+    _animationReset = Matrix4Tween(
+      begin: _transformationController.value,
+      end: Matrix4.identity(),
+    ).animate(_controllerReset);
+    _animationReset!.addListener(_onAnimateReset);
+    _controllerReset.forward();
+  }
+
+  void _animateResetStop() {
+    _controllerReset.stop();
+    _animationReset?.removeListener(_onAnimateReset);
+    _animationReset = null;
+    _controllerReset.reset();
   }
 
   @override
@@ -36,7 +68,18 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
     return InteractiveViewer(
       panEnabled: false,
       clipBehavior: Clip.none,
-      maxScale: 1.5,
+      maxScale: maxScale,
+      minScale: 1.0,
+      boundaryMargin: EdgeInsets.all(double.infinity),
+      transformationController: _transformationController,
+      onInteractionStart: (ScaleStartDetails details) {
+        if (_controllerReset.status == AnimationStatus.forward) {
+          _animateResetStop();
+        }
+      },
+      onInteractionEnd: (ScaleEndDetails details) {
+        _animateResetInitialize();
+      },
       child: GestureDetector(
         onHorizontalDragStart: (details) {
           controller.reset();

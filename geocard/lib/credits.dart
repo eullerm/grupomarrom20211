@@ -41,7 +41,7 @@ class _CreditsState extends State<Credits> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      /* Text(
+                      /*Text(
                         "Arthur Zampirolli",
                         style: TextStyles.plainText,
                       ),
@@ -64,7 +64,7 @@ class _CreditsState extends State<Credits> {
                       Text(
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
-                      ), */
+                      ),*/
                       CardObject(
                           urlFront: 'assets/images/Front-test.png',
                           urlBack: 'assets/images/Cardback.png'),

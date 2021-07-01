@@ -21,5 +21,8 @@ class GenericText extends StatelessWidget {
 }
 
 _text(String text, TextStyle textStyle) {
-  return Text("$text", style: textStyle);
+  return Text(
+    "$text",
+    style: textStyle,
+  );
 }

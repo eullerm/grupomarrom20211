@@ -4,6 +4,8 @@ import 'package:geocard/Theme.dart';
 import 'package:geocard/const/cards.dart';
 import 'package:geocard/widgets/background.dart';
 import 'package:geocard/widgets/cardInfo.dart';
+import 'package:geocard/widgets/cardObject.dart';
+import 'package:geocard/widgets/genericText.dart';
 import 'package:geocard/widgets/title.dart';
 
 class CountryDetail extends StatefulWidget {
@@ -64,7 +66,9 @@ class _CountryDetailState extends State<CountryDetail> {
     );
   }
 
-  _body(context) {
+  _body(
+    context,
+  ) {
     return Container(
       child: Stack(
         children: <Widget>[
@@ -103,13 +107,24 @@ class _CountryDetailState extends State<CountryDetail> {
                               child: Column(
                                 children: <Widget>[
                                   SizedBox(height: 20),
-                                  //Exemplo de como cada campo de informação deve ser construido.
-                                  Row(
-                                    children: [
-                                      Text("Info: "),
-                                      Text("Informação sobre o campo info"),
-                                    ],
-                                  )
+                                  _info("Capital", this.country["capital"]),
+                                  _info("Idioma", this.country["language"]),
+                                  _info("Moeda", this.country["coin"]),
+                                  _info("Governo", this.country["government"]),
+                                  _info(this.country["typeOfLeader"],
+                                      this.country["leader"]),
+                                  _info("PIB", this.country["pib"]),
+                                  _info("PIB per capita",
+                                      this.country["pibPerCapita"]),
+                                  _info("Taxa de crescimento",
+                                      this.country["growthRate"]),
+                                  SizedBox(height: 50),
+                                  CardObject(
+                                      urlFront: 'assets/images/Front-test.png',
+                                      urlBack: 'assets/images/Cardback.png'),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
                                 ],
                               ),
                             ),
@@ -124,6 +139,32 @@ class _CountryDetailState extends State<CountryDetail> {
           ),
         ],
       ),
+    );
+  }
+
+  _info(String string1, String string2) {
+    if (string2.isEmpty) {
+      return Container();
+    }
+    return Column(
+      children: <Widget>[
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: GenericText(
+                  text: string1 + ": ", textStyle: TextStyles.plainText),
+            ),
+            SizedBox(width: 5),
+            Expanded(
+              flex: 2,
+              child:
+                  GenericText(text: string2, textStyle: TextStyles.plainText),
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+      ],
     );
   }
 }
