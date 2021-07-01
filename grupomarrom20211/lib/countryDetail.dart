@@ -47,7 +47,7 @@ class _CountryDetailState extends State<CountryDetail> {
         }
       });
     });
-    scrollControllerCardInfo.addListener(() {
+    /* scrollControllerCardInfo.addListener(() {
       setState(() {
         if (scrollControllerCardInfo.offset ==
             scrollControllerCardInfo.position.minScrollExtent) {
@@ -56,7 +56,7 @@ class _CountryDetailState extends State<CountryDetail> {
           );
         }
       });
-    });
+    }); */
   }
 
   @override

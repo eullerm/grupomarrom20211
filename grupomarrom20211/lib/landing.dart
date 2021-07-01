@@ -32,7 +32,7 @@ class _LandingState extends State<Landing> {
                 // Título
                 Container(
                   height: MediaQuery.of(context).size.height / 3,
-                  child: TextTitle(title: "grupomarrom20211"),
+                  child: TextTitle(title: "GEOCARD"),
                 ),
                 //Botões
                 Container(

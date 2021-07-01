@@ -38,6 +38,7 @@ android {
         applicationId "br.uff.ic.dm.grupomarrom20211"
         minSdkVersion 21
         targetSdkVersion 30
+        // multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
