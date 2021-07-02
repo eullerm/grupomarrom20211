@@ -8,6 +8,7 @@ import 'package:grupomarrom20211/widgets/cardObject.dart';
 import 'package:grupomarrom20211/widgets/genericText.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
+//Tela responsável pela exibição das informações dos países
 class CountryDetail extends StatefulWidget {
   final int id;
 
@@ -51,6 +52,7 @@ class _CountryDetailState extends State<CountryDetail> {
       setState(() {
         if (scrollControllerCardInfo.offset ==
             scrollControllerCardInfo.position.minScrollExtent) {
+          //Future.dalayed adicionado antes do jump To para que não ocorra ocorra erro com o listener acima
           Future.delayed(Duration(milliseconds: 50), () {
             scrollControllerOverview.jumpTo(
               scrollControllerOverview.position.minScrollExtent,
@@ -68,9 +70,7 @@ class _CountryDetailState extends State<CountryDetail> {
     );
   }
 
-  _body(
-    context,
-  ) {
+  _body(BuildContext context) {
     return Container(
       child: Stack(
         children: <Widget>[
@@ -122,9 +122,11 @@ class _CountryDetailState extends State<CountryDetail> {
                                       this.country["growthRate"]),
                                   SizedBox(height: 50),
                                   CardObject(
-                                      urlFront:
-                                          'assets/images/cards/${this.country['name']}.png',
-                                      urlBack: 'assets/images/Cardback.png'),
+                                    urlFront:
+                                        'assets/images/cards/${this.country['name']}.png',
+                                    urlBack: 'assets/images/Cardback.png',
+                                    isInGame: true,
+                                  ),
                                   SizedBox(
                                     height: 8,
                                   ),

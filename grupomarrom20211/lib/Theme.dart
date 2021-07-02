@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//Local onde será armazenado o estilo dos widgets do projeto.
 class AppColorScheme {
   const AppColorScheme();
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//Widget que exibe textos com possibilidade de animação.
 class GenericText extends StatelessWidget {
   final String text;
   final TextStyle textStyle;

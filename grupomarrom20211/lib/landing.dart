@@ -3,6 +3,7 @@ import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/button.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
+//Tela inicial
 class Landing extends StatefulWidget {
   Landing();
 

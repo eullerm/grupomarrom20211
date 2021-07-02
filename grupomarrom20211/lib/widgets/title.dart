@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:auto_route/auto_route.dart';
 
+//Widget responsável pela exibição dos títulos do app
 class TextTitle extends StatelessWidget {
   final String title;
   final TextStyle textStyle;

@@ -4,6 +4,7 @@ import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/cardObject.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
+//Tela responsável pela exibição dos autores do projeto.
 class Credits extends StatefulWidget {
   Credits();
 

@@ -2,9 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 
+//Widget responsável por exibir os botões
 class Button extends StatelessWidget {
   final String title;
-  //final Widget widgetPage;
   final String screen;
   final bool pop;
   Button({required this.title, required this.screen, this.pop = false});
@@ -41,8 +41,6 @@ _button(String title, String screen, bool pop, BuildContext context) {
             context.router.popUntilRouteWithName('$screen');
           else
             context.router.pushNamed('$screen');
-          //Navigator.push(
-          //  context, MaterialPageRoute(builder: (context) => widgetPage));
         },
         child: _text(title),
         style: ElevatedButton.styleFrom(

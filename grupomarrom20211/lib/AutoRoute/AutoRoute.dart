@@ -4,6 +4,7 @@ import 'package:grupomarrom20211/landing.dart';
 import 'package:grupomarrom20211/credits.dart';
 import 'package:grupomarrom20211/countryDetail.dart';
 
+//Responsável por gerar as rotas das páginas.
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[

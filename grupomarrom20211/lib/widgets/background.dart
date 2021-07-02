@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
+//Widget que exibe o background das telas.
 class Background extends StatelessWidget {
   final String background;
   Background({
