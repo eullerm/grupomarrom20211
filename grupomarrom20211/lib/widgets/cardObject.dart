@@ -1,13 +1,15 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+//Responsável pela exibição da carta
 class CardObject extends StatefulWidget {
   final String urlFront;
   final String urlBack;
-
-  const CardObject({
+  final bool isInGame;
+  CardObject({
     required this.urlFront,
     required this.urlBack,
+    this.isInGame = false,
     Key? key,
   }) : super(key: key);
 
@@ -18,6 +20,7 @@ class CardObject extends StatefulWidget {
 class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
+  AnimationStatus animationStatus = AnimationStatus.dismissed;
   bool isFront = true;
   double horizontalDrag = 0;
   double maxScale = 1.5;
@@ -26,6 +29,7 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   var initialControllerValue;
   Animation<Matrix4>? _animationReset;
   late final AnimationController _controllerReset;
+  bool showFront = false;
 
   @override
   void initState() {
@@ -40,11 +44,36 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+    if (this.widget.isInGame) {
+      isFront = false;
+      Future.delayed(Duration(seconds: 2), () {
+        setState(() {
+          showFront = true;
+          controller = AnimationController(
+            vsync: this,
+            duration: Duration(milliseconds: 400),
+          );
+          animation = Tween<double>(end: 1, begin: 0).animate(controller)
+            ..addListener(() {
+              setState(() {
+                if (controller.value >= 0.5) {
+                  isFront = true;
+                }
+              });
+            })
+            ..addStatusListener((status) {
+              animationStatus = status;
+            });
+          controller.forward();
+        });
+      });
+    }
   }
 
   @override
   void dispose() {
     _controllerReset.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -76,6 +105,12 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    Widget body = Container();
+    if (showFront) {
+      body = withAutomaticFlip();
+    } else {
+      body = withGestureFlip();
+    }
     return InteractiveViewer(
       panEnabled: false,
       clipBehavior: Clip.none,
@@ -91,59 +126,79 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
       onInteractionEnd: (ScaleEndDetails details) {
         _animateResetInitialize();
       },
-      child: GestureDetector(
-        onHorizontalDragStart: (details) {
-          controller.reset();
-
-          setState(() {
-            isFront = true;
-            horizontalDrag = 0;
-          });
-        },
-        onHorizontalDragUpdate: (details) {
-          setState(() {
-            horizontalDrag += details.delta.dx;
-            horizontalDrag %= 360;
-
-            setImageSide();
-          });
-        },
-        onHorizontalDragEnd: (details) {
-          final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
-
-          animation =
-              Tween<double>(begin: horizontalDrag, end: end).animate(controller)
-                ..addListener(() {
-                  setState(() {
-                    horizontalDrag = animation.value;
-
-                    setImageSide();
-                  });
-                });
-          controller.forward();
-        },
-        child: Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(-horizontalDrag / 180 * pi),
-          child: isFront
-              ? Image.asset(widget.urlFront)
-              : Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateY(pi),
-                  child: Image.asset(widget.urlBack),
-                ),
-        ),
-      ),
+      child: body,
     );
   }
 
-  void setImageSide() {
+  void _setImageSide() {
     if (horizontalDrag <= 90 || horizontalDrag >= 270) {
       isFront = true;
     } else {
       isFront = false;
     }
   }
+
+  Widget withAutomaticFlip() {
+    return _card(
+      isFront,
+      -controller.value,
+      this.widget.urlFront,
+      this.widget.urlBack,
+    );
+  }
+
+  Widget withGestureFlip() {
+    return GestureDetector(
+      onHorizontalDragStart: (details) {
+        controller.reset();
+
+        setState(() {
+          isFront = true;
+          horizontalDrag = 0;
+        });
+      },
+      onHorizontalDragUpdate: (details) {
+        setState(() {
+          horizontalDrag += details.delta.dx;
+          horizontalDrag %= 360;
+
+          _setImageSide();
+        });
+      },
+      onHorizontalDragEnd: (details) {
+        final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
+        animation =
+            Tween<double>(begin: horizontalDrag, end: end).animate(controller)
+              ..addListener(() {
+                setState(() {
+                  horizontalDrag = animation.value;
+                  _setImageSide();
+                });
+              });
+        controller.forward();
+      },
+      child: _card(
+        isFront,
+        -horizontalDrag / 180,
+        this.widget.urlFront,
+        this.widget.urlBack,
+      ),
+    );
+  }
+}
+
+_card(bool isFront, double value, String front, String back) {
+  return Transform(
+    alignment: Alignment.center,
+    transform: Matrix4.identity()
+      ..setEntry(3, 2, 0.001)
+      ..rotateY(value * pi),
+    child: isFront
+        ? Image.asset(front)
+        : Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()..rotateY(pi),
+            child: Image.asset(back),
+          ),
+  );
 }

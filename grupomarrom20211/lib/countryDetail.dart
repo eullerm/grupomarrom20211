@@ -125,7 +125,6 @@ class _CountryDetailState extends State<CountryDetail> {
                                     urlFront:
                                         'assets/images/cards/${this.country['name']}.png',
                                     urlBack: 'assets/images/Cardback.png',
-                                    isInGame: true,
                                   ),
                                   SizedBox(
                                     height: 8,

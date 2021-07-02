@@ -3,9 +3,9 @@ import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/cardInfo.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
-
 import 'const/cards.dart';
 
+//Tela responsável pela exibição da lista de países
 class Countries extends StatefulWidget {
   Countries();
 
