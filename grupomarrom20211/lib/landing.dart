@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/button.dart';
+import 'package:grupomarrom20211/widgets/timer.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
 //Tela inicial
@@ -41,6 +42,7 @@ class _LandingState extends State<Landing> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
+                      OtpTimer(),
                       Button(title: "Jogar", screen: "/").withShadow(context),
                       Button(title: "Como jogar", screen: "/")
                           .withShadow(context),

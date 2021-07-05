@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
+import 'package:grupomarrom20211/widgets/title.dart';
 
 class OtpTimer extends StatefulWidget {
   @override
@@ -8,45 +9,54 @@ class OtpTimer extends StatefulWidget {
 }
 
 class _OtpTimerState extends State<OtpTimer> {
-  final interval = const Duration(seconds: 1);
+  static const maxSeconds = 10;
+  int seconds = maxSeconds;
+  Timer? timer;
 
-  final int timerMaxSeconds = 30;
-
-  int currentSeconds = 0;
-
-  String get timerText =>
-      '${((timerMaxSeconds - currentSeconds) % 60).toString().padLeft(2, '0')}';
-
-  startTimeout([int? milliseconds]) {
-    var duration = interval;
-    Timer.periodic(duration, (timer) {
-      setState(() {
-        currentSeconds = timer.tick;
-        if (timer.tick >= timerMaxSeconds) {
-          timer.cancel();
-        }
-      });
+  startCountdown() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (seconds > 0) {
+        setState(() {
+          seconds--;
+        });
+      } else
+        stopCountdown(reset: false);
     });
+  }
+
+  void resetCountdown() => setState(() => seconds = maxSeconds);
+
+  void stopCountdown({bool reset = true}) {
+    if (reset) {
+      resetCountdown();
+    }
+    timer?.cancel();
   }
 
   @override
   void initState() {
-    if (mounted) startTimeout();
+    startCountdown();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          timerText,
-          textAlign: TextAlign.center,
-          style: TextStyles.screenTitle,
-        )
-      ],
-    );
+    return SizedBox(
+        width: 80,
+        height: 80,
+        child: Stack(fit: StackFit.expand, children: [
+          CircularProgressIndicator(
+            value: seconds / maxSeconds,
+            valueColor: AlwaysStoppedAnimation(Colors.grey[400]),
+            strokeWidth: 12,
+            backgroundColor: Colors.lightBlue[900],
+          ),
+          Align(
+              alignment: Alignment(0, 0.5),
+              child: TextTitle(
+                title: '$seconds',
+                textStyle: TextStyles.appTitle,
+              ))
+        ]));
   }
 }
