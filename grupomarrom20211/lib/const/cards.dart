@@ -11,6 +11,8 @@ final List CARDS = [
     "government": "República democrática parlamentarista",
     "leader": "Angela Merkel (desde 2005)",
     "typeOfLeader": "Chanceler",
+    "overview":
+        "A Alemanha é uma república parlamentar federal de dezesseis estados, localizada na Europa Central. A capital e maior cidade do país é Berlim, localizada no nordeste do território alemão. O país é membro das Nações Unidas, da OTAN, G8, G20, da OCDE e da OMC. É uma grande potência com a quarta maior economia do mundo por PIB nominal (US\$ 4,319 trilhões) e a quinta maior em poder de compra. Como um moderno Estado-nação, o país foi unificado pela primeira vez em consequência da Guerra Franco-Prussiana em 1871. Em 1949, após a Segunda Guerra Mundial, a Alemanha foi dividida em dois estados, a Alemanha Ocidental, oficialmente \"República Federal da Alemanha\", e a \"Alemanha Oriental\", oficialmente República Democrática Alemã, ao longo das linhas de ocupação aliadas. A Alemanha foi reunificada em 1990. A língua oficial do país é o Alemão.",
     "division": [
       'Baden-Wurttemberg',
       'Baixa Saxônia',
@@ -48,6 +50,8 @@ final List CARDS = [
     "leader": "Imperador Akhito",
     "minister": "Shinzō Abe",
     "typeOfLeader": "Monarca",
+    "overview":
+        "O Japão é um país insular da Ásia Oriental, composto por um arquipélago de 6.852 ilhas. O país possui a maior maior área metropolitana do mundo, com mais de 30 milhões de habitantes, na região que contém a capital japonesa, a cidade de Tóquio. Desde a sua constituição em 1947, o Japão se manteve como uma monarquia constitucional unitária parlamentarista, com um imperador e um parlamento eleito, a Dieta. Como grande potência econômica, possui a terceira maior economia do mundo em PIB nominal (US\$ 4,123 trilhões) e a quarta maior em poder de compra. A moeda nacional é o Iene e o país faz parte do G7, sendo o único país asiático a fazer parte, e G20. O Japão é o 19° país com maior IDH no mundo, contando também com a maior expectativa de vida e a 3ª menor taxa de mortalidade infantil. A língua oficial do país é o japonês.",
     "division": [
       'Hokkaidō',
       'Tōhoku',
@@ -71,6 +75,8 @@ final List CARDS = [
     "area": "8.516.000 km²",
     "population": "211 M",
     "capital": "Brasília",
+    "overview":
+        "O Brasil é o maior país da América do Sul e da região da América Latina, sendo o quinto maior do mundo em área territorial e sexto em população. É o único país na América onde se fala majoritariamente a língua portuguesa, além de ser uma das nações mais multiculturais e etnicamente diversas, em decorrência da forte imigração oriunda de variados locais do mundo. Sua atual Constituição, promulgada em 1988, concebe o Brasil como uma república federativa presidencialista, formada pela união dos 26 estados. O PIB nominal brasileiro é o décimo segundo maior do mundo (US\$ 1,363 trilhão), tendo como moeda o Real. O país é um dos principais celeiros do planeta, sendo o maior produtor de café dos últimos 150 anos. É membro fundador da ONU, G20, BRICS, CPLP, União Latina, OEA, OEI, Mercosul e da Unasul.",
   },
   {
     "id": 3,
@@ -79,6 +85,18 @@ final List CARDS = [
     "area": "9.834.000 km²",
     "population": "328 M",
     "capital": "Washington, D.C.",
+    "overview":
+        "Os Estados Unidos da América são uma república constitucional federal composta por 50 estados. O país é o quarto maior em área total, o quinto maior em área contígua e o terceiro em população. Sua geografia e sistemas climáticos também são extremamente diversificados, com desertos, planícies, florestas e montanhas que abrigam uma grande variedade de espécies. A Convenção de Filadélfia aprovou a atual Constituição dos Estados Unidos em 17 de setembro de 1787; sua ratificação no ano seguinte tornou os estados parte de uma única república com um forte governo central. Os Estados Unidos são um país desenvolvido e formam a maior economia nacional do mundo, com o maior PIB nominal do mundo (US\$ 22,675 trilhões), tendo como moeda o Dólar americano.  Sua renda per capita era a sexta maior do mundo em 2010, no entanto o país é o mais desigual dos membros da OCDE, conforme calculado pelo Banco Mundial. Os EUA participam de diversas organizações, como a ONU; o USMCA, antigo Nafta; a Otan, dentre outros. O idioma oficial do país é o inglês.",
+  },
+  {
+    "id": 4,
+    "name": "China",
+    "location": "Ásia",
+    "area": "9.596.961 km²",
+    "population": "1,3 B",
+    "capital": "Pequim",
+    "overview":
+        "A China é o maior país da Ásia Oriental e o mais populoso do mundo. É uma república popular socialista unipartidária. É o terceiro maior país do mundo em área total e em área terrestre. Desde a introdução de reformas econômicas em 1978, a China tornou-se em uma das economias de mais rápido crescimento no mundo, sendo o maior exportador e o terceiro maior importador de mercadorias do planeta. A importância da China como uma grande potência é refletida através de seu papel com o segundo maior PIB nominal do mundo (US\$ 10,982 trilhões), tendo como moeda o Renminbi, e da sua posição como membro permanente da ONU e de várias outras organizações multilaterais, incluindo a OMC, Cooperação Econômica Ásia–Pacífico, G20, BRICS e da Organização para Cooperação de Xangai. Sua língua oficial é o Mandarim.",
   }
 ];
 

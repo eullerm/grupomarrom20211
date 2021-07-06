@@ -47,7 +47,7 @@ class _OtpTimerState extends State<OtpTimer> {
         child: Stack(fit: StackFit.expand, children: [
           CircularProgressIndicator(
             value: seconds / maxSeconds,
-            valueColor: AlwaysStoppedAnimation(Colors.grey[400]),
+            valueColor: AlwaysStoppedAnimation(AppColorScheme.cardColor),
             strokeWidth: 12,
             backgroundColor: Colors.lightBlue[900],
           ),

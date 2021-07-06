@@ -109,7 +109,7 @@ class _CountryDetailState extends State<CountryDetail> {
                               child: Column(
                                 children: <Widget>[
                                   SizedBox(height: 20),
-                                  _info("Capital", this.country["capital"]),
+                                  /* _info("Capital", this.country["capital"]),
                                   _info("Idioma", this.country["language"]),
                                   _info("Moeda", this.country["coin"]),
                                   _info("Governo", this.country["government"]),
@@ -119,7 +119,10 @@ class _CountryDetailState extends State<CountryDetail> {
                                   _info("PIB per capita",
                                       this.country["pibPerCapita"]),
                                   _info("Taxa de crescimento",
-                                      this.country["growthRate"]),
+                                      this.country["growthRate"]), */
+                                  GenericText(
+                                      text: this.country["overview"],
+                                      textStyle: TextStyles.plainText),
                                   SizedBox(height: 50),
                                   CardObject(
                                     urlFront:
