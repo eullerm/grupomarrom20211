@@ -97,6 +97,26 @@ final List CARDS = [
     "capital": "Pequim",
     "overview":
         "A China é o maior país da Ásia Oriental e o mais populoso do mundo. É uma república popular socialista unipartidária. É o terceiro maior país do mundo em área total e em área terrestre. Desde a introdução de reformas econômicas em 1978, a China tornou-se em uma das economias de mais rápido crescimento no mundo, sendo o maior exportador e o terceiro maior importador de mercadorias do planeta. A importância da China como uma grande potência é refletida através de seu papel com o segundo maior PIB nominal do mundo (US\$ 10,982 trilhões), tendo como moeda o Renminbi, e da sua posição como membro permanente da ONU e de várias outras organizações multilaterais, incluindo a OMC, Cooperação Econômica Ásia–Pacífico, G20, BRICS e da Organização para Cooperação de Xangai. Sua língua oficial é o Mandarim.",
+  },
+  {
+    "id": 5,
+    "name": "Angola",
+    "location": "África",
+    "area": "1.246.700 km²",
+    "population": "29,3 M",
+    "capital": "Luanda",
+    "overview":
+        "A Angola é um país da costa ocidental da África e é uma República presidencialista de partido dominante unitária, sendo o vigésimo terceiro maior país em extensão territorial e o quadragésimo sexto em população. Os padrões de vida angolanos são um tanto baixos: cerca de 70% da população vive com menos de dois dólares por dia, enquanto as taxas de expectativa de vida e mortalidade infantil no país continuam entre as piores do mundo, além da presença proeminente da desigualdade económica, visto que a maioria da riqueza do país está concentrada numa parte desproporcionalmente pequena da população. No entanto, Angola apresenta boas taxas de crescimento apoiadas principalmente pelas suas exportações de petróleo. As jazidas de petróleo estão localizadas em quase toda a extensão da sua costa marítima. A estimativa de PIB nominal (2014) para o país foi de US\$ 131,407 mil milhões, sendo a sua moeda o Kwanza, colocando o país em 61° na lista de produto interno bruto mundial. O Quicongo, Chócue, Umbundo, Quimbundo, Ganguela e Cuanhama tem status de línguas nacionais, também sendo considerada como língua oficial o português.",
+  },
+  {
+    "id": 6,
+    "name": "França",
+    "location": "Europa",
+    "area": "543.965 km²",
+    "population": "67,3 M",
+    "capital": "Paris",
+    "overview":
+        "A França é um país localizado na Europa Ocidental, com várias ilhas e territórios ultramarinos em outros continentes. A nação é o maior país da União Europeia em área e o terceiro maior da Europa. A França é um dos países mais desenvolvidos do mundo, possui a quinta maior economia do mundo por produto interno bruto (US\$ 2,584 trilhões) nominal, tendo como moeda nacional o Euro, a nona maior por paridade do poder de compra e a segunda maior de toda a Europa. O país goza de um alto padrão de vida, bem como um elevado nível de escolaridade pública, além de ter uma das mais altas expectativas de vida do mundo. A França foi classificada como o melhor provedor de saúde pública do mundo pela OMS. O país é um dos membros fundadores da UE e também da ONU, além de ser membro da Francofonia, do G8, do G20, da OCDE, da OMC e da União Latina. A língua oficial do país é o francês.",
   }
 ];
 
