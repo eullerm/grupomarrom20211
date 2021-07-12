@@ -93,7 +93,7 @@ final List CARDS = [
     "name": "China",
     "location": "Ásia",
     "area": "9.596.961 km²",
-    "population": "1,3 B",
+    "population": "1,39 B",
     "capital": "Pequim",
     "overview":
         "A China é o maior país da Ásia Oriental e o mais populoso do mundo. É uma república popular socialista unipartidária. É o terceiro maior país do mundo em área total e em área terrestre. Desde a introdução de reformas econômicas em 1978, a China tornou-se em uma das economias de mais rápido crescimento no mundo, sendo o maior exportador e o terceiro maior importador de mercadorias do planeta. A importância da China como uma grande potência é refletida através de seu papel com o segundo maior PIB nominal do mundo (US\$ 10,982 trilhões), tendo como moeda o Renminbi, e da sua posição como membro permanente da ONU e de várias outras organizações multilaterais, incluindo a OMC, Cooperação Econômica Ásia–Pacífico, G20, BRICS e da Organização para Cooperação de Xangai. Sua língua oficial é o Mandarim.",
@@ -117,6 +117,26 @@ final List CARDS = [
     "capital": "Paris",
     "overview":
         "A França é um país localizado na Europa Ocidental, com várias ilhas e territórios ultramarinos em outros continentes. A nação é o maior país da União Europeia em área e o terceiro maior da Europa. A França é um dos países mais desenvolvidos do mundo, possui a quinta maior economia do mundo por produto interno bruto (US\$ 2,584 trilhões) nominal, tendo como moeda nacional o Euro, a nona maior por paridade do poder de compra e a segunda maior de toda a Europa. O país goza de um alto padrão de vida, bem como um elevado nível de escolaridade pública, além de ter uma das mais altas expectativas de vida do mundo. A França foi classificada como o melhor provedor de saúde pública do mundo pela OMS. O país é um dos membros fundadores da UE e também da ONU, além de ser membro da Francofonia, do G8, do G20, da OCDE, da OMC e da União Latina. A língua oficial do país é o francês.",
+  },
+  {
+    "id": 7,
+    "name": "Rússia",
+    "location": "Eurásia",
+    "area": "17.124.442 km²",
+    "population": "144 M",
+    "capital": "Moscou",
+    "overview":
+        "A Rússia é um país localizado nos continentes europeu e asiático, sendo o de maior extensão territorial do mundo. Faz parte da União econômica Eurasiática (UEE), BRICS, do G20, Cooperação Econômica Ásia-Pacífico, ONU e FMI, APEC, Organização para Cooperação de Xangai (OCX), EurAsEC, além de ser um destacado membro da Comunidade dos Estados Independentes (CEI). Possui o décimo primeiro maior PIB do mundo (US\$ 1,474 trilhão). Sua moeda é o Rublo Russo. O país goza de uma alta taxa de escolaridade e possui um clima úmido e polar. O país estabeleceu poder e influência em todo o mundo desde os tempos do império até se tornar a maior e principal república constituinte da URSS, entre 1922 e 1991, o primeiro e maior Estado socialista constitucional, reconhecido como uma superpotência. A Federação da Rússia foi criada na sequência da dissolução da União Soviética, em 1991, mas é reconhecida como o Estado sucessor da URSS, sendo uma república federal semipresidencialista. A língua oficial é o russo.",
+  },
+  {
+    "id": 8,
+    "name": "Índia",
+    "location": "Ásia",
+    "area": "3.287.590 km²",
+    "population": "1,38 B",
+    "capital": "Nova Déli",
+    "overview":
+        "A Índia é o segundo país mais populoso, o sétimo maior em área geográfica e a democracia mais populosa do mundo. Lar da Civilização do Vale do Indo, de rotas comerciais históricas e de vastos impérios, o subcontinente indiano é identificado por sua riqueza comercial e cultural de grande parte da sua longa história. É uma república composta por 28 estados e sete territórios da união, com um sistema de democracia parlamentar. O país é a sétima maior economia do mundo em PIB nominal (US\$ 2,09 trilhões), bem como a terceira maior do mundo em PIB medido em Paridade de Poder de Compra. As reformas econômicas feitas desde 1991 transformaram o país em uma das economias de mais rápido crescimento do mundo. Os idiomas oficiais do país são o Hindi, o inglês e mais 21 línguas oficiais.",
   }
 ];
 
