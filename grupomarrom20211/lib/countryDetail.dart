@@ -27,7 +27,7 @@ class _CountryDetailState extends State<CountryDetail> {
   @override
   void initState() {
     super.initState();
-    country = CARDS[this.widget.id];
+    country = InfoCountry().cards[this.widget.id];
     scrollControllerOverview.addListener(() {
       setState(() {
         if (scrollControllerOverview.offset >=
@@ -130,7 +130,7 @@ class _CountryDetailState extends State<CountryDetail> {
                                     urlBack: 'assets/images/Cardback.png',
                                   ),
                                   SizedBox(
-                                    height: 130,
+                                    height: 180,
                                   ),
                                 ],
                               ),
