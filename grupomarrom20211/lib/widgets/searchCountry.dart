@@ -14,8 +14,7 @@ class SearchCountry extends SearchDelegate<String> {
       onPressed: () {
         // close(context, null);
       },
-      icon: AnimatedIcon(
-          icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
+      icon: AnimatedIcon(icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
     );
   }
 

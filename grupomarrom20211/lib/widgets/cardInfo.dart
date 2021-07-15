@@ -7,8 +7,7 @@ import 'package:grupomarrom20211/widgets/genericText.dart';
 class CardInfo extends StatelessWidget {
   final bool isDetailPage;
   final Map card;
-  const CardInfo({Key? key, this.isDetailPage = false, required this.card})
-      : super(key: key);
+  const CardInfo({Key? key, this.isDetailPage = false, required this.card}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +29,7 @@ _card(BuildContext context, bool isDetailPage, Map card) {
       padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Stack(
         children: <Widget>[
-          _cardInfo(isDetailPage, card["name"], card["location"], card["area"],
-              card["population"], context),
+          _cardInfo(isDetailPage, card["name"], card["location"], card["area"], card["population"], context),
           _cardFlag(isDetailPage, card["name"]),
         ],
       ),
@@ -41,8 +39,7 @@ _card(BuildContext context, bool isDetailPage, Map card) {
 
 _cardFlag(bool isDetailPage, String name) {
   return Container(
-    alignment:
-        isDetailPage ? FractionalOffset(0.5, 0) : FractionalOffset(0.0, 0.5),
+    alignment: isDetailPage ? FractionalOffset(0.5, 0) : FractionalOffset(0.0, 0.5),
     margin: isDetailPage ? EdgeInsets.all(0) : EdgeInsets.only(left: 20.0),
     child: Hero(
       tag: 'country-icon-$name',
@@ -57,38 +54,26 @@ _cardFlag(bool isDetailPage, String name) {
   );
 }
 
-_cardInfo(bool isDetailPage, String name, String location, String area,
-    String population, context) {
+_cardInfo(bool isDetailPage, String name, String location, String area, String population, context) {
   return Stack(
     children: <Widget>[
       _cardBackground('card-$name', isDetailPage),
       // Informações exibidas
       Container(
-        margin: isDetailPage
-            ? EdgeInsets.only(top: 50.0)
-            : EdgeInsets.only(left: 65.0, right: 24.0),
+        margin: isDetailPage ? EdgeInsets.only(top: 50.0) : EdgeInsets.only(left: 65.0, right: 24.0),
         decoration: BoxDecoration(
           color: Color(0x00FFFFFF),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Container(
-          margin: isDetailPage
-              ? EdgeInsets.only(top: 50.0, left: 16.0, right: 16, bottom: 16)
-              : EdgeInsets.only(top: 16.0, left: 60.0),
+          margin: isDetailPage ? EdgeInsets.only(top: 50.0, left: 16.0, right: 16, bottom: 16) : EdgeInsets.only(top: 16.0, left: 60.0),
           constraints: BoxConstraints.expand(),
           child: Column(
-            mainAxisAlignment: isDetailPage
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.start,
-            crossAxisAlignment: isDetailPage
-                ? CrossAxisAlignment.center
-                : CrossAxisAlignment.start,
+            mainAxisAlignment: isDetailPage ? MainAxisAlignment.center : MainAxisAlignment.start,
+            crossAxisAlignment: isDetailPage ? CrossAxisAlignment.center : CrossAxisAlignment.start,
             children: <Widget>[
-              GenericText(text: "$name", textStyle: TextStyles.countryTitle)
-                  .withAnimation(context, 'country-name-$name'),
-              GenericText(
-                      text: "$location", textStyle: TextStyles.countryLocation)
-                  .withAnimation(context, 'country-location-$name'),
+              GenericText(text: "$name", textStyle: TextStyles.countryTitle).withAnimation(context, 'country-name-$name'),
+              GenericText(text: "$location", textStyle: TextStyles.countryLocation).withAnimation(context, 'country-location-$name'),
               Hero(
                 tag: '$name',
                 child: Container(
@@ -99,23 +84,17 @@ _cardInfo(bool isDetailPage, String name, String location, String area,
                 ),
               ),
               Row(
-                mainAxisAlignment: isDetailPage
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.start,
+                mainAxisAlignment: isDetailPage ? MainAxisAlignment.center : MainAxisAlignment.start,
                 children: <Widget>[
                   Container(
                     child: Row(
                       children: <Widget>[
                         Hero(
                           tag: '$area',
-                          child: Icon(Icons.straighten,
-                              size: 14.0, color: AppColorScheme.iconColor),
+                          child: Icon(Icons.straighten, size: 14.0, color: AppColorScheme.iconColor),
                         ),
                         SizedBox(width: 6),
-                        GenericText(
-                                text: "$area",
-                                textStyle: TextStyles.countrySize)
-                            .withAnimation(context, 'country-size-$name'),
+                        GenericText(text: "$area", textStyle: TextStyles.countrySize).withAnimation(context, 'country-size-$name'),
                       ],
                     ),
                   ),
@@ -125,14 +104,10 @@ _cardInfo(bool isDetailPage, String name, String location, String area,
                       children: <Widget>[
                         Hero(
                           tag: '$population',
-                          child: Icon(Icons.people,
-                              size: 14.0, color: AppColorScheme.iconColor),
+                          child: Icon(Icons.people, size: 14.0, color: AppColorScheme.iconColor),
                         ),
                         SizedBox(width: 6),
-                        GenericText(
-                                text: "$population",
-                                textStyle: TextStyles.countryPopulation)
-                            .withAnimation(context, 'country-population-$name'),
+                        GenericText(text: "$population", textStyle: TextStyles.countryPopulation).withAnimation(context, 'country-population-$name'),
                       ],
                     ),
                   ),
@@ -150,9 +125,7 @@ _cardBackground(String tag, bool isDetailPage) {
   return Hero(
     tag: tag,
     child: Container(
-      margin: isDetailPage
-          ? EdgeInsets.only(top: 50.0)
-          : EdgeInsets.only(left: 65.0, right: 24.0),
+      margin: isDetailPage ? EdgeInsets.only(top: 50.0) : EdgeInsets.only(left: 65.0, right: 24.0),
       decoration: BoxDecoration(
         color: AppColorScheme.cardColor,
         borderRadius: BorderRadius.circular(8.0),

@@ -44,12 +44,9 @@ class _LandingState extends State<Landing> {
                     children: <Widget>[
                       OtpTimer(),
                       Button(title: "Jogar", screen: "/").withShadow(context),
-                      Button(title: "Como jogar", screen: "/")
-                          .withShadow(context),
-                      Button(title: "Cartas", screen: "/Countries")
-                          .withShadow(context),
-                      Button(title: "Créditos", screen: "/Credits")
-                          .withShadow(context),
+                      Button(title: "Como jogar", screen: "/").withShadow(context),
+                      Button(title: "Cartas", screen: "/Countries").withShadow(context),
+                      Button(title: "Créditos", screen: "/Credits").withShadow(context),
                     ],
                   ),
                 ),

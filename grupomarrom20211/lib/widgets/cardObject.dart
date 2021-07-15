@@ -24,8 +24,7 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   bool isFront = true;
   double horizontalDrag = 0;
   double maxScale = 1.5;
-  TransformationController _transformationController =
-      TransformationController();
+  TransformationController _transformationController = TransformationController();
   var initialControllerValue;
   Animation<Matrix4>? _animationReset;
   late final AnimationController _controllerReset;
@@ -167,14 +166,13 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
       },
       onHorizontalDragEnd: (details) {
         final double end = 360 - horizontalDrag >= 180 ? 0 : 360;
-        animation =
-            Tween<double>(begin: horizontalDrag, end: end).animate(controller)
-              ..addListener(() {
-                setState(() {
-                  horizontalDrag = animation.value;
-                  _setImageSide();
-                });
-              });
+        animation = Tween<double>(begin: horizontalDrag, end: end).animate(controller)
+          ..addListener(() {
+            setState(() {
+              horizontalDrag = animation.value;
+              _setImageSide();
+            });
+          });
         controller.forward();
       },
       child: _card(

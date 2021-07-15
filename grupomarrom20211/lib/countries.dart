@@ -58,15 +58,10 @@ class _CountriesState extends State<Countries> {
                     children: <Widget>[
                       AnimatedContainer(
                         duration: Duration(milliseconds: 300),
-                        width: isSearch
-                            ? MediaQuery.of(context).size.width - 128
-                            : 0,
+                        width: isSearch ? MediaQuery.of(context).size.width - 128 : 0,
                         child: TextField(
                           decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: isSearch ? OutlineInputBorder() : null,
-                              hintText: 'Enter a search term'),
+                              filled: true, fillColor: Colors.white, border: isSearch ? OutlineInputBorder() : null, hintText: 'Enter a search term'),
                         ),
                       ),
                       IconButton(
@@ -116,10 +111,7 @@ class _CountriesState extends State<Countries> {
 
   _cards() {
     return Column(
-      children: InfoCountry()
-          .cards
-          .map<Widget>((value) => CardInfo(card: value))
-          .toList(),
+      children: InfoCountry().cards.map<Widget>((value) => CardInfo(card: value)).toList(),
     );
   }
 }

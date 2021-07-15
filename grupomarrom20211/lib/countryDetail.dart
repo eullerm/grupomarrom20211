@@ -30,16 +30,14 @@ class _CountryDetailState extends State<CountryDetail> {
     country = InfoCountry().cards[this.widget.id];
     scrollControllerOverview.addListener(() {
       setState(() {
-        if (scrollControllerOverview.offset >=
-            scrollControllerOverview.position.maxScrollExtent / 2) {
+        if (scrollControllerOverview.offset >= scrollControllerOverview.position.maxScrollExtent / 2) {
           scrollControllerCardInfo.animateTo(
             scrollControllerCardInfo.position.maxScrollExtent,
             duration: Duration(milliseconds: 200),
             curve: Curves.ease,
           );
         }
-        if (scrollControllerOverview.offset ==
-            scrollControllerOverview.position.minScrollExtent) {
+        if (scrollControllerOverview.offset == scrollControllerOverview.position.minScrollExtent) {
           scrollControllerCardInfo.animateTo(
             scrollControllerCardInfo.position.minScrollExtent,
             duration: Duration(milliseconds: 200),
@@ -50,8 +48,7 @@ class _CountryDetailState extends State<CountryDetail> {
     });
     scrollControllerCardInfo.addListener(() {
       setState(() {
-        if (scrollControllerCardInfo.offset ==
-            scrollControllerCardInfo.position.minScrollExtent) {
+        if (scrollControllerCardInfo.offset == scrollControllerCardInfo.position.minScrollExtent) {
           //Future.dalayed adicionado antes do jump To para que não ocorra ocorra erro com o listener acima
           Future.delayed(Duration(milliseconds: 50), () {
             scrollControllerOverview.jumpTo(
@@ -95,9 +92,7 @@ class _CountryDetailState extends State<CountryDetail> {
                       height: MediaQuery.of(context).size.height + 70,
                       child: Column(
                         children: <Widget>[
-                          AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              height: invisibleContainerHeight),
+                          AnimatedContainer(duration: Duration(milliseconds: 200), height: invisibleContainerHeight),
                           CardInfo(
                             isDetailPage: true,
                             card: this.country,
@@ -120,13 +115,10 @@ class _CountryDetailState extends State<CountryDetail> {
                                       this.country["pibPerCapita"]),
                                   _info("Taxa de crescimento",
                                       this.country["growthRate"]), */
-                                  GenericText(
-                                      text: this.country["overview"],
-                                      textStyle: TextStyles.plainText),
+                                  GenericText(text: this.country["overview"], textStyle: TextStyles.plainText),
                                   SizedBox(height: 50),
                                   CardObject(
-                                    urlFront:
-                                        'assets/images/cards/${this.country['name']}.png',
+                                    urlFront: 'assets/images/cards/${this.country['name']}.png',
                                     urlBack: 'assets/images/Cardback.png',
                                   ),
                                   SizedBox(
@@ -159,14 +151,12 @@ class _CountryDetailState extends State<CountryDetail> {
           children: [
             Expanded(
               flex: 1,
-              child: GenericText(
-                  text: string1 + ": ", textStyle: TextStyles.plainText),
+              child: GenericText(text: string1 + ": ", textStyle: TextStyles.plainText),
             ),
             SizedBox(width: 5),
             Expanded(
               flex: 2,
-              child:
-                  GenericText(text: string2, textStyle: TextStyles.plainText),
+              child: GenericText(text: string2, textStyle: TextStyles.plainText),
             ),
           ],
         ),

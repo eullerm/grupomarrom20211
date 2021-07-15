@@ -53,16 +53,7 @@ class InfoCountry {
       "typeOfLeader": "Monarca",
       "overview":
           "O Japão é um país insular da Ásia Oriental, composto por um arquipélago de 6.852 ilhas. O país possui a maior maior área metropolitana do mundo, com mais de 30 milhões de habitantes, na região que contém a capital japonesa, a cidade de Tóquio. Desde a sua constituição em 1947, o Japão se manteve como uma monarquia constitucional unitária parlamentarista, com um imperador e um parlamento eleito, a Dieta. Como grande potência econômica, possui a terceira maior economia do mundo em PIB nominal (US\$ 4,123 trilhões) e a quarta maior em poder de compra. A moeda nacional é o Iene e o país faz parte do G7, sendo o único país asiático a fazer parte, e G20. O Japão é o 19° país com maior IDH no mundo, contando também com a maior expectativa de vida e a 3ª menor taxa de mortalidade infantil. A língua oficial do país é o japonês.",
-      "division": [
-        'Hokkaidō',
-        'Tōhoku',
-        'Kansai',
-        'Kantō',
-        'Chūgoku',
-        'Shikoku',
-        'Chūbu',
-        'Kyūshū e Okinawa'
-      ],
+      "division": ['Hokkaidō', 'Tōhoku', 'Kansai', 'Kantō', 'Chūgoku', 'Shikoku', 'Chūbu', 'Kyūshū e Okinawa'],
       "typeOfDivision": "Províncias ",
       "pib": "5,082 trilhões USD (2019)",
       "pibPerCapita": "40.246,88 USD ‎(2019)",

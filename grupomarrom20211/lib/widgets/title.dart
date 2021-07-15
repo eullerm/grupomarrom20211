@@ -7,9 +7,7 @@ import 'package:auto_route/auto_route.dart';
 class TextTitle extends StatelessWidget {
   final String title;
   final TextStyle textStyle;
-  const TextTitle(
-      {Key? key, required this.title, this.textStyle = TextStyles.appTitle})
-      : super(key: key);
+  const TextTitle({Key? key, required this.title, this.textStyle = TextStyles.appTitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
