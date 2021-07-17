@@ -22,7 +22,7 @@ class TextTitle extends StatelessWidget {
           IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                color: AppColorScheme.appText,
+                color: AppColorScheme.iconColor,
               ),
               onPressed: () async {
                 context.router.popUntilRouteWithName('$screen');
@@ -38,9 +38,12 @@ _appTitle(String title, TextStyle textStyle) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: <Widget>[
-      Text(
-        title,
-        style: textStyle,
+      Container(
+        margin: EdgeInsets.only(top: 5),
+        child: Text(
+          title,
+          style: textStyle,
+        ),
       ),
     ],
   );

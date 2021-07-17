@@ -10,7 +10,7 @@ class AppColorScheme {
   static const Color buttonColor = const Color(0xAAF1FAEE);
   static const Color buttonText = const Color(0xFF000000);
   static const Color appText = const Color(0xFFC0C0C0);
-  static const Color iconColor = const Color(0xFF000000);
+  static const Color iconColor = const Color(0xFFC0C0C0);
   static const Color cardColor = const Color(0xFFC0C0C0);
 }
 

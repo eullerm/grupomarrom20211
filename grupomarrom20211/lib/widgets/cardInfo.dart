@@ -91,7 +91,7 @@ _cardInfo(bool isDetailPage, String name, String location, String area, String p
                       children: <Widget>[
                         Hero(
                           tag: '$area',
-                          child: Icon(Icons.straighten, size: 14.0, color: AppColorScheme.iconColor),
+                          child: Icon(Icons.straighten, size: 14.0),
                         ),
                         SizedBox(width: 6),
                         GenericText(text: "$area", textStyle: TextStyles.countrySize).withAnimation(context, 'country-size-$name'),
@@ -104,7 +104,7 @@ _cardInfo(bool isDetailPage, String name, String location, String area, String p
                       children: <Widget>[
                         Hero(
                           tag: '$population',
-                          child: Icon(Icons.people, size: 14.0, color: AppColorScheme.iconColor),
+                          child: Icon(Icons.people, size: 14.0),
                         ),
                         SizedBox(width: 6),
                         GenericText(text: "$population", textStyle: TextStyles.countryPopulation).withAnimation(context, 'country-population-$name'),

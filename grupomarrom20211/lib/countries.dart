@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/cardInfo.dart';
-import 'package:grupomarrom20211/widgets/searchCountry.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 import 'const/cards.dart';
 
@@ -16,6 +15,7 @@ class Countries extends StatefulWidget {
 
 class _CountriesState extends State<Countries> {
   bool isSearch = false;
+  TextEditingController searchController = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
@@ -46,38 +46,17 @@ class _CountriesState extends State<Countries> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Stack(children: <Widget>[
-                  // Título
-                  TextTitle(
-                    title: "Cartas",
-                    textStyle: TextStyles.screenTitle,
-                  ).withArrowBack(context, screen: "Landing"),
-                  //Lupa
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        width: isSearch ? MediaQuery.of(context).size.width - 128 : 0,
-                        child: TextField(
-                          decoration: InputDecoration(
-                              filled: true, fillColor: Colors.white, border: isSearch ? OutlineInputBorder() : null, hintText: 'Enter a search term'),
-                        ),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            _verificaBusca();
-                            /* showSearch(
-                              context: context, delegate: SearchCountry()); */
-                          },
-                          icon: Icon(
-                            Icons.search,
-                            color: AppColorScheme.iconColor,
-                          )),
-                    ],
-                  ),
-                ]),
-
+                SizedBox(height: 16),
+                Stack(
+                  children: <Widget>[
+                    // Título
+                    TextTitle(
+                      title: "Cartas",
+                      textStyle: TextStyles.screenTitle,
+                    ).withArrowBack(context, screen: "Landing"),
+                    _searchBar(),
+                  ],
+                ),
                 // Cards
                 Flexible(
                   child: ShaderMask(
@@ -111,7 +90,60 @@ class _CountriesState extends State<Countries> {
 
   _cards() {
     return Column(
-      children: InfoCountry().cards.map<Widget>((value) => CardInfo(card: value)).toList(),
+      children: InfoCountry().cards.map<Widget>((value) {
+        bool contain = false;
+        value["keywords"].forEach((String value) {
+          if (!contain && searchController.text.isNotEmpty) {
+            contain = value.contains(searchController.text.toLowerCase());
+          }
+        });
+
+        if (contain) {
+          return CardInfo(card: value);
+        } else if (searchController.text.isEmpty) {
+          return CardInfo(card: value);
+        }
+
+        return SizedBox();
+      }).toList(),
+    );
+  }
+
+  //Lupa
+  _searchBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          width: isSearch ? MediaQuery.of(context).size.width - 128 : 0,
+          child: TextField(
+            onChanged: (String value) {
+              setState(() {
+                searchController.text = value;
+              });
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              hintText: 'Pesquisar',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            _verificaBusca();
+          },
+          icon: Icon(
+            Icons.search,
+            color: AppColorScheme.iconColor,
+          ),
+        ),
+      ],
     );
   }
 }
