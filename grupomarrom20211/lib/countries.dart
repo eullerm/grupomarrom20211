@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/cardInfo.dart';
@@ -16,21 +17,23 @@ class Countries extends StatefulWidget {
 class _CountriesState extends State<Countries> {
   bool isSearch = false;
   TextEditingController searchController = TextEditingController();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   void _verificaBusca() {
     setState(() {
       isSearch = !isSearch;
+      FocusScopeNode currentFocus = FocusScope.of(context);
+
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: _body(context),
     );
   }
@@ -91,20 +94,23 @@ class _CountriesState extends State<Countries> {
   _cards() {
     return Column(
       children: InfoCountry().cards.map<Widget>((value) {
-        bool contain = false;
-        value["keywords"].forEach((String value) {
-          if (!contain && searchController.text.isNotEmpty) {
-            contain = value.contains(searchController.text.toLowerCase());
-          }
-        });
+        if (searchController.text.isNotEmpty) {
+          bool contain = false;
+          //Percorre as palavras chaves de cada país e verifica se o que o usuário digitou bate com elas
+          value["keywords"].forEach((String value) {
+            if (!contain && searchController.text.isNotEmpty) {
+              contain = value.contains(searchController.text.toLowerCase());
+            }
+          });
 
-        if (contain) {
-          return CardInfo(card: value);
-        } else if (searchController.text.isEmpty) {
+          if (contain) {
+            return CardInfo(card: value);
+          } else {
+            return SizedBox();
+          }
+        } else {
           return CardInfo(card: value);
         }
-
-        return SizedBox();
       }).toList(),
     );
   }

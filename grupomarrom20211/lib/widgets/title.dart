@@ -25,6 +25,11 @@ class TextTitle extends StatelessWidget {
                 color: AppColorScheme.iconColor,
               ),
               onPressed: () async {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
                 context.router.popUntilRouteWithName('$screen');
               }),
           _appTitle(this.title, this.textStyle),
