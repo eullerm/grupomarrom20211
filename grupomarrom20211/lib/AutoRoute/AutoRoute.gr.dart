@@ -11,9 +11,11 @@ import '../countries.dart' as _i5;
 import '../countryDetail.dart' as _i6;
 import '../credits.dart' as _i4;
 import '../landing.dart' as _i3;
+import '../play.dart' as _i7;
 
 class AppRouter extends _i1.RootStackRouter {
-  AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey]) : super(navigatorKey);
+  AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey])
+      : super(navigatorKey);
 
   @override
   final Map<String, _i1.PageFactory> pagesMap = {
@@ -36,8 +38,14 @@ class AppRouter extends _i1.RootStackRouter {
         routeData: routeData,
         builder: (data) {
           final pathParams = data.pathParams;
-          final args = data.argsAs<CountryDetailArgs>(orElse: () => CountryDetailArgs(id: pathParams.getInt('id')));
+          final args = data.argsAs<CountryDetailArgs>(
+              orElse: () => CountryDetailArgs(id: pathParams.getInt('id')));
           return _i6.CountryDetail(id: args.id);
+        }),
+    Play.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i7.Play();
         })
   };
 
@@ -46,7 +54,8 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Landing.name, path: '/'),
         _i1.RouteConfig(Credits.name, path: '/Credits'),
         _i1.RouteConfig(Countries.name, path: '/Countries'),
-        _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id')
+        _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
+        _i1.RouteConfig(Play.name, path: '/Play')
       ];
 }
 
@@ -69,7 +78,11 @@ class Countries extends _i1.PageRouteInfo {
 }
 
 class CountryDetail extends _i1.PageRouteInfo<CountryDetailArgs> {
-  CountryDetail({required int id}) : super(name, path: '/CountryDetail/:id', args: CountryDetailArgs(id: id), rawPathParams: {'id': id});
+  CountryDetail({required int id})
+      : super(name,
+            path: '/CountryDetail/:id',
+            args: CountryDetailArgs(id: id),
+            rawPathParams: {'id': id});
 
   static const String name = 'CountryDetail';
 }
@@ -78,4 +91,10 @@ class CountryDetailArgs {
   const CountryDetailArgs({required this.id});
 
   final int id;
+}
+
+class Play extends _i1.PageRouteInfo {
+  const Play() : super(name, path: '/Play');
+
+  static const String name = 'Play';
 }
