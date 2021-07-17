@@ -17,6 +17,7 @@ class _PlayState extends State<Play> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: _body(context),
     );
   }
@@ -39,7 +40,7 @@ class _PlayState extends State<Play> {
                 ),
                 // Texto
                 Flexible(
-                  flex: 2,
+                  flex: 3,
                   child: TextField(
                     onChanged: (String value) {
                       setState(() {

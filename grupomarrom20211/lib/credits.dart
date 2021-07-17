@@ -32,13 +32,16 @@ class _CreditsState extends State<Credits> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 // Título
-                TextTitle(
-                  title: "Créditos",
-                  textStyle: TextStyles.screenTitle,
-                ).withArrowBack(context, screen: "Landing"),
+                Flexible(
+                  flex: 2,
+                  child: TextTitle(
+                    title: "Créditos",
+                    textStyle: TextStyles.screenTitle,
+                  ).withArrowBack(context, screen: "Landing"),
+                ),
                 //Nomes
-                Container(
-                  height: MediaQuery.of(context).size.height / 2,
+                Flexible(
+                  flex: 10,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
