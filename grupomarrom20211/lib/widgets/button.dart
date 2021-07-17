@@ -7,11 +7,12 @@ class Button extends StatelessWidget {
   final String title;
   final String screen;
   final bool pop;
-  Button({required this.title, required this.screen, this.pop = false});
+  final double width;
+  Button({required this.title, required this.screen, this.pop = false, this.width = 150});
 
   @override
   Widget build(BuildContext context) {
-    return _button(this.title, this.screen, this.pop, context);
+    return _button(this.title, this.screen, this.pop, context, this.width);
   }
 
   Widget withShadow(BuildContext context) {
@@ -26,14 +27,14 @@ class Button extends StatelessWidget {
           ),
         ],
       ),
-      child: _button(this.title, this.screen, this.pop, context),
+      child: _button(this.title, this.screen, this.pop, context, this.width),
     );
   }
 }
 
-_button(String title, String screen, bool pop, BuildContext context) {
+_button(String title, String screen, bool pop, BuildContext context, double width) {
   return Container(
-    width: 150,
+    width: width,
     child: ButtonTheme(
       child: ElevatedButton(
         onPressed: () async {

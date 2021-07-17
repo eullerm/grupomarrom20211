@@ -34,18 +34,18 @@ class _LandingState extends State<Landing> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 // Título
-                Container(
-                  height: MediaQuery.of(context).size.height / 3,
+                Flexible(
+                  flex: 2,
                   child: TextTitle(title: "GEOCARD"),
                 ),
                 //Botões
-                Container(
-                  height: MediaQuery.of(context).size.height / 2,
+                Flexible(
+                  flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      OtpTimer(),
-                      Button(title: "Jogar", screen: "/").withShadow(context),
+                      //OtpTimer(),
+                      Button(title: "Jogar", screen: "/Play").withShadow(context),
                       Button(title: "Como jogar", screen: "/").withShadow(context),
                       Button(title: "Cartas", screen: "/Countries").withShadow(context),
                       Button(title: "Créditos", screen: "/Credits").withShadow(context),
