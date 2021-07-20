@@ -26,7 +26,7 @@ class _LandingState extends State<Landing> {
     return Container(
       child: Stack(
         children: <Widget>[
-          Background(background: "./assets/images/Background.png"),
+          BackgroundVideo(background: "assets/videos/BackgroundAnimated.mp4"),
           Container(
             padding: EdgeInsets.all(16.0),
             width: double.infinity,
