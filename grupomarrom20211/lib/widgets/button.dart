@@ -8,7 +8,7 @@ class Button extends StatelessWidget {
   final String screen;
   final bool pop;
   final double width;
-  Button({required this.title, required this.screen, this.pop = false, this.width = 150});
+  Button({required this.title, this.screen = "", this.pop = false, this.width = 150});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,38 @@ class Button extends StatelessWidget {
         ],
       ),
       child: _button(this.title, this.screen, this.pop, context, this.width),
+    );
+  }
+
+  Widget matchMaking(BuildContext context, {required Function function}) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Color(0xFF000000).withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 16.0,
+            offset: Offset(0, 0.75),
+          ),
+        ],
+      ),
+      child: Container(
+        width: width,
+        child: ButtonTheme(
+          child: ElevatedButton(
+            onPressed: () => function,
+            child: _text(title),
+            style: ElevatedButton.styleFrom(
+              elevation: 10,
+              shadowColor: Colors.black,
+              primary: AppColorScheme.buttonColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -61,5 +93,49 @@ _text(String title) {
   return Text(
     title,
     style: TextStyles.buttonTitle,
+  );
+}
+
+class MatchButton extends StatelessWidget {
+  final String title;
+  final double width;
+  final Function function;
+  const MatchButton({required this.title, this.width = 150, required this.function, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Color(0xFF000000).withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 16.0,
+            offset: Offset(0, 0.75),
+          ),
+        ],
+      ),
+      child: _matchButton(this.title, context, this.width, this.function),
+    );
+  }
+}
+
+_matchButton(String title, BuildContext context, double width, Function function) {
+  return Container(
+    width: width,
+    child: ButtonTheme(
+      child: ElevatedButton(
+        onPressed: () => function(),
+        child: _text(title),
+        style: ElevatedButton.styleFrom(
+          elevation: 10,
+          shadowColor: Colors.black,
+          primary: AppColorScheme.buttonColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+        ),
+      ),
+    ),
   );
 }

@@ -12,6 +12,7 @@ class AppColorScheme {
   static const Color appText = const Color(0xFFC0C0C0);
   static const Color iconColor = const Color(0xFFC0C0C0);
   static const Color cardColor = const Color(0xFFC0C0C0);
+  static const Color snackBarColor = const Color(0xAAF1FAEE);
 }
 
 class Dimens {
