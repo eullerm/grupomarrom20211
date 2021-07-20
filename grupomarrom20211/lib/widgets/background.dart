@@ -76,10 +76,7 @@ class _BackgroundVideoState extends State<BackgroundVideo> {
                     child: SizedBox(
                       width: constraints.maxWidth * _controller.value.aspectRatio,
                       height: constraints.maxHeight,
-                      child: Transform.rotate(
-                        angle: pi / 2,
-                        child: VideoPlayer(_controller),
-                      ),
+                      child: VideoPlayer(_controller),
                     ),
                   ),
                 );
