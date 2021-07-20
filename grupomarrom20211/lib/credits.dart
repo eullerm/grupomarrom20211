@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
-import 'package:grupomarrom20211/widgets/cardObject.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
 //Tela responsável pela exibição dos autores do projeto.
@@ -69,9 +68,6 @@ class _CreditsState extends State<Credits> {
                         "Malkai Oliveira",
                         style: TextStyles.plainText,
                       ),
-                      /* CardObject(
-                          urlFront: 'assets/images/cards/Japão.png',
-                          urlBack: 'assets/images/Cardback.png'), */
                     ],
                   ),
                 ),
