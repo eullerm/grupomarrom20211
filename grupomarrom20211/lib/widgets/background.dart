@@ -32,7 +32,8 @@ class BackgroundVideo extends StatefulWidget {
   final String background;
   BackgroundVideo({
     required this.background,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   _BackgroundVideoState createState() => _BackgroundVideoState();
@@ -45,20 +46,22 @@ class _BackgroundVideoState extends State<BackgroundVideo> {
   @override
   void initState() {
     super.initState();
-    // Pointing the video controller to our local asset.
     _controller = VideoPlayerController.asset(this.widget.background)
       ..addListener(() {})
-      ..setLooping(true)
       ..initialize().then((_) {
-        _controller.play();
-        isPlay = true;
+        setState(() {
+          _controller.play();
+          _controller.setLooping(true);
+          _controller.setVolume(0.0);
+          isPlay = true;
+        });
       });
   }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override

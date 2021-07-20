@@ -111,7 +111,7 @@ class _CountryDetailState extends State<CountryDetail> {
                                     urlBack: 'assets/images/Cardback.png',
                                   ),
                                   SizedBox(
-                                    height: 180,
+                                    height: 120,
                                   ),
                                 ],
                               ),
