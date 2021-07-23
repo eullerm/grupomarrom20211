@@ -12,6 +12,7 @@ import '../countryDetail.dart' as _i6;
 import '../credits.dart' as _i4;
 import '../landing.dart' as _i3;
 import '../play.dart' as _i7;
+import '../privateroom.dart' as _i8;
 
 class AppRouter extends _i1.RootStackRouter {
   AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey])
@@ -46,6 +47,11 @@ class AppRouter extends _i1.RootStackRouter {
         routeData: routeData,
         builder: (_) {
           return const _i7.Play();
+        }),
+    PrivateRoom.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i8.PrivateRoom();
         })
   };
 
@@ -55,7 +61,8 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Credits.name, path: '/Credits'),
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
-        _i1.RouteConfig(Play.name, path: '/Play')
+        _i1.RouteConfig(Play.name, path: '/Play'),
+        _i1.RouteConfig(PrivateRoom.name, path: '/private-room')
       ];
 }
 
@@ -97,4 +104,10 @@ class Play extends _i1.PageRouteInfo {
   const Play() : super(name, path: '/Play');
 
   static const String name = 'Play';
+}
+
+class PrivateRoom extends _i1.PageRouteInfo {
+  const PrivateRoom() : super(name, path: '/private-room');
+
+  static const String name = 'PrivateRoom';
 }

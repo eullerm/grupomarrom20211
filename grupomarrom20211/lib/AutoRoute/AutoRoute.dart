@@ -4,6 +4,7 @@ import 'package:grupomarrom20211/landing.dart';
 import 'package:grupomarrom20211/credits.dart';
 import 'package:grupomarrom20211/countryDetail.dart';
 import 'package:grupomarrom20211/play.dart';
+import 'package:grupomarrom20211/privateroom.dart';
 
 //Responsável por gerar as rotas das páginas.
 @MaterialAutoRouter(
@@ -14,6 +15,7 @@ import 'package:grupomarrom20211/play.dart';
     AutoRoute(page: Countries),
     AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
     AutoRoute(page: Play),
+    AutoRoute(page: PrivateRoom)
   ],
 )
 class $AppRouter {}
