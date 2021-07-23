@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,16 +17,27 @@ class Play extends StatefulWidget {
   _PlayState createState() => _PlayState();
 }
 
-class _PlayState extends State<Play> {
+class _PlayState extends State<Play> with WidgetsBindingObserver {
   TextEditingController nameController = TextEditingController();
   final database = FirebaseDatabase.instance;
   String? _deviceId;
   bool waiting = false;
-
+  final Connectivity _connectivity = Connectivity();
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
     initPlatformState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final reference = database.reference();
+
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused && waiting) {
+      _connect(reference);
+    }
   }
 
   Future<void> initPlatformState() async {
@@ -127,46 +139,54 @@ class _PlayState extends State<Play> {
   }
 
   Future _connect(DatabaseReference reference) async {
-    if (waiting) {
-      reference.child("waiting/${_deviceId!}").remove();
-      setState(() {
-        waiting = false;
-      });
-    } else {
-      if (_deviceId != null) {
-        reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
-        // print((await reference.child("waiting").get())!.value.length);
-        setState(() {
-          waiting = true;
-        });
-      } else {
-        setState(() {
-          waiting = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
-            ),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            backgroundColor: AppColorScheme.snackBarColor.withOpacity(0.5),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  Icons.report_problem,
-                  size: 20.0,
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
+        if (waiting) {
+          reference.child("waiting/${_deviceId!}").remove();
+          setState(() {
+            waiting = false;
+          });
+        } else {
+          if (_deviceId != null) {
+            reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
+            setState(() {
+              waiting = true;
+            });
+          } else {
+            setState(() {
+              waiting = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
                 ),
-                SizedBox(width: 5),
-                GenericText(text: "Dado deletado!", textStyle: TextStyles.plainText),
-              ],
-            ),
-          ),
-        );
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                backgroundColor: AppColorScheme.snackBarColor.withOpacity(0.5),
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.report_problem,
+                      size: 20.0,
+                    ),
+                    SizedBox(width: 5),
+                    GenericText(text: "Dado deletado!", textStyle: TextStyles.plainText),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
       }
+    } on PlatformException catch (e) {
+      print(e.toString());
+
+      return;
     }
   }
 }
