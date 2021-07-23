@@ -68,6 +68,7 @@ class _PlayState extends State<Play> {
                   flex: 2,
                   child: TextTitle(
                     title: waiting ? "Procurando" : "",
+                    textStyle: TextStyles.screenTitle,
                   ).withArrowBack(context, screen: "Landing"),
                 ),
                 // Texto
@@ -127,13 +128,14 @@ class _PlayState extends State<Play> {
 
   Future _connect(DatabaseReference reference) async {
     if (waiting) {
-      reference.child("waiting").child(_deviceId!).remove();
+      reference.child("waiting/${_deviceId!}").remove();
       setState(() {
         waiting = false;
       });
     } else {
       if (_deviceId != null) {
-        reference.child("waiting").child(_deviceId!).set({"name": nameController.text});
+        reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
+        // print((await reference.child("waiting").get())!.value.length);
         setState(() {
           waiting = true;
         });
