@@ -9,6 +9,7 @@ import 'package:grupomarrom20211/widgets/button.dart';
 import 'package:grupomarrom20211/widgets/genericText.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 import 'package:platform_device_id/platform_device_id.dart';
+import 'package:auto_route/auto_route.dart';
 
 class Play extends StatefulWidget {
   const Play({Key? key}) : super(key: key);
@@ -19,10 +20,12 @@ class Play extends StatefulWidget {
 
 class _PlayState extends State<Play> with WidgetsBindingObserver {
   TextEditingController nameController = TextEditingController();
+  TextEditingController tokenController = TextEditingController();
   final database = FirebaseDatabase.instance;
   String? _deviceId;
   bool waiting = false;
   final Connectivity _connectivity = Connectivity();
+
   @override
   void initState() {
     super.initState();
@@ -32,11 +35,9 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final reference = database.reference();
-
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.paused && waiting) {
-      _connect(reference);
+      _connect("waiting");
     }
   }
 
@@ -63,8 +64,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
     );
   }
 
-  Widget _body(context) {
-    final reference = database.reference();
+  Widget _body(BuildContext context) {
     return Container(
       child: Stack(
         children: <Widget>[
@@ -109,15 +109,6 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      MatchButton(
-                        title: waiting ? "Cancelar" : "Procurar uma partida",
-                        width: waiting ? 150 : 250,
-                        function: () => _connect(reference),
-                      ),
-                      Button(
-                        title: "Criar sala",
-                        screen: "/",
-                      ).withShadow(context),
                       SizedBox(
                         height: 50,
                         width: 50,
@@ -126,6 +117,72 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                                 color: AppColorScheme.iconColor,
                               )
                             : SizedBox(),
+                      ),
+                      MatchButton(
+                        title: waiting ? "Cancelar" : "Procurar uma partida",
+                        width: waiting ? 150 : 250,
+                        function: () => _connect("waiting"),
+                      ),
+                      MatchButton(
+                        title: "Criar sala",
+                        function: () {
+                          if (nameController.text.isNotEmpty && _deviceId != null) {
+                            context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId!}/token/');
+                          } else {
+                            if (nameController.text.isEmpty)
+                              _showSnackBar("Insira um nome antes de continuar.");
+                            else
+                              _showSnackBar("Houve um problema.");
+                          }
+                        },
+                      ),
+                      MatchButton(
+                        title: "Entrar na sala",
+                        function: () {
+                          if (nameController.text.isNotEmpty && _deviceId != null) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    backgroundColor: AppColorScheme.cardColor.withOpacity(0.2),
+                                    title: GenericText(
+                                      text: "Token da sala",
+                                      textStyle: TextStyles.plainText,
+                                    ),
+                                    content: TextField(
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          tokenController.text = value;
+                                        });
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        hintText: '42Ad5Rafd6f1Lr159PcT',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      MatchButton(
+                                        title: "Entrar",
+                                        function: () {
+                                          context.router.pop();
+                                          _connect("privateRoom");
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } else {
+                            if (nameController.text.isEmpty)
+                              _showSnackBar("Insira um nome antes de continuar.");
+                            else
+                              _showSnackBar("Houve um problema.");
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -138,10 +195,11 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
     );
   }
 
-  Future _connect(DatabaseReference reference) async {
+  Future _connect(String type) async {
+    DatabaseReference reference = database.reference();
     try {
       var result = await _connectivity.checkConnectivity();
-      if (result != ConnectivityResult.none) {
+      if (result != ConnectivityResult.none && nameController.text.isNotEmpty) {
         if (waiting) {
           reference.child("waiting/${_deviceId!}").remove();
           setState(() {
@@ -149,44 +207,78 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
           });
         } else {
           if (_deviceId != null) {
-            reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
-            setState(() {
-              waiting = true;
-            });
+            if (type == "waiting") {
+              reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
+              setState(() {
+                waiting = true;
+              });
+            } else if (type == "privateRoom") {
+              if (true) {
+                // Precisa checar se existe a sala com o token digitado
+                reference
+                    .child("privateRoom/${tokenController.text}/${_deviceId!}")
+                    .set({"name": nameController.text, "isReady": false, "leader": false, "id": _deviceId!});
+
+                context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId!}/${tokenController.text}');
+              } else {
+                _closeKeyboard();
+                _showSnackBar("Sala inexistente");
+              }
+            }
           } else {
+            _showSnackBar("Houve um problema");
             setState(() {
               waiting = false;
             });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                ),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                backgroundColor: AppColorScheme.snackBarColor.withOpacity(0.5),
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.report_problem,
-                      size: 20.0,
-                    ),
-                    SizedBox(width: 5),
-                    GenericText(text: "Dado deletado!", textStyle: TextStyles.plainText),
-                  ],
-                ),
-              ),
-            );
           }
+        }
+      } else {
+        if (nameController.text.isEmpty) {
+          _showSnackBar("Insira um nome válido");
+        } else if (result != ConnectivityResult.none) {
+          _showSnackBar("Cheque sua conexão com a internet");
         }
       }
     } on PlatformException catch (e) {
-      print(e.toString());
+      _showSnackBar(e.toString());
 
       return;
     }
+  }
+
+  _showSnackBar(String title) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        backgroundColor: AppColorScheme.snackBarColor.withOpacity(0.5),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.report_problem,
+              size: 20.0,
+            ),
+            SizedBox(width: 5),
+            GenericText(text: title, textStyle: TextStyles.plainText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _closeKeyboard() {
+    setState(() {
+      FocusScopeNode currentFocus = FocusScope.of(context);
+
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    });
   }
 }

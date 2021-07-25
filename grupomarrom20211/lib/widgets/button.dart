@@ -30,38 +30,6 @@ class Button extends StatelessWidget {
       child: _button(this.title, this.screen, this.pop, context, this.width),
     );
   }
-
-  Widget matchMaking(BuildContext context, {required Function function}) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Color(0xFF000000).withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 16.0,
-            offset: Offset(0, 0.75),
-          ),
-        ],
-      ),
-      child: Container(
-        width: width,
-        child: ButtonTheme(
-          child: ElevatedButton(
-            onPressed: () => function,
-            child: _text(title),
-            style: ElevatedButton.styleFrom(
-              elevation: 10,
-              shadowColor: Colors.black,
-              primary: AppColorScheme.buttonColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 _button(String title, String screen, bool pop, BuildContext context, double width) {

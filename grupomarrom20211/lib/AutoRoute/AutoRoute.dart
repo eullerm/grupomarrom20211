@@ -15,7 +15,7 @@ import 'package:grupomarrom20211/privateroom.dart';
     AutoRoute(page: Countries),
     AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
     AutoRoute(page: Play),
-    AutoRoute(page: PrivateRoom)
+    AutoRoute(path: '/PrivateRoom/:player/:id/:token', page: PrivateRoom)
   ],
 )
 class $AppRouter {}

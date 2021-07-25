@@ -50,8 +50,18 @@ class AppRouter extends _i1.RootStackRouter {
         }),
     PrivateRoom.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
-        builder: (_) {
-          return const _i8.PrivateRoom();
+        builder: (data) {
+          final pathParams = data.pathParams;
+          final args = data.argsAs<PrivateRoomArgs>(
+              orElse: () => PrivateRoomArgs(
+                  player: pathParams.getString('player'),
+                  id: pathParams.getString('id'),
+                  token: pathParams.getString('token')));
+          return _i8.PrivateRoom(
+              player: args.player,
+              id: args.id,
+              token: args.token,
+              key: args.key);
         })
   };
 
@@ -62,7 +72,8 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
         _i1.RouteConfig(Play.name, path: '/Play'),
-        _i1.RouteConfig(PrivateRoom.name, path: '/private-room')
+        _i1.RouteConfig(PrivateRoom.name,
+            path: '/PrivateRoom/:player/:id/:token')
       ];
 }
 
@@ -106,8 +117,30 @@ class Play extends _i1.PageRouteInfo {
   static const String name = 'Play';
 }
 
-class PrivateRoom extends _i1.PageRouteInfo {
-  const PrivateRoom() : super(name, path: '/private-room');
+class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
+  PrivateRoom(
+      {required String player,
+      required String id,
+      required String token,
+      _i2.Key? key})
+      : super(name,
+            path: '/PrivateRoom/:player/:id/:token',
+            args:
+                PrivateRoomArgs(player: player, id: id, token: token, key: key),
+            rawPathParams: {'player': player, 'id': id, 'token': token});
 
   static const String name = 'PrivateRoom';
+}
+
+class PrivateRoomArgs {
+  const PrivateRoomArgs(
+      {required this.player, required this.id, required this.token, this.key});
+
+  final String player;
+
+  final String id;
+
+  final String token;
+
+  final _i2.Key? key;
 }
