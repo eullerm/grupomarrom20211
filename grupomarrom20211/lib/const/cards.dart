@@ -42,7 +42,7 @@ class InfoCountry {
       "capital": "Washington, D.C.",
       "overview":
           "Os Estados Unidos da América são uma república constitucional federal composta por 50 estados. O país é o quarto maior em área total, o quinto maior em área contígua e o terceiro em população. Sua geografia e sistemas climáticos também são extremamente diversificados, com desertos, planícies, florestas e montanhas que abrigam uma grande variedade de espécies. A Convenção de Filadélfia aprovou a atual Constituição dos Estados Unidos em 17 de setembro de 1787; sua ratificação no ano seguinte tornou os estados parte de uma única república com um forte governo central. Os Estados Unidos são um país desenvolvido e formam a maior economia nacional do mundo, com o maior PIB nominal do mundo (US\$ 22,675 trilhões), tendo como moeda o Dólar americano.  Sua renda per capita era a sexta maior do mundo em 2010, no entanto o país é o mais desigual dos membros da OCDE, conforme calculado pelo Banco Mundial. Os EUA participam de diversas organizações, como a ONU; o USMCA, antigo Nafta; a Otan, dentre outros. O idioma oficial do país é o inglês.",
-      "keywords": ["eua", "ámerica do norte", "america do norte"],
+      "keywords": ["eua", "estados unidos", "ámerica do norte", "america do norte"],
     },
     {
       "id": 4,
@@ -96,8 +96,41 @@ class InfoCountry {
       "population": "1,38 B",
       "capital": "Nova Déli",
       "overview":
-          "A Índia é o segundo país mais populoso, o sétimo maior em área geográfica e a democracia mais populosa do mundo. Lar da Civilização do Vale do Indo, de rotas comerciais históricas e de vastos impérios, o subcontinente indiano é identificado por sua riqueza comercial e cultural de grande parte da sua longa história. É uma república composta por 28 estados e sete territórios da união, com um sistema de democracia parlamentar. O país é a sétima maior economia do mundo em PIB nominal (US\$ 2,09 trilhões), bem como a terceira maior do mundo em PIB medido em Paridade de Poder de Compra. As reformas econômicas feitas desde 1991 transformaram o país em uma das economias de mais rápido crescimento do mundo. Os idiomas oficiais do país são o Hindi, o inglês e mais 21 línguas oficiais.",
+          "A Índia é o segundo país mais populoso, o sétimo maior em área geográfica e a democracia mais populosa do mundo. Lar da Civilização do Vale do Indo, de rotas comerciais históricas e de vastos impérios, o subcontinente indiano é identificado por sua riqueza comercial e cultural de grande parte da sua longa história. É uma república composta por 28 estados e sete territórios da união, com um sistema de democracia parlamentar. O país é a sétima maior economia do mundo em PIB nominal (US\$ 2,09 trilhões), bem como a terceira maior do mundo em PIB medido em Paridade de Poder de Compra, sendo a sua moeda a Rupia indiana. As reformas econômicas feitas desde 1991 transformaram o país em uma das economias de mais rápido crescimento do mundo. Os idiomas oficiais do país são o Hindi, o inglês e mais 21 línguas oficiais.",
       "keywords": ["índia", "ásia", "india", "asia"],
+    },
+    {
+      "id": 9,
+      "name": "Egito",
+      "location": "África",
+      "area": "1.001.450 km²",
+      "population": "92,8 M",
+      "capital": "Cairo",
+      "overview":
+          "O Egito, oficialmente República Árabe do Egito (República semipresidencialista), é um país localizado no nordeste da África. A longa e rica herança cultural do Egito é parte integrante de sua identidade nacional, que muitas vezes assimilou várias influências estrangeiras, como gregos, persas, romano, árabes, otomanos e núbios. O Egito moderno remonta a 1922, quando conquistou a independência nominal do domínio britânico através de uma monarquia. No entanto, a ocupação militar britânica do Egito continuou e muitos egípcios acreditavam que a monarquia era um instrumento do colonialismo britânico. Com mais de 95 milhões de habitantes, o Egito é o país mais populoso do Norte da África, do Oriente Médio e do mundo árabe, o terceiro mais populoso da África e o 14º mais populoso do mundo. A grande maioria do seu povo vive perto das margens do rio Nilo, uma área de cerca de 40.000 quilômetros quadrados, onde a única terra arável disponível é encontrada. As grandes regiões do deserto do Saara, que constituem a maior parte do território do Egito, são escassamente habitadas. O Estado soberano do Egito é um país transcontinental considerado uma potência regional no Norte da África, no Oriente Médio e no mundo muçulmano, e uma potência média em todo o mundo. A economia do Egito é uma das maiores e mais diversificadas do Oriente Médio e deve se tornar uma das maiores do mundo ao longo do século XXI, com um PIB nominal de US\$ 284,860 bilhões, sendo sua moeda a Libra Egípcia. A língua oficial é o árabe e o país é um dos membros fundadores das Nações Unidas, do Movimento Não Alinhado, da Liga Árabe, da União Africana e da Organização para a Cooperação Islâmica.",
+      "keywords": ["egito", "áfrica", "africa"],
+    },
+    {
+      "id": 10,
+      "name": "Nigéria",
+      "location": "África",
+      "area": "910.770 km²",
+      "population": "210 M",
+      "capital": "Abuja",
+      "overview":
+          "A Nigéria, oficialmente República Federal da Nigéria, é uma república constitucional federal que compreende 36 estados e o Território da Capital Federal. O país está localizado na África Ocidental e por muito tempo foi sede de inúmeros reinos e impérios, o Estado moderno da Nigéria tem suas origens na colonização britânica da região durante final do século XIX a início do XX, surgindo a partir da combinação de dois protetorados britânicos vizinhos. A Nigéria é muitas vezes referida como o gigante da África, devido à sua grande população e economia. Com cerca de 210 milhões de habitantes, é o país mais populoso do continente e o sétimo país mais populoso do mundo. A língua oficial do país é o inglês. O país tem sido identificado como uma potência regional no continente africano, com particular hegemonia sobre a África Ocidental. Em 2013, o seu PIB se tornou o maior da África, com US\$ 447,013 bilhões de dólares, sendo a sua moeda o Naira. Estima-se que a Nigéria irá se tornar uma das 20 maiores economias do mundo por volta de 2050. As reservas de petróleo nigerianas têm desempenhado um papel importante na crescente riqueza e influência do país. A Nigéria é considerada um mercado emergente pelo Banco Mundial e está listado entre as economias chamadas de Próximos Onze. A maior parte da população nigeriana, no entanto, ainda vive na pobreza absoluta. O país é membro da Commonwealth, da União Africana, da Organização dos Países Exportadores de Petróleo e das Nações Unidas.",
+      "keywords": ["nigéria", "nigeria", "áfrica", "africa"],
+    },
+    {
+      "id": 11,
+      "name": "México",
+      "location": "América do Norte",
+      "area": "1.958.201 km²",
+      "population": "126 M",
+      "capital": "Cidade do México",
+      "overview":
+          "México, oficialmente Estados Unidos Mexicanos, é uma república constitucional federal localizada na América do Norte. Com um território que abrange quase 2 milhões de quilômetros quadrados, o México é o quinto maior país das Américas por área total e o 14º maior país independente do mundo. Com uma população estimada para 2020 de 126 milhões de habitantes, é o 11º país mais populoso do mundo e o mais populoso país da hispanofonia, mas o país não possui um idioma oficialmente reconhecido, contando apenas com línguas nacionais, sendo elas o espanhol e mais 67 línguas indígenas. O México é uma federação composta por 31 estados e a Cidade do México. O país é uma das maiores economias do mundo e uma potência regional, e, desde 1994, o primeiro país latino-americano membro da OCDE, sendo um país de renda média-alta consolidada. É considerado um dos países recentemente industrializados e uma potência emergente. A nação tem o 16º maior PIB nominal (US\$ 1,250 trilhão), tendo a economia fortemente ligada à dos seus parceiros do Tratado Norte-Americano de Livre Comércio (NAFTA), especialmente os Estados Unidos. A moeda nacional é o Peso mexicano.",
+      "keywords": ["méxico", "mexico", "ámerica do norte", "america do norte"],
     },
   ];
   List get cards {
