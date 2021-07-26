@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:grupomarrom20211/Theme.dart';
@@ -8,8 +6,10 @@ import 'package:video_player/video_player.dart';
 //Widget que exibe o background das telas.
 class Background extends StatelessWidget {
   final String background;
+  final String format;
   Background({
     required this.background,
+    this.format = "png",
   });
 
   @override
@@ -19,7 +19,7 @@ class Background extends StatelessWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(this.background),
+          image: AssetImage("assets/images/${this.background}.${this.format}"),
           fit: BoxFit.cover,
         ),
       ),
@@ -30,8 +30,10 @@ class Background extends StatelessWidget {
 
 class BackgroundVideo extends StatefulWidget {
   final String background;
+  final String format;
   BackgroundVideo({
     required this.background,
+    this.format = "mp4",
     Key? key,
   }) : super(key: key);
 
@@ -46,7 +48,7 @@ class _BackgroundVideoState extends State<BackgroundVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(this.widget.background)
+    _controller = VideoPlayerController.asset("assets/videos/${this.widget.background}Animated.${this.widget.format}")
       ..addListener(() {})
       ..initialize().then((_) {
         setState(() {
@@ -111,6 +113,6 @@ class _BackgroundVideoState extends State<BackgroundVideo> {
               ),
             ],
           )
-        : Container();
+        : Background(background: this.widget.background);
   }
 }

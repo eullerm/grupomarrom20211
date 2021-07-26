@@ -71,7 +71,7 @@ class _CountryDetailState extends State<CountryDetail> {
     return Container(
       child: Stack(
         children: <Widget>[
-          Background(background: "./assets/images/Background.png"),
+          Background(background: "Background"),
           Container(
             padding: EdgeInsets.all(16.0),
             width: double.infinity,

@@ -23,7 +23,7 @@ class _CreditsState extends State<Credits> {
     return Container(
       child: Stack(
         children: <Widget>[
-          Background(background: "./assets/images/Background.png"),
+          Background(background: "Background"),
           Container(
             padding: EdgeInsets.all(10.0),
             width: double.infinity,

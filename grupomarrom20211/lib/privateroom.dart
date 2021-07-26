@@ -63,7 +63,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Background(background: "./assets/images/Background.png"),
+          Background(background: "Background"),
           Container(
             padding: EdgeInsets.all(16),
             child: Column(
