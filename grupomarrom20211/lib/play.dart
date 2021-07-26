@@ -215,9 +215,13 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
             } else if (type == "privateRoom") {
               if (true) {
                 // Precisa checar se existe a sala com o token digitado
-                reference
-                    .child("privateRoom/${tokenController.text}/${_deviceId!}")
-                    .set({"name": nameController.text, "isReady": false, "leader": false, "id": _deviceId!});
+                reference.child("privateRoom/${tokenController.text}/${_deviceId!}").set({
+                  "name": nameController.text,
+                  "isReady": false,
+                  "leader": false,
+                  "id": _deviceId!,
+                  "timestamp": DateTime.now().millisecondsSinceEpoch
+                });
 
                 context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId!}/${tokenController.text}');
               } else {

@@ -24,17 +24,20 @@ class PrivateRoom extends StatefulWidget {
   _PrivateRoomState createState() => _PrivateRoomState();
 }
 
-class _PrivateRoomState extends State<PrivateRoom> {
+class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   late bool isToken;
+  bool isTyping = false;
   late String token;
   TextEditingController messageController = TextEditingController();
   final Connectivity _connectivity = Connectivity();
   final database = FirebaseDatabase.instance;
+  ScrollController scrollController = ScrollController();
 
   void _typing() {
     setState(() {
       FocusScopeNode currentFocus = FocusScope.of(context);
-
+      isTyping = !isTyping;
+      print(isTyping.toString());
       if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
       }
@@ -102,6 +105,8 @@ class _PrivateRoomState extends State<PrivateRoom> {
                 users(),
                 SizedBox(height: 16),
                 chat(),
+                SizedBox(height: 8),
+                textField(),
               ],
             ),
           )
@@ -123,13 +128,14 @@ class _PrivateRoomState extends State<PrivateRoom> {
         ),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               isToken
                   ? FirebaseAnimatedList(
                       shrinkWrap: true,
-                      query: database.reference().child("privateRoom/${token}"),
+                      query: database.reference().child("privateRoom/${token}").orderByChild('timestamp'),
                       itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                        if (snapshot.key != "message") {
+                        if (snapshot.key != "messages") {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -172,6 +178,7 @@ class _PrivateRoomState extends State<PrivateRoom> {
     return Flexible(
       flex: 5,
       child: Container(
+        width: MediaQuery.of(context).size.width - 16,
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.black,
@@ -181,42 +188,37 @@ class _PrivateRoomState extends State<PrivateRoom> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                Flexible(
-                  child: TextField(
-                    onTap: () => _typing(),
-                    onChanged: (String value) {
-                      setState(() {
-                        messageController.text = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
+            Flexible(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  child: isToken
+                      ? Column(
+                          children: [
+                            FirebaseAnimatedList(
+                                shrinkWrap: true,
+                                query: database.reference().child("privateRoom/${token}/messages"),
+                                itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
+                                          SizedBox(width: 6),
+                                          GenericText(text: snapshot.value['text'], textStyle: TextStyles.plainText),
+                                        ],
+                                      ),
+                                      SizedBox(height: 5),
+                                    ],
+                                  );
+                                }),
+                          ],
+                        )
+                      : SizedBox(),
                 ),
-                SizedBox(width: 6),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.send),
-                    color: AppColorScheme.iconColor,
-                    onPressed: () => sendMessage(),
-                  ),
-                ),
-              ],
-            )
+              ),
+            ),
           ],
         ),
       ),
@@ -228,9 +230,33 @@ class _PrivateRoomState extends State<PrivateRoom> {
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
+        reference.child("privateRoom/${token}/${this.widget.id}").set(
+            {"name": this.widget.player, "isReady": true, "leader": true, "id": this.widget.id, "timestamp": DateTime.now().millisecondsSinceEpoch});
+      } else {
+        _showSnackBar("Cheque sua conexão com a internet");
+        setState(() {
+          isToken = false;
+        });
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(e.toString());
+      setState(() {
+        isToken = false;
+      });
+    }
+  }
+
+  sendMessage() async {
+    DatabaseReference reference = database.reference();
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
         reference
-            .child("privateRoom/${token}/${this.widget.id}")
-            .set({"name": this.widget.player, "isReady": true, "leader": true, "id": this.widget.id});
+            .child("privateRoom/${token}/messages/${DateTime.now().millisecondsSinceEpoch}")
+            .set({"name": this.widget.player, "text": messageController.text});
+        setState(() {
+          messageController.clear();
+        });
       } else {
         _showSnackBar("Cheque sua conexão com a internet");
         setState(() {
@@ -246,8 +272,6 @@ class _PrivateRoomState extends State<PrivateRoom> {
       return;
     }
   }
-
-  sendMessage() {}
 
   _showSnackBar(String title) {
     return ScaffoldMessenger.of(context).showSnackBar(
@@ -313,5 +337,40 @@ class _PrivateRoomState extends State<PrivateRoom> {
         token = "";
       });
     }
+  }
+
+  textField() {
+    return Row(
+      children: <Widget>[
+        Flexible(
+          child: TextField(
+            onTap: () => _typing(),
+            controller: messageController,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 6),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+            ),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.send),
+            color: AppColorScheme.iconColor,
+            onPressed: () => sendMessage(),
+          ),
+        ),
+      ],
+    );
   }
 }
