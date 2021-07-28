@@ -139,7 +139,13 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              GenericText(text: snapshot.value['name'], textStyle: TextStyles.plainText),
+                              Expanded(
+                                flex: 5,
+                                child: GenericText(text: snapshot.value['name'], textStyle: TextStyles.plainText),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
                               IgnorePointer(
                                 ignoring: snapshot.value["id"] != this.widget.id,
                                 child: MatchButton(
@@ -156,7 +162,13 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GenericText(text: this.widget.player, textStyle: TextStyles.plainText),
+                        Expanded(
+                          flex: 5,
+                          child: GenericText(text: this.widget.player, textStyle: TextStyles.plainText),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
                         MatchButton(
                           title: "Começar",
                           function: () => start(true),
@@ -202,12 +214,22 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                 itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
                                   return Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
-                                          SizedBox(width: 6),
-                                          GenericText(text: snapshot.value['text'], textStyle: TextStyles.plainText),
-                                        ],
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                                        child: Row(
+                                          children: [
+                                            GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
+                                            SizedBox(width: 6),
+                                            Expanded(
+                                              flex: 8,
+                                              child: GenericText(text: snapshot.value['text'], textStyle: TextStyles.plainText),
+                                            ),
+                                          ],
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          color: Colors.black26,
+                                        ),
                                       ),
                                       SizedBox(height: 5),
                                     ],
@@ -287,12 +309,18 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.report_problem,
-              size: 20.0,
+            Expanded(
+              flex: 2,
+              child: Icon(
+                Icons.report_problem,
+                size: 20.0,
+              ),
             ),
             SizedBox(width: 5),
-            GenericText(text: title, textStyle: TextStyles.plainText),
+            Expanded(
+              flex: 7,
+              child: GenericText(text: title, textStyle: TextStyles.plainText),
+            ),
           ],
         ),
       ),
@@ -328,7 +356,9 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
     setState(() {
       token = String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(Random().nextInt(_chars.length))));
-
+      Clipboard.setData(ClipboardData(text: token)).then((value) {
+        _showSnackBar("Token copiado!");
+      });
       isToken = true;
     });
     _createPrivateRoom();
@@ -348,7 +378,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             controller: messageController,
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Colors.white70,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,

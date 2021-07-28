@@ -264,12 +264,18 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
         content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.report_problem,
-              size: 20.0,
+            Expanded(
+              flex: 2,
+              child: Icon(
+                Icons.report_problem,
+                size: 20.0,
+              ),
             ),
             SizedBox(width: 5),
-            GenericText(text: title, textStyle: TextStyles.plainText),
+            Expanded(
+              flex: 7,
+              child: GenericText(text: title, textStyle: TextStyles.plainText),
+            ),
           ],
         ),
       ),
