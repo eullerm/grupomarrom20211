@@ -85,6 +85,12 @@ class TextStyles {
     fontSize: 20.0,
   );
 
+  static const TextStyle smallText = const TextStyle(
+    color: AppColorScheme.appText,
+    fontFamily: 'ElanITCStdBook',
+    fontSize: 12.0,
+  );
+
   static const TextStyle plainText = const TextStyle(
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',

@@ -87,6 +87,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                 Flexible(
                   flex: 3,
                   child: TextField(
+                    maxLength: 15,
                     onChanged: (String value) {
                       setState(() {
                         nameController.text = value;
@@ -95,7 +96,8 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Insira seu nome',
+                      hintText: 'Insira seu nome (até 15 caracteres)',
+                      counterStyle: TextStyles.smallText,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,

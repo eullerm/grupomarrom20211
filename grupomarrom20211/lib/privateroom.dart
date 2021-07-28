@@ -202,34 +202,34 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
           children: <Widget>[
             Flexible(
               child: SingleChildScrollView(
-                controller: scrollController,
                 child: Container(
                   padding: EdgeInsets.all(8),
                   child: isToken
                       ? Column(
                           children: [
                             FirebaseAnimatedList(
+                                controller: scrollController,
                                 shrinkWrap: true,
                                 query: database.reference().child("privateRoom/${token}/messages"),
                                 itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
                                   return Column(
                                     children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                                        child: Row(
-                                          children: [
-                                            GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
-                                            SizedBox(width: 6),
-                                            Expanded(
-                                              flex: 8,
+                                      Row(
+                                        children: [
+                                          GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
+                                          SizedBox(width: 6),
+                                          Expanded(
+                                            flex: 8,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
                                               child: GenericText(text: snapshot.value['text'], textStyle: TextStyles.plainText),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(5.0),
+                                                color: Colors.black26,
+                                              ),
                                             ),
-                                          ],
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(5.0),
-                                          color: Colors.black26,
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                       SizedBox(height: 5),
                                     ],
