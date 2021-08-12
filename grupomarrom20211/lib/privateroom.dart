@@ -47,7 +47,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   @override
   void initState() {
     print(this.widget.token.toString());
-    //Caso o token seja a palavra token é porque a sala acabou de ser criada.
+    // Caso o token seja a palavra token é porque a sala acabou de ser criada.
     if (this.widget.token != "token") {
       token = this.widget.token;
       isToken = true;
@@ -77,12 +77,15 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                           onPressed: () async {
                             if (isToken) {
                               try {
+                                // Recebe os valores do usuário no banco.
                                 var db = await database.reference().child("privateRoom/${token}/${this.widget.id}").get();
 
+                                // Verifica se é o líder.
                                 if (db!.value["leader"]) {
-                                  //Se o líder sair da sala ela é deletada.
+                                  // Se o líder sair da sala ela é deletada.
                                   database.reference().child("privateRoom/${token}").remove();
                                 } else {
+                                  // Caso não seja o líder, somente o usuário é deletado.
                                   database.reference().child("privateRoom/${token}/${this.widget.id}").remove();
                                 }
                               } catch (e) {}
