@@ -15,8 +15,9 @@ class _CreditsState extends State<Credits> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _body(context),
-    );
+        body: SafeArea(
+      child: _body(context),
+    ));
   }
 
   _body(context) {
