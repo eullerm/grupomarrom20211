@@ -83,7 +83,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                 await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
                                 // Verifica se é o líder.
                                 if (user.get("leader")) {
-                                  print("era lider");
                                   QuerySnapshot users = await collection.doc("${token}").collection("users").get();
 
                                   if (users.docs.isNotEmpty) {
@@ -94,6 +93,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                         ds.reference.delete();
                                       }
                                     });
+                                    room.delete();
                                   }
 
                                   //doc("${this.widget.id}").delete();
@@ -274,6 +274,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
+        collection.doc("${token}").set({"createdAt": timestamp});
         collection.doc("${token}").collection("users").doc("${this.widget.id}").set({
           "name": this.widget.player,
           "isReady": true,
