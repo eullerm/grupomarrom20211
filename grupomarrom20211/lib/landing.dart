@@ -18,9 +18,8 @@ class _LandingState extends State<Landing> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
-        body: SafeArea(
-      child: _body(context),
-    ));
+      body: _body(context),
+    );
   }
 
   _body(context) {

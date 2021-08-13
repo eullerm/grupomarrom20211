@@ -34,9 +34,7 @@ class _CountriesState extends State<Countries> {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: _body(context),
-      ),
+      body: _body(context),
     );
   }
 
