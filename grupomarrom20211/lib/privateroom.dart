@@ -147,29 +147,32 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                   ? StreamBuilder<QuerySnapshot>(
                       stream: database.collection("privateRoom").doc("${token}").collection("users").orderBy("timestamp").snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
-                        return Column(
-                          children: snapshot!.data!.docs.map<Widget>((DocumentSnapshot doc) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: GenericText(text: doc.get('name'), textStyle: TextStyles.plainText),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                IgnorePointer(
-                                  ignoring: doc.get("id") != this.widget.id,
-                                  child: MatchButton(
-                                    title: doc.get("leader") ? "Começar" : "Pronto",
-                                    function: () => start(doc.get("leader")),
+                        if (snapshot!.hasData) {
+                          return Column(
+                            children: snapshot.data!.docs.map<Widget>((DocumentSnapshot doc) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 5,
+                                    child: GenericText(text: doc.get('name'), textStyle: TextStyles.plainText),
                                   ),
-                                )
-                              ],
-                            );
-                          }).toList(),
-                        );
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  IgnorePointer(
+                                    ignoring: doc.get("id") != this.widget.id,
+                                    child: MatchButton(
+                                      title: doc.get("leader") ? "Começar" : "Pronto",
+                                      function: () => start(doc.get("leader")),
+                                    ),
+                                  )
+                                ],
+                              );
+                            }).toList(),
+                          );
+                        }
+                        return Container();
                       })
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,32 +225,35 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                             StreamBuilder<QuerySnapshot>(
                                 stream: database.collection("privateRoom").doc("${token}").collection("messages").snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
-                                  return Column(
-                                    children: snapshot!.data!.docs.map<Widget>((DocumentSnapshot doc) {
-                                      return Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              GenericText(text: doc.get('name') + ":", textStyle: TextStyles.plainText),
-                                              SizedBox(width: 6),
-                                              Expanded(
-                                                flex: 8,
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                                                  child: GenericText(text: doc.get('text'), textStyle: TextStyles.plainText),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(5.0),
-                                                    color: Colors.black26,
+                                  if (snapshot!.hasData) {
+                                    return Column(
+                                      children: snapshot.data!.docs.map<Widget>((DocumentSnapshot doc) {
+                                        return Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                GenericText(text: doc.get('name') + ":", textStyle: TextStyles.plainText),
+                                                SizedBox(width: 6),
+                                                Expanded(
+                                                  flex: 8,
+                                                  child: Container(
+                                                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                                                    child: GenericText(text: doc.get('text'), textStyle: TextStyles.plainText),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(5.0),
+                                                      color: Colors.black26,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 5),
-                                        ],
-                                      );
-                                    }).toList(),
-                                  );
+                                              ],
+                                            ),
+                                            SizedBox(height: 5),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    );
+                                  }
+                                  return Container();
                                 }),
                           ],
                         )
