@@ -298,28 +298,30 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   sendMessage() async {
-    CollectionReference collection = await database.collection("privateRoom");
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
-    try {
-      var result = await _connectivity.checkConnectivity();
-      if (result != ConnectivityResult.none) {
-        collection.doc("${token}").collection("messages").doc("${timestamp}").set({"name": this.widget.player, "text": messageController.text});
-        setState(() {
-          messageController.clear();
-        });
-      } else {
-        _showSnackBar("Cheque sua conexão com a internet");
+    if (messageController.text.isNotEmpty) {
+      CollectionReference collection = await database.collection("privateRoom");
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      try {
+        var result = await _connectivity.checkConnectivity();
+        if (result != ConnectivityResult.none) {
+          collection.doc("${token}").collection("messages").doc("${timestamp}").set({"name": this.widget.player, "text": messageController.text});
+          setState(() {
+            messageController.clear();
+          });
+        } else {
+          _showSnackBar("Cheque sua conexão com a internet");
+          setState(() {
+            isToken = false;
+          });
+        }
+      } on PlatformException catch (e) {
+        _showSnackBar(e.toString());
         setState(() {
           isToken = false;
         });
-      }
-    } on PlatformException catch (e) {
-      _showSnackBar(e.toString());
-      setState(() {
-        isToken = false;
-      });
 
-      return;
+        return;
+      }
     }
   }
 
@@ -417,10 +419,13 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             ),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          child: IconButton(
-            icon: Icon(Icons.send),
-            color: AppColorScheme.iconColor,
-            onPressed: () => sendMessage(),
+          child: IgnorePointer(
+            ignoring: !isToken,
+            child: IconButton(
+              icon: Icon(Icons.send),
+              color: AppColorScheme.iconColor,
+              onPressed: () => sendMessage(),
+            ),
           ),
         ),
       ],
