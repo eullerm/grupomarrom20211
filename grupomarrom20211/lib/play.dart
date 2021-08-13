@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -21,7 +21,7 @@ class Play extends StatefulWidget {
 class _PlayState extends State<Play> with WidgetsBindingObserver {
   TextEditingController nameController = TextEditingController();
   TextEditingController tokenController = TextEditingController();
-  final database = FirebaseDatabase.instance;
+  final database = FirebaseFirestore.instance;
   String? _deviceId;
   bool waiting = false;
   final Connectivity _connectivity = Connectivity();
@@ -198,37 +198,43 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
   }
 
   Future _connect(String type) async {
-    DatabaseReference reference = database.reference();
+    CollectionReference collection = database.collection("${type}");
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none && nameController.text.isNotEmpty) {
         if (waiting) {
-          reference.child("waiting/${_deviceId!}").remove();
+          await collection.doc("${_deviceId}").delete();
           setState(() {
             waiting = false;
           });
         } else {
           if (_deviceId != null) {
             if (type == "waiting") {
-              reference.child("waiting/${_deviceId!}").set({"name": nameController.text});
+              await collection.doc("${_deviceId}").set({"name": nameController.text});
               setState(() {
                 waiting = true;
               });
             } else if (type == "privateRoom") {
-              if (true) {
-                // Precisa checar se existe a sala com o token digitado
-                reference.child("privateRoom/${tokenController.text}/${_deviceId!}").set({
-                  "name": nameController.text,
-                  "isReady": false,
-                  "leader": false,
-                  "id": _deviceId!,
-                  "timestamp": DateTime.now().millisecondsSinceEpoch
-                });
+              if (tokenController.text.isNotEmpty) {
+                bool exist = false;
+                DocumentSnapshot<Object?> snapshot = await collection.doc("${tokenController.text}").get();
+                exist = snapshot.exists;
+                if (exist) {
+                  // Precisa checar se existe a sala com o token digitado
+                  print(exist);
+                  collection.doc("${tokenController.text}").collection("users").doc("${_deviceId}").set({
+                    "name": nameController.text,
+                    "isReady": false,
+                    "leader": false,
+                    "id": _deviceId!,
+                    "timestamp": DateTime.now().millisecondsSinceEpoch,
+                  });
 
-                context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId!}/${tokenController.text}');
-              } else {
-                _closeKeyboard();
-                _showSnackBar("Sala inexistente");
+                  context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId}/${tokenController.text}');
+                } else {
+                  _closeKeyboard();
+                  _showSnackBar("Sala inexistente");
+                }
               }
             }
           } else {

@@ -1,9 +1,7 @@
 import 'dart:math';
-
 import 'package:auto_route/annotations.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grupomarrom20211/Theme.dart';
@@ -30,7 +28,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   late String token;
   TextEditingController messageController = TextEditingController();
   final Connectivity _connectivity = Connectivity();
-  final database = FirebaseDatabase.instance;
+  final database = FirebaseFirestore.instance;
   ScrollController scrollController = ScrollController();
 
   void _typing() {
@@ -78,15 +76,27 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                             if (isToken) {
                               try {
                                 // Recebe os valores do usuário no banco.
-                                var db = await database.reference().child("privateRoom/${token}/${this.widget.id}").get();
+                                CollectionReference collection = database.collection("privateRoom");
+                                DocumentReference<Object?> room = collection.doc("${token}");
+                                DocumentSnapshot<Object?> user = await room.collection("users").doc("${this.widget.id}").get();
 
+                                await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
                                 // Verifica se é o líder.
-                                if (db!.value["leader"]) {
-                                  // Se o líder sair da sala ela é deletada.
-                                  database.reference().child("privateRoom/${token}").remove();
-                                } else {
-                                  // Caso não seja o líder, somente o usuário é deletado.
-                                  database.reference().child("privateRoom/${token}/${this.widget.id}").remove();
+                                if (user.get("leader")) {
+                                  print("era lider");
+                                  QuerySnapshot users = await collection.doc("${token}").collection("users").get();
+
+                                  if (users.docs.isNotEmpty) {
+                                    users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
+                                  } else {
+                                    room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+                                      for (DocumentSnapshot ds in element.docs) {
+                                        ds.reference.delete();
+                                      }
+                                    });
+                                  }
+
+                                  //doc("${this.widget.id}").delete();
                                 }
                               } catch (e) {}
                             }
@@ -134,33 +144,32 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               isToken
-                  ? FirebaseAnimatedList(
-                      shrinkWrap: true,
-                      query: database.reference().child("privateRoom/${token}").orderByChild('timestamp'),
-                      itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                        if (snapshot.key != "messages") {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                flex: 5,
-                                child: GenericText(text: snapshot.value['name'], textStyle: TextStyles.plainText),
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              IgnorePointer(
-                                ignoring: snapshot.value["id"] != this.widget.id,
-                                child: MatchButton(
-                                  title: snapshot.value["leader"] ? "Começar" : "Pronto",
-                                  function: () => start(snapshot.value["leader"]),
+                  ? StreamBuilder<QuerySnapshot>(
+                      stream: database.collection("privateRoom").doc("${token}").collection("users").orderBy("timestamp").snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
+                        return Column(
+                          children: snapshot!.data!.docs.map<Widget>((DocumentSnapshot doc) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  flex: 5,
+                                  child: GenericText(text: doc.get('name'), textStyle: TextStyles.plainText),
                                 ),
-                              )
-                            ],
-                          );
-                        } else {
-                          return SizedBox();
-                        }
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                IgnorePointer(
+                                  ignoring: doc.get("id") != this.widget.id,
+                                  child: MatchButton(
+                                    title: doc.get("leader") ? "Começar" : "Pronto",
+                                    function: () => start(doc.get("leader")),
+                                  ),
+                                )
+                              ],
+                            );
+                          }).toList(),
+                        );
                       })
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,32 +219,34 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                   child: isToken
                       ? Column(
                           children: [
-                            FirebaseAnimatedList(
-                                controller: scrollController,
-                                shrinkWrap: true,
-                                query: database.reference().child("privateRoom/${token}/messages"),
-                                itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                            StreamBuilder<QuerySnapshot>(
+                                stream: database.collection("privateRoom").doc("${token}").collection("messages").snapshots(),
+                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
                                   return Column(
-                                    children: [
-                                      Row(
+                                    children: snapshot!.data!.docs.map<Widget>((DocumentSnapshot doc) {
+                                      return Column(
                                         children: [
-                                          GenericText(text: snapshot.value['name'] + ":", textStyle: TextStyles.plainText),
-                                          SizedBox(width: 6),
-                                          Expanded(
-                                            flex: 8,
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                                              child: GenericText(text: snapshot.value['text'], textStyle: TextStyles.plainText),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                                color: Colors.black26,
+                                          Row(
+                                            children: [
+                                              GenericText(text: doc.get('name') + ":", textStyle: TextStyles.plainText),
+                                              SizedBox(width: 6),
+                                              Expanded(
+                                                flex: 8,
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                                                  child: GenericText(text: doc.get('text'), textStyle: TextStyles.plainText),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(5.0),
+                                                    color: Colors.black26,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
+                                          SizedBox(height: 5),
                                         ],
-                                      ),
-                                      SizedBox(height: 5),
-                                    ],
+                                      );
+                                    }).toList(),
                                   );
                                 }),
                           ],
@@ -251,12 +262,19 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   Future _createPrivateRoom() async {
-    DatabaseReference reference = database.reference();
+    CollectionReference collection = await database.collection("privateRoom");
+
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        reference.child("privateRoom/${token}/${this.widget.id}").set(
-            {"name": this.widget.player, "isReady": true, "leader": true, "id": this.widget.id, "timestamp": DateTime.now().millisecondsSinceEpoch});
+        collection.doc("${token}").collection("users").doc("${this.widget.id}").set({
+          "name": this.widget.player,
+          "isReady": true,
+          "leader": true,
+          "id": this.widget.id,
+          "timestamp": timestamp,
+        });
       } else {
         _showSnackBar("Cheque sua conexão com a internet");
         setState(() {
@@ -267,18 +285,18 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       _showSnackBar(e.toString());
       setState(() {
         isToken = false;
+        token = "";
       });
     }
   }
 
   sendMessage() async {
-    DatabaseReference reference = database.reference();
+    CollectionReference collection = await database.collection("privateRoom");
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        reference
-            .child("privateRoom/${token}/messages/${DateTime.now().millisecondsSinceEpoch}")
-            .set({"name": this.widget.player, "text": messageController.text});
+        collection.doc("${token}").collection("messages").doc("${timestamp}").set({"name": this.widget.player, "text": messageController.text});
         setState(() {
           messageController.clear();
         });
@@ -365,11 +383,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       isToken = true;
     });
     _createPrivateRoom();
-    if (!isToken) {
-      setState(() {
-        token = "";
-      });
-    }
   }
 
   textField() {
