@@ -5,6 +5,7 @@ import 'package:grupomarrom20211/credits.dart';
 import 'package:grupomarrom20211/countryDetail.dart';
 import 'package:grupomarrom20211/play.dart';
 import 'package:grupomarrom20211/privateroom.dart';
+import 'package:grupomarrom20211/inGame.dart';
 
 //Responsável por gerar as rotas das páginas.
 @MaterialAutoRouter(
@@ -15,6 +16,7 @@ import 'package:grupomarrom20211/privateroom.dart';
     AutoRoute(page: Countries),
     AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
     AutoRoute(page: Play),
+    AutoRoute(page: inGame, initial: true),
     AutoRoute(path: '/PrivateRoom/:player/:id/:token', page: PrivateRoom)
   ],
 )

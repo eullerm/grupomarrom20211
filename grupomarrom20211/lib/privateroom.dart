@@ -62,67 +62,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       body: Stack(
         children: <Widget>[
           Background(background: "Background"),
-          Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: () async {
-                            if (isToken) {
-                              try {
-                                // Recebe os valores do usuário no banco.
-                                CollectionReference collection = database.collection("privateRoom");
-                                DocumentReference<Object?> room = collection.doc("${token}");
-                                DocumentSnapshot<Object?> user = await room.collection("users").doc("${this.widget.id}").get();
-
-                                await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
-                                // Verifica se é o líder.
-                                if (user.get("leader")) {
-                                  QuerySnapshot users = await collection.doc("${token}").collection("users").get();
-
-                                  if (users.docs.isNotEmpty) {
-                                    users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
-                                  } else {
-                                    room.collection("messages").snapshots().forEach((QuerySnapshot element) {
-                                      for (DocumentSnapshot ds in element.docs) {
-                                        ds.reference.delete();
-                                      }
-                                    });
-                                    room.delete();
-                                  }
-
-                                  //doc("${this.widget.id}").delete();
-                                }
-                              } catch (e) {}
-                            }
-                            context.router.pop();
-                          },
-                          icon: Icon(Icons.arrow_back),
-                          color: AppColorScheme.iconColor,
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        generateToken(),
-                      ],
-                    )
-                  ],
-                ),
-                SizedBox(height: 16),
-                users(),
-                SizedBox(height: 16),
-                chat(),
-                SizedBox(height: 8),
-                textField(),
-              ],
-            ),
-          )
+          _body(),
         ],
       ),
     );
@@ -164,7 +104,15 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                     ignoring: doc.get("id") != this.widget.id,
                                     child: MatchButton(
                                       title: doc.get("leader") ? "Começar" : "Pronto",
-                                      function: () => start(doc.get("leader")),
+                                      function: () async {
+                                        int aux = await numero();
+                                        print(aux);
+                                        if (aux >= 2) {
+                                          start(true);
+                                        } else {
+                                          _showSnackBar("Necessário mais de 1 jogador");
+                                        }
+                                      },
                                     ),
                                   )
                                 ],
@@ -184,10 +132,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                         SizedBox(
                           width: 15,
                         ),
-                        MatchButton(
-                          title: "Começar",
-                          function: () => start(true),
-                        ),
+                        MatchButton(title: "Começar", function: () => _showSnackBar("Necessário criar a sala")),
                       ],
                     ),
             ],
@@ -195,6 +140,21 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  Future<int> numero() async {
+    CollectionReference collection = await database.collection("privateRoom");
+
+    var result = await _connectivity.checkConnectivity();
+    var aux = await collection.doc("${token}").collection("users");
+    var snapshot = await aux.get();
+    var count = snapshot.size;
+
+    //snapshot.length;
+    /*  if (result != ConnectivityResult.none) {
+    } else
+      return true; */
+    return count;
   }
 
   start(bool isLeader) {
@@ -298,30 +258,28 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   sendMessage() async {
-    if (messageController.text.isNotEmpty) {
-      CollectionReference collection = await database.collection("privateRoom");
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
-      try {
-        var result = await _connectivity.checkConnectivity();
-        if (result != ConnectivityResult.none) {
-          collection.doc("${token}").collection("messages").doc("${timestamp}").set({"name": this.widget.player, "text": messageController.text});
-          setState(() {
-            messageController.clear();
-          });
-        } else {
-          _showSnackBar("Cheque sua conexão com a internet");
-          setState(() {
-            isToken = false;
-          });
-        }
-      } on PlatformException catch (e) {
-        _showSnackBar(e.toString());
+    CollectionReference collection = await database.collection("privateRoom");
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
+        collection.doc("${token}").collection("messages").doc("${timestamp}").set({"name": this.widget.player, "text": messageController.text});
+        setState(() {
+          messageController.clear();
+        });
+      } else {
+        _showSnackBar("Cheque sua conexão com a internet");
         setState(() {
           isToken = false;
         });
-
-        return;
       }
+    } on PlatformException catch (e) {
+      _showSnackBar(e.toString());
+      setState(() {
+        isToken = false;
+      });
+
+      return;
     }
   }
 
@@ -419,16 +377,81 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             ),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          child: IgnorePointer(
-            ignoring: !isToken,
-            child: IconButton(
-              icon: Icon(Icons.send),
-              color: AppColorScheme.iconColor,
-              onPressed: () => sendMessage(),
-            ),
+          child: IconButton(
+            icon: Icon(Icons.send),
+            color: AppColorScheme.iconColor,
+            onPressed: () {
+              if (messageController.text != '') {
+                sendMessage();
+              }
+            },
           ),
         ),
       ],
+    );
+  }
+
+  _body() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () async {
+                      if (isToken) {
+                        try {
+                          // Recebe os valores do usuário no banco.
+                          CollectionReference collection = database.collection("privateRoom");
+                          DocumentReference<Object?> room = collection.doc("${token}");
+                          DocumentSnapshot<Object?> user = await room.collection("users").doc("${this.widget.id}").get();
+
+                          await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
+                          // Verifica se é o líder.
+                          if (user.get("leader")) {
+                            QuerySnapshot users = await collection.doc("${token}").collection("users").get();
+
+                            if (users.docs.isNotEmpty) {
+                              users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
+                            } else {
+                              room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+                                for (DocumentSnapshot ds in element.docs) {
+                                  ds.reference.delete();
+                                }
+                              });
+                              room.delete();
+                            }
+
+                            //doc("${this.widget.id}").delete();
+                          }
+                        } catch (e) {}
+                      }
+                      context.router.pop();
+                    },
+                    icon: Icon(Icons.arrow_back),
+                    color: AppColorScheme.iconColor,
+                  )
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  generateToken(),
+                ],
+              )
+            ],
+          ),
+          SizedBox(height: 16),
+          users(),
+          SizedBox(height: 16),
+          chat(),
+          SizedBox(height: 8),
+          textField(),
+        ],
+      ),
     );
   }
 }

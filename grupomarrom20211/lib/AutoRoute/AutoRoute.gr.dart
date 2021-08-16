@@ -10,9 +10,10 @@ import 'package:flutter/material.dart' as _i2;
 import '../countries.dart' as _i5;
 import '../countryDetail.dart' as _i6;
 import '../credits.dart' as _i4;
+import '../inGame.dart' as _i8;
 import '../landing.dart' as _i3;
 import '../play.dart' as _i7;
-import '../privateroom.dart' as _i8;
+import '../privateroom.dart' as _i9;
 
 class AppRouter extends _i1.RootStackRouter {
   AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey])
@@ -48,6 +49,11 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (_) {
           return const _i7.Play();
         }),
+    InGame.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return _i8.inGame();
+        }),
     PrivateRoom.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (data) {
@@ -57,7 +63,7 @@ class AppRouter extends _i1.RootStackRouter {
                   player: pathParams.getString('player'),
                   id: pathParams.getString('id'),
                   token: pathParams.getString('token')));
-          return _i8.PrivateRoom(
+          return _i9.PrivateRoom(
               player: args.player,
               id: args.id,
               token: args.token,
@@ -72,6 +78,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
         _i1.RouteConfig(Play.name, path: '/Play'),
+        _i1.RouteConfig(InGame.name, path: '/'),
         _i1.RouteConfig(PrivateRoom.name,
             path: '/PrivateRoom/:player/:id/:token')
       ];
@@ -115,6 +122,12 @@ class Play extends _i1.PageRouteInfo {
   const Play() : super(name, path: '/Play');
 
   static const String name = 'Play';
+}
+
+class InGame extends _i1.PageRouteInfo {
+  const InGame() : super(name, path: '/');
+
+  static const String name = 'InGame';
 }
 
 class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
