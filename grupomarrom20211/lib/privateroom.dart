@@ -107,8 +107,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                       function: () async {
                                         int aux = await numero();
                                         print(aux);
-                                        if (aux >= 2) {
-                                          start(true);
+                                        if (aux > 1 && doc.get("leader")) {
+                                          start();
+                                        } else if (!doc.get("leader")) {
+                                          waitingAdm();
                                         } else {
                                           _showSnackBar("Necessário mais de 1 jogador");
                                         }
@@ -144,21 +146,46 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   Future<int> numero() async {
     CollectionReference collection = await database.collection("privateRoom");
-
-    var result = await _connectivity.checkConnectivity();
-    var aux = await collection.doc("${token}").collection("users");
-    var snapshot = await aux.get();
-    var count = snapshot.size;
-
-    //snapshot.length;
-    /*  if (result != ConnectivityResult.none) {
-    } else
-      return true; */
+    var count = 1;
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
+        var aux = await collection.doc("${token}").collection("users");
+        var snapshot = await aux.get();
+        count = snapshot.size;
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(e.toString());
+    }
     return count;
   }
 
-  start(bool isLeader) {
-    print("Nicolas Cagezin");
+  void waitingAdm() async {
+    CollectionReference collection = await database.collection("privateRoom");
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
+        await collection.doc("${token}").snapshots().listen((event) {
+          if (event.get('startLevel')) {
+            context.router.pushNamed('/inGame/${this.widget.id}/${token}');
+          }
+        });
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(e.toString());
+    }
+  }
+
+  start() async {
+    CollectionReference collection = await database.collection("privateRoom");
+    try {
+      var result = await _connectivity.checkConnectivity();
+      if (result != ConnectivityResult.none) {
+        collection.doc("${token}").update({"startLevel": true}).whenComplete(() => context.router.pushNamed('/inGame/${this.widget.id}/${token}'));
+      }
+    } on PlatformException catch (e) {
+      _showSnackBar(e.toString());
+    }
   }
 
   chat() {
@@ -234,7 +261,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        collection.doc("${token}").set({"createdAt": timestamp});
+        collection.doc("${token}").set({"createdAt": timestamp, "startLevel": false});
         collection.doc("${token}").collection("users").doc("${this.widget.id}").set({
           "name": this.widget.player,
           "isReady": true,

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
@@ -8,6 +9,11 @@ import 'package:grupomarrom20211/widgets/title.dart';
 import 'const/cards.dart';
 
 class inGame extends StatefulWidget {
+  final String id;
+  final String token;
+
+  const inGame({@PathParam('id') required this.id, @PathParam('token') required this.token, Key? key}) : super(key: key);
+
   @override
   _inGameState createState() => _inGameState();
 }

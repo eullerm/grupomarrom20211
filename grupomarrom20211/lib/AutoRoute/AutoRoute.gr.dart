@@ -51,8 +51,13 @@ class AppRouter extends _i1.RootStackRouter {
         }),
     InGame.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
-        builder: (_) {
-          return _i8.inGame();
+        builder: (data) {
+          final pathParams = data.pathParams;
+          final args = data.argsAs<InGameArgs>(
+              orElse: () => InGameArgs(
+                  id: pathParams.getString('id'),
+                  token: pathParams.getString('token')));
+          return _i8.inGame(id: args.id, token: args.token, key: args.key);
         }),
     PrivateRoom.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
@@ -78,7 +83,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
         _i1.RouteConfig(Play.name, path: '/Play'),
-        _i1.RouteConfig(InGame.name, path: '/'),
+        _i1.RouteConfig(InGame.name, path: '/inGame/:id/:token'),
         _i1.RouteConfig(PrivateRoom.name,
             path: '/PrivateRoom/:player/:id/:token')
       ];
@@ -124,10 +129,24 @@ class Play extends _i1.PageRouteInfo {
   static const String name = 'Play';
 }
 
-class InGame extends _i1.PageRouteInfo {
-  const InGame() : super(name, path: '/');
+class InGame extends _i1.PageRouteInfo<InGameArgs> {
+  InGame({required String id, required String token, _i2.Key? key})
+      : super(name,
+            path: '/inGame/:id/:token',
+            args: InGameArgs(id: id, token: token, key: key),
+            rawPathParams: {'id': id, 'token': token});
 
   static const String name = 'InGame';
+}
+
+class InGameArgs {
+  const InGameArgs({required this.id, required this.token, this.key});
+
+  final String id;
+
+  final String token;
+
+  final _i2.Key? key;
 }
 
 class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
