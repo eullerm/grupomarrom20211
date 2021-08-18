@@ -227,6 +227,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                     "isReady": false,
                     "leader": false,
                     "id": _deviceId!,
+                    "loggedAt": DateTime.now().millisecondsSinceEpoch,
                     "timestamp": DateTime.now().millisecondsSinceEpoch,
                   });
 

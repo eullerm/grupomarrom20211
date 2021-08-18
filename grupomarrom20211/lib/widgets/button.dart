@@ -68,7 +68,8 @@ class MatchButton extends StatelessWidget {
   final String title;
   final double width;
   final Function function;
-  const MatchButton({required this.title, this.width = 150, required this.function, Key? key}) : super(key: key);
+  final bool isReady;
+  const MatchButton({required this.title, this.width = 150, required this.function, this.isReady = false, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +84,12 @@ class MatchButton extends StatelessWidget {
           ),
         ],
       ),
-      child: _matchButton(this.title, context, this.width, this.function),
+      child: _matchButton(this.title, context, this.width, this.function, this.isReady),
     );
   }
 }
 
-_matchButton(String title, BuildContext context, double width, Function function) {
+_matchButton(String title, BuildContext context, double width, Function function, bool isReady) {
   return Container(
     width: width,
     child: ButtonTheme(
@@ -100,6 +101,10 @@ _matchButton(String title, BuildContext context, double width, Function function
           shadowColor: Colors.black,
           primary: AppColorScheme.buttonColor,
           shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: isReady ? Color(0xFF197419) : Color(4278190080),
+              width: isReady ? 2 : 0,
+            ),
             borderRadius: BorderRadius.circular(32),
           ),
         ),

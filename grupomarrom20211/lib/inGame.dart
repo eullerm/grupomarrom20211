@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
@@ -24,8 +25,15 @@ class _inGameState extends State<inGame> {
   ScrollController scrollControllerCardInfo = ScrollController();
   double invisibleContainerHeight = 150;
   var country = InfoCountry().cards.first;
+  final database = FirebaseFirestore.instance;
 
   //Map country = {};
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
