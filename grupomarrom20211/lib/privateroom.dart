@@ -35,7 +35,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     setState(() {
       FocusScopeNode currentFocus = FocusScope.of(context);
       isTyping = !isTyping;
-      print(isTyping.toString());
       if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
       }
@@ -44,7 +43,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    print(this.widget.token.toString());
     // Caso o token seja a palavra token é porque a sala acabou de ser criada.
     if (this.widget.token != "token") {
       token = this.widget.token;
@@ -106,7 +104,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                       title: doc.get("leader") ? "Começar" : "Pronto",
                                       function: () async {
                                         int count = await countUsers();
-                                        if (count > 1 && doc.get("leader")) {
+                                        if (count >= 1 && doc.get("leader")) {
                                           start();
                                         } else if (!doc.get("leader")) {
                                           waitingAdm();
@@ -521,6 +519,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
           doc.collection("users").doc(user.id).set({
             "name": user.get("name"),
             "points": 0,
+            "finished": false, // Se o jogador terminou a jogada
             "leader": user.get("leader"),
             "id": user.get("id"),
             "loggedAt": user.get("loggedAt"),

@@ -66,6 +66,19 @@ class TextStyles {
     ],
   );
 
+  static const TextStyle questions = const TextStyle(
+    color: AppColorScheme.appText,
+    fontFamily: 'ElanITCStdBook',
+    fontSize: 30.0,
+    shadows: <Shadow>[
+      Shadow(
+        offset: Offset(2.0, 2.0),
+        blurRadius: 3.0,
+        color: Color(0xFF000000),
+      ),
+    ],
+  );
+
   static const TextStyle screenTitle = const TextStyle(
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',

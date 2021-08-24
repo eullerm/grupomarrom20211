@@ -4,6 +4,8 @@ import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
 class OtpTimer extends StatefulWidget {
+  final Function function;
+  OtpTimer({required this.function});
   @override
   _OtpTimerState createState() => _OtpTimerState();
 }
@@ -14,13 +16,16 @@ class _OtpTimerState extends State<OtpTimer> {
   Timer? timer;
 
   startCountdown() {
-    timer = Timer.periodic(Duration(seconds: 1), (_) {
+    timer = Timer.periodic(Duration(seconds: 1), (_) async {
       if (seconds > 0) {
         setState(() {
           seconds--;
         });
-      } else
-        stopCountdown(reset: false);
+      } else {
+        this.widget.function();
+
+        stopCountdown(reset: true);
+      }
     });
   }
 
@@ -30,7 +35,7 @@ class _OtpTimerState extends State<OtpTimer> {
     if (reset) {
       resetCountdown();
     }
-    timer?.cancel();
+    timer?.cancel(); //Remover para o tempo voltar a correr
   }
 
   @override
@@ -42,9 +47,11 @@ class _OtpTimerState extends State<OtpTimer> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 80,
-        height: 80,
-        child: Stack(fit: StackFit.expand, children: [
+      width: 80,
+      height: 80,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
           CircularProgressIndicator(
             value: seconds / maxSeconds,
             valueColor: AlwaysStoppedAnimation(AppColorScheme.cardColor),
@@ -52,11 +59,14 @@ class _OtpTimerState extends State<OtpTimer> {
             backgroundColor: Colors.lightBlue[900],
           ),
           Align(
-              alignment: Alignment(0, 0.5),
-              child: TextTitle(
-                title: '$seconds',
-                textStyle: TextStyles.appTitle,
-              ))
-        ]));
+            alignment: Alignment(0, 0.5),
+            child: TextTitle(
+              title: '$seconds',
+              textStyle: TextStyles.appTitle,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

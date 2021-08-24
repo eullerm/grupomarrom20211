@@ -221,7 +221,6 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                 exist = snapshot.exists;
                 if (exist) {
                   // Precisa checar se existe a sala com o token digitado
-                  print(exist);
                   collection.doc("${tokenController.text}").collection("users").doc("${_deviceId}").set({
                     "name": nameController.text,
                     "isReady": false,

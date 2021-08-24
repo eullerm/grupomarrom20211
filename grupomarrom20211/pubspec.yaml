@@ -78,6 +78,7 @@ flutter:
     - assets/images/
     - assets/images/flags/
     - assets/images/cards/
+    - assets/images/medals/
     - assets/videos/
     # - assets/images/maps
   
