@@ -17,15 +17,8 @@ class GenericText extends StatelessWidget {
 }
 
 _text(String text, TextStyle textStyle) {
-  return Row(
-    children: <Widget>[
-      Container(
-        margin: EdgeInsets.only(top: 5),
-        child: Text(
-          text,
-          style: textStyle,
-        ),
-      ),
-    ],
+  return Text(
+    text,
+    style: textStyle,
   );
 }
