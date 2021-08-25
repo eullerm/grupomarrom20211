@@ -5,6 +5,7 @@
 // **************************************************************************
 
 import 'package:auto_route/auto_route.dart' as _i1;
+import 'package:flutter/foundation.dart' as _i10;
 import 'package:flutter/material.dart' as _i2;
 
 import '../countries.dart' as _i5;
@@ -56,8 +57,13 @@ class AppRouter extends _i1.RootStackRouter {
           final args = data.argsAs<InGameArgs>(
               orElse: () => InGameArgs(
                   id: pathParams.getString('id'),
-                  token: pathParams.getString('token')));
-          return _i8.inGame(id: args.id, token: args.token, key: args.key);
+                  token: pathParams.getString('token'),
+                  isLeader: pathParams.getBool('isLeader')));
+          return _i8.inGame(
+              id: args.id,
+              token: args.token,
+              isLeader: args.isLeader,
+              key: args.key);
         }),
     PrivateRoom.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
@@ -83,7 +89,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
         _i1.RouteConfig(Play.name, path: '/Play'),
-        _i1.RouteConfig(InGame.name, path: '/inGame/:id/:token'),
+        _i1.RouteConfig(InGame.name, path: '/inGame/:id/:token/:isLeader'),
         _i1.RouteConfig(PrivateRoom.name,
             path: '/PrivateRoom/:player/:id/:token')
       ];
@@ -130,23 +136,34 @@ class Play extends _i1.PageRouteInfo {
 }
 
 class InGame extends _i1.PageRouteInfo<InGameArgs> {
-  InGame({required String id, required String token, _i2.Key? key})
+  InGame(
+      {required String id,
+      required String token,
+      required bool isLeader,
+      _i10.Key? key})
       : super(name,
-            path: '/inGame/:id/:token',
-            args: InGameArgs(id: id, token: token, key: key),
-            rawPathParams: {'id': id, 'token': token});
+            path: '/inGame/:id/:token/:isLeader',
+            args:
+                InGameArgs(id: id, token: token, isLeader: isLeader, key: key),
+            rawPathParams: {'id': id, 'token': token, 'isLeader': isLeader});
 
   static const String name = 'InGame';
 }
 
 class InGameArgs {
-  const InGameArgs({required this.id, required this.token, this.key});
+  const InGameArgs(
+      {required this.id,
+      required this.token,
+      required this.isLeader,
+      this.key});
 
   final String id;
 
   final String token;
 
-  final _i2.Key? key;
+  final bool isLeader;
+
+  final _i10.Key? key;
 }
 
 class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
@@ -154,7 +171,7 @@ class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
       {required String player,
       required String id,
       required String token,
-      _i2.Key? key})
+      _i10.Key? key})
       : super(name,
             path: '/PrivateRoom/:player/:id/:token',
             args:
@@ -174,5 +191,5 @@ class PrivateRoomArgs {
 
   final String token;
 
-  final _i2.Key? key;
+  final _i10.Key? key;
 }

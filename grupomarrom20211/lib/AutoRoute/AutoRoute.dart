@@ -16,7 +16,7 @@ import 'package:grupomarrom20211/inGame.dart';
     AutoRoute(page: Countries),
     AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
     AutoRoute(page: Play),
-    AutoRoute(path: '/inGame/:id/:token', page: inGame),
+    AutoRoute(path: '/inGame/:id/:token/:isLeader', page: inGame),
     AutoRoute(path: '/PrivateRoom/:player/:id/:token', page: PrivateRoom)
   ],
 )

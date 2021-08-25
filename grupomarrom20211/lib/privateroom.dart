@@ -55,7 +55,9 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    database.useFirestoreEmulator("localhost", 8080); //Emulador
     SystemChrome.setEnabledSystemUIOverlays([]);
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -175,7 +177,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         doc.reference.collection("users").doc("${this.widget.id}").update({"isReady": isReady});
         doc.reference.snapshots().listen((DocumentSnapshot event) async {
           if (event.get('startLevel')) {
-            context.router.pushNamed('/inGame/${this.widget.id}/${token}');
+            context.router.pushNamed('/inGame/${this.widget.id}/${token}/${false}');
           }
         });
       }
@@ -196,7 +198,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         if (total == doc.get("count")) {
           collection.doc("${token}").update({"startLevel": true}).whenComplete(() {
             _changingRoom();
-            context.router.pushNamed('/inGame/${this.widget.id}/${token}');
+            context.router.pushNamed('/inGame/${this.widget.id}/${token}/${true}');
           });
         } else {
           _showSnackBar("Nem todos jogadores estão prontos.");
@@ -508,7 +510,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   //Leva os usuários para a sala de jogo
   void _changingRoom() async {
     DocumentReference doc = await database.collection("inGame").doc("${token}");
-    doc.set({"createdAt": DateTime.now().millisecondsSinceEpoch});
+    doc.set({
+      "createdAt": DateTime.now().millisecondsSinceEpoch,
+      "resetTimer": false,
+    });
     //O líder fica responsavel por gerar a sala de jogo e levar todos os usuários.
     //Pega a sala
     await database.collection("privateRoom").doc("${token}").get().then((DocumentSnapshot snapshot) {
@@ -540,5 +545,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         ds.reference.delete();
       }
     });
+
+    //Exclui toda sala.
+    await database.collection("privateRoom").doc("${token}").delete();
   }
 }

@@ -5,7 +5,7 @@ import 'package:grupomarrom20211/widgets/title.dart';
 
 class OtpTimer extends StatefulWidget {
   final Function function;
-  OtpTimer({required this.function});
+  OtpTimer({required this.function, Key? key}) : super(key: key);
   @override
   _OtpTimerState createState() => _OtpTimerState();
 }
@@ -24,7 +24,7 @@ class _OtpTimerState extends State<OtpTimer> {
       } else {
         this.widget.function();
 
-        stopCountdown(reset: true);
+        //stopCountdown(reset: true);
       }
     });
   }
@@ -42,6 +42,12 @@ class _OtpTimerState extends State<OtpTimer> {
   void initState() {
     startCountdown();
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant OtpTimer oldWidget) {
+    resetCountdown();
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
