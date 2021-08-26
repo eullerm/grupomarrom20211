@@ -125,11 +125,22 @@ class Questions {
       "id": 11,
       "question": "De onde origina o \"Kuduro\"?",
       "cards": {
+        "Angola": true,
         "Egito": false,
         "Índia": false,
         "México": false,
         "Brasil": false,
-        "Angola": true,
+      },
+    },
+    {
+      "id": 12,
+      "question": "Qual país possui mais títulos de copa do Mundo?",
+      "cards": {
+        "Angola": false,
+        "França": false,
+        "Alemanha": false,
+        "México": false,
+        "Brasil": true,
       },
     },
   ];
