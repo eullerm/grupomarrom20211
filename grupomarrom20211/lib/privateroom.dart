@@ -104,8 +104,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                     ignoring: doc.get("id") != this.widget.id,
                                     child: MatchButton(
                                       title: doc.get("leader") ? "Começar" : "Pronto",
-                                      function: () async {
-                                        int count = await countUsers();
+                                      function: () {
+                                        int count = countUsers();
                                         if (count >= 1 && doc.get("leader")) {
                                           start();
                                         } else if (!doc.get("leader")) {
@@ -145,15 +145,16 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   //Retorna a quantidade de usuarios na sala.
-  Future<int> countUsers() async {
-    CollectionReference collection = await database.collection("privateRoom");
+  countUsers() {
+    CollectionReference collection = database.collection("privateRoom");
     var count = 1;
     try {
-      var result = await _connectivity.checkConnectivity();
+      var result = _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        var aux = await collection.doc("${token}").collection("users");
-        var snapshot = await aux.get();
-        count = snapshot.size;
+        var aux = collection.doc("${token}").collection("users");
+        aux.get().then((value) {
+          count = value.size;
+        });
       }
     } on PlatformException catch (e) {
       _showSnackBar(e.toString());
@@ -187,22 +188,20 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   //Função responsável pelo inicio da partida.
-  start() async {
-    CollectionReference collection = await database.collection("privateRoom");
+  start() {
+    CollectionReference collection = database.collection("privateRoom");
 
     try {
-      var result = await _connectivity.checkConnectivity();
+      var result = _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        int total = await countUsers();
-        DocumentSnapshot doc = await collection.doc("${token}").get();
-        if (total == doc.get("count")) {
-          collection.doc("${token}").update({"startLevel": true}).whenComplete(() {
+        int total = countUsers();
+        collection.doc("${token}").get().then((DocumentSnapshot doc) {
+          if (total == doc.get("count")) {
             _changingRoom();
-            context.router.pushNamed('/inGame/${this.widget.id}/${token}/${true}');
-          });
-        } else {
-          _showSnackBar("Nem todos jogadores estão prontos.");
-        }
+          } else {
+            _showSnackBar("Nem todos jogadores estão prontos.");
+          }
+        });
       } else {
         _showSnackBar("Cheque sua conexão.");
       }
@@ -508,19 +507,23 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   }
 
   //Leva os usuários para a sala de jogo
-  void _changingRoom() async {
-    DocumentReference doc = await database.collection("inGame").doc("${token}");
+  void _changingRoom() {
+    DocumentReference doc = database.collection("inGame").doc("${token}");
     doc.set({
       "createdAt": DateTime.now().millisecondsSinceEpoch,
       "resetTimer": false,
+      "currentQuestion": 0,
+      "winningPlayer": [],
     });
     //O líder fica responsavel por gerar a sala de jogo e levar todos os usuários.
     //Pega a sala
-    await database.collection("privateRoom").doc("${token}").get().then((DocumentSnapshot snapshot) {
+    database.collection("privateRoom").doc("${token}").get().then((DocumentSnapshot snapshot) {
       //Percorre todos os usuários
       snapshot.reference.collection("users").snapshots().forEach((QuerySnapshot element) {
         //Envia para outra sala
         element.docs.forEach((QueryDocumentSnapshot user) {
+          var name = user.get("name");
+          print("${name}");
           doc.collection("users").doc(user.id).set({
             "name": user.get("name"),
             "points": 0,
@@ -532,21 +535,26 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
           });
         });
       });
-    });
-    //Exclui todas as mensagens da sala.
-    database.collection("privateRoom").doc("${token}").collection("messages").snapshots().forEach((QuerySnapshot element) {
-      for (DocumentSnapshot ds in element.docs) {
-        ds.reference.delete();
-      }
-    });
-    //Exclui os usuários da sala antiga.
-    await database.collection("privateRoom").doc("${token}").collection("users").snapshots().forEach((QuerySnapshot element) {
-      for (DocumentSnapshot ds in element.docs) {
-        ds.reference.delete();
-      }
-    });
+    }).whenComplete(() {
+      //Troca o usuário de sala.
+      database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
+        context.router.pushNamed('/inGame/${this.widget.id}/${token}/${true}');
+      });
+      //Exclui todas as mensagens da sala.
+      database.collection("privateRoom").doc("${token}").collection("messages").snapshots().forEach((QuerySnapshot element) {
+        for (DocumentSnapshot ds in element.docs) {
+          ds.reference.delete();
+        }
+      });
+      //Exclui os usuários da sala antiga.
+      database.collection("privateRoom").doc("${token}").collection("users").snapshots().forEach((QuerySnapshot element) {
+        for (DocumentSnapshot ds in element.docs) {
+          ds.reference.delete();
+        }
+      });
 
-    //Exclui toda sala.
-    await database.collection("privateRoom").doc("${token}").delete();
+      //Exclui toda sala.
+      database.collection("privateRoom").doc("${token}").delete();
+    });
   }
 }

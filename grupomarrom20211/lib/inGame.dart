@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:grupomarrom20211/AutoRoute/AutoRoute.gr.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/button.dart';
@@ -37,20 +38,26 @@ class _inGameState extends State<inGame> {
   final database = FirebaseFirestore.instance;
   List winningPlayer = ["", 0];
   List question = Questions().questions;
+  List allCountries = InfoCountry().countryName;
+  String gameQuestion = "";
+  List gameCards = [];
+  int numCorrectAnswer = 0;
   var ids = new Set<int>();
   GlobalKey timerKey = GlobalKey();
   late OtpTimer timer = OtpTimer(function: () => _savePoints(), key: timerKey);
-  List<String> cards = ["Japão", "Alemanha", "Brasil", "França", "Rússia"];
+  int numCardInGame = 5;
+  int numQuestion = 3;
+  bool getQuestion = true;
 
   @override
   void initState() {
     var rand = new Random();
 
-    while (ids.length != 3) {
-      ids.add(rand.nextInt(4));
+    while (ids.length != numQuestion) {
+      ids.add(rand.nextInt(question.length));
     }
     _sendQuestion();
-
+    _newQuestion();
     super.initState();
   }
 
@@ -74,7 +81,6 @@ class _inGameState extends State<inGame> {
   _body() {
     _winner();
     _resetTimer();
-
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,18 +106,17 @@ class _inGameState extends State<inGame> {
             },
           ),
           SizedBox(height: 10),
-          // Pergunta e cartas
-          _question(),
-
-          /* //Cartas
-          Container(
-            height: 394,
-            width: containerWidthCards,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: _cards(),
-            ),
-          ), */
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              //Numero de perguntas corretas na partida
+              _numberOfAnswer(),
+              // Pergunta
+              _question(),
+              //Cartas
+              _cards(),
+            ],
+          ),
         ],
       ),
     );
@@ -146,22 +151,18 @@ class _inGameState extends State<inGame> {
 
   Future<void> _winner() async {
     if (!this.widget.isLeader) {
-      await database.collection("inGame").doc("${this.widget.token}").collection("users").snapshots().listen((QuerySnapshot event) {
-        event.docs.forEach((QueryDocumentSnapshot element) {
-          if (element.get("points") > winningPlayer[1]) {
-            setState(() {
-              winningPlayer[0] = element.get("name");
-              winningPlayer[1] = element.get("points");
-            });
-          }
+      await database.collection("inGame").doc("${this.widget.token}").snapshots().listen((DocumentSnapshot event) {
+        setState(() {
+          winningPlayer[0] = event.get("name");
+          winningPlayer[1] = event.get("points");
         });
       });
     }
   }
 
-  _savePoints() async {
+  _savePoints() {
     int point = 0;
-    await database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
+    database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
       point = value.get("points");
       if (!value.get("finished")) {
         value.reference.update({"points": point + 1});
@@ -171,46 +172,40 @@ class _inGameState extends State<inGame> {
   }
 
   _sendQuestion() {
-    ids.forEach((index) async {
-      await database.collection("inGame").doc("${this.widget.token}").collection("questions").doc().set(question.asMap()[index]);
+    int count = 0;
+    ids.forEach((index) {
+      database.collection("inGame").doc("${this.widget.token}").collection("questions").doc("${count}").set(question.asMap()[index]);
+      count++;
     });
   }
 
   _question() {
-    return StreamBuilder<QuerySnapshot>(
-        stream: database.collection("inGame").doc("${this.widget.token}").collection("questions").snapshots().first.asStream(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
-          if (snapshot!.hasData) {
-            Map<String, dynamic> cards = snapshot.data!.docs.first.get("cards");
-            List<String> countries = cards.keys.toList();
-            return Column(children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Flexible(
-                      child: GenericText(
-                        textAlign: TextAlign.center,
-                        text: snapshot.data!.docs.first.get("question"),
-                        textStyle: TextStyles.questions,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 394,
-                width: containerWidthCards,
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: countries.map<Widget>((String country) => _card(country, countries.indexOf(country))).toList(),
-                ),
-              ),
-            ]);
-          }
-          return Container();
-        });
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Flexible(
+            child: GenericText(
+              textAlign: TextAlign.center,
+              text: gameQuestion,
+              textStyle: TextStyles.questions,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _cards() {
+    return Container(
+      height: 355,
+      width: containerWidthCards,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: gameCards.map<Widget>((country) => _card(country, gameCards.indexOf(country))).toList(),
+      ),
+    );
   }
 
   void _resetTimer() async {
@@ -230,25 +225,77 @@ class _inGameState extends State<inGame> {
             });
           }
         });
-        bool isNotResetTimer = true;
+        bool isToResetTimer = false;
+        int currentQuestion = 0;
         QuerySnapshot snapshot = await collection.get();
-        await collection.parent!.get().then((DocumentSnapshot value) => isNotResetTimer = !value.get("resetTimer"));
-        if (isNotResetTimer && countFinished == snapshot.size) {
-          await collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer});
+        await collection.parent!.get().then((DocumentSnapshot value) {
+          isToResetTimer = !value.get("resetTimer");
+          currentQuestion = value.get("currentQuestion");
+        });
+        if (isToResetTimer && countFinished == snapshot.size) {
+          await collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1});
         }
       });
     }
 
     await collection.parent!.snapshots().listen((DocumentSnapshot event) {
       if (event.get("resetTimer")) {
+        _newQuestion();
         collection.doc("${this.widget.id}").update({"finished": false});
-        setState(() {
-          timerKey.currentState!.didUpdateWidget(timer);
-        });
+
         if (this.widget.isLeader) {
           event.reference.update({"resetTimer": false});
         }
+        setState(() {
+          timerKey.currentState!.didUpdateWidget(timer);
+        });
       }
     });
+  }
+
+  void _newQuestion() {
+    DocumentReference doc = database.collection("inGame").doc("${this.widget.token}");
+    doc.get().then((DocumentSnapshot value) {
+      int currentQuestion = value.get("currentQuestion");
+      doc.collection("questions").doc("${currentQuestion}").get().then((value) {
+        if (value.exists) {
+          gameCards = value.get("cards");
+          numCorrectAnswer = gameCards.length;
+          gameQuestion = value.get("question");
+          var rand = Random();
+          while (numCardInGame - gameCards.length > 0) {
+            int randomIndex = rand.nextInt(allCountries.length);
+            if (!gameCards.contains(allCountries[randomIndex])) {
+              gameCards.add(allCountries[randomIndex]);
+            }
+          }
+          gameCards.shuffle();
+          setState(() {
+            gameCards;
+            numCorrectAnswer;
+            gameQuestion;
+          });
+        } else {
+          print("Fim de jogo");
+        }
+      });
+    });
+  }
+
+  _numberOfAnswer() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Flexible(
+            child: GenericText(
+              text: "Respostas: x/${numCorrectAnswer}",
+              textStyle: TextStyles.questions,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

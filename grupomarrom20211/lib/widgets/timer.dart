@@ -35,7 +35,7 @@ class _OtpTimerState extends State<OtpTimer> {
     if (reset) {
       resetCountdown();
     }
-    timer?.cancel(); //Remover para o tempo voltar a correr
+    timer?.cancel();
   }
 
   @override
