@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -36,7 +38,7 @@ class _inGameState extends State<inGame> {
   int index = -1;
   List<double> positions = [-83, -83, -83, -83, -83]; //Posição das cartas
   final database = FirebaseFirestore.instance;
-  List winningPlayer = ["", 0];
+  List winningPlayer = ["", 0, ""];
   List question = Questions().questions;
   List allCountries = InfoCountry().countryName;
   String gameQuestion = "";
@@ -48,6 +50,8 @@ class _inGameState extends State<inGame> {
   int numCardInGame = 5;
   int numQuestion = 3;
   bool getQuestion = true;
+  bool isGame = true;
+  bool isReset = false;
 
   @override
   void initState() {
@@ -82,43 +86,50 @@ class _inGameState extends State<inGame> {
     _winner();
     _resetTimer();
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          //Quem ta ganhando
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
-                SizedBox(width: 10),
-                GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.questions)
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          timer,
-          SizedBox(height: 10),
-          MatchButton(
-            title: "Enviar",
-            function: () {
-              print("object");
-            },
-          ),
-          SizedBox(height: 10),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: isGame ? _game() : Container(),
+    );
+  }
+
+  _game() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        //Quem ta ganhando
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              //Numero de perguntas corretas na partida
-              _numberOfAnswer(),
-              // Pergunta
-              _question(),
-              //Cartas
-              _cards(),
+              Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
+              SizedBox(width: 10),
+              GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.questions)
             ],
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: 10),
+        timer,
+        SizedBox(height: 10),
+        MatchButton(
+          title: "Enviar",
+          function: () {
+            String seconds = timerKey.currentState!.toString();
+            print("segundos: ${seconds}");
+            _savePoints();
+            //timerKey.currentState!.didUpdateWidget(timer);
+          },
+        ),
+        SizedBox(height: 10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            //Numero de perguntas corretas na partida
+            _numberOfAnswer(),
+            // Pergunta
+            _question(),
+            //Cartas
+            _cards(),
+          ],
+        ),
+      ],
     );
   }
 
@@ -151,10 +162,9 @@ class _inGameState extends State<inGame> {
 
   Future<void> _winner() async {
     if (!this.widget.isLeader) {
-      await database.collection("inGame").doc("${this.widget.token}").snapshots().listen((DocumentSnapshot event) {
+      database.collection("inGame").doc("${this.widget.token}").get().then((DocumentSnapshot event) {
         setState(() {
-          winningPlayer[0] = event.get("name");
-          winningPlayer[1] = event.get("points");
+          winningPlayer = event.get("winningPlayer");
         });
       });
     }
@@ -208,10 +218,10 @@ class _inGameState extends State<inGame> {
     );
   }
 
-  void _resetTimer() async {
+  void _resetTimer() {
     CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
     if (this.widget.isLeader) {
-      await collection.snapshots().listen((QuerySnapshot event) async {
+      collection.snapshots().listen((QuerySnapshot event) {
         int countFinished = 0;
         event.docs.forEach((QueryDocumentSnapshot element) {
           if (element.get("finished")) {
@@ -222,32 +232,36 @@ class _inGameState extends State<inGame> {
             setState(() {
               winningPlayer[0] = element.get("name");
               winningPlayer[1] = element.get("points");
+              winningPlayer[2] = element.get("id");
             });
           }
         });
-        bool isToResetTimer = false;
+
+        bool isResetTimer = false;
         int currentQuestion = 0;
-        QuerySnapshot snapshot = await collection.get();
-        await collection.parent!.get().then((DocumentSnapshot value) {
-          isToResetTimer = !value.get("resetTimer");
-          currentQuestion = value.get("currentQuestion");
+        collection.get().then((QuerySnapshot snapshot) {
+          collection.parent!.get().then((DocumentSnapshot value) {
+            isResetTimer = value.get("resetTimer");
+            currentQuestion = value.get("currentQuestion");
+          }).whenComplete(() {
+            if (!isResetTimer && countFinished == snapshot.size) {
+              collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1});
+            }
+          });
         });
-        if (isToResetTimer && countFinished == snapshot.size) {
-          await collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1});
-        }
       });
     }
-
-    await collection.parent!.snapshots().listen((DocumentSnapshot event) {
+    collection.parent!.snapshots().listen((DocumentSnapshot event) {
       if (event.get("resetTimer")) {
         _newQuestion();
-        collection.doc("${this.widget.id}").update({"finished": false});
 
         if (this.widget.isLeader) {
           event.reference.update({"resetTimer": false});
         }
-        setState(() {
-          timerKey.currentState!.didUpdateWidget(timer);
+        collection.doc("${this.widget.id}").update({"finished": false}).whenComplete(() {
+          setState(() {
+            timerKey.currentState!.didUpdateWidget(timer);
+          });
         });
       }
     });
@@ -276,7 +290,11 @@ class _inGameState extends State<inGame> {
             gameQuestion;
           });
         } else {
-          print("Fim de jogo");
+          Future.delayed(Duration(seconds: 2), () {
+            setState(() {
+              isGame = false;
+            });
+          });
         }
       });
     });

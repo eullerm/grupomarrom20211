@@ -24,7 +24,7 @@ class _OtpTimerState extends State<OtpTimer> {
       } else {
         this.widget.function();
 
-        //stopCountdown(reset: true);
+        //resetCountdown();
       }
     });
   }
@@ -38,6 +38,8 @@ class _OtpTimerState extends State<OtpTimer> {
     timer?.cancel();
   }
 
+  void pauseCountDown() => timer?.cancel();
+
   @override
   void initState() {
     startCountdown();
@@ -45,7 +47,18 @@ class _OtpTimerState extends State<OtpTimer> {
   }
 
   @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return seconds.toString();
+  }
+
+  @override
   void didUpdateWidget(covariant OtpTimer oldWidget) {
+    /* if (seconds == 0) {
+      
+      startCountdown();
+    } else {
+      pauseCountDown();
+    } */
     resetCountdown();
     super.didUpdateWidget(oldWidget);
   }
