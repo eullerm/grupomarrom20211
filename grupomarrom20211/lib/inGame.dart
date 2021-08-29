@@ -46,7 +46,7 @@ class _inGameState extends State<inGame> {
   int numCorrectAnswer = 0;
   var ids = new Set<int>();
   GlobalKey timerKey = GlobalKey();
-  late OtpTimer timer = OtpTimer(function: () => _savePoints(), key: timerKey);
+  late OtpTimer timer = OtpTimer(whenTimeIsOver: () => _savePoints(), whenTimeIsPaused: () => _whenTimeIsPaused(), key: timerKey);
   int numCardInGame = 5;
   int numQuestion = 3;
   bool getQuestion = true;
@@ -107,16 +107,7 @@ class _inGameState extends State<inGame> {
         ),
         SizedBox(height: 10),
         timer,
-        SizedBox(height: 10),
-        MatchButton(
-          title: "Enviar",
-          function: () {
-            String seconds = timerKey.currentState!.toString();
-            print("segundos: ${seconds}");
-            _savePoints();
-            //timerKey.currentState!.didUpdateWidget(timer);
-          },
-        ),
+
         SizedBox(height: 10),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,6 +122,12 @@ class _inGameState extends State<inGame> {
         ),
       ],
     );
+  }
+
+  _whenTimeIsPaused() {
+    String seconds = timerKey.currentState!.toString();
+    print("segundos: ${seconds}");
+    _savePoints();
   }
 
   _card(String name, int index) {

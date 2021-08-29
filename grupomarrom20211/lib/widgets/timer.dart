@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
+import 'button.dart';
+
 class OtpTimer extends StatefulWidget {
-  final Function function;
-  OtpTimer({required this.function, Key? key}) : super(key: key);
+  final Function whenTimeIsOver;
+  final Function whenTimeIsPaused;
+  OtpTimer({required this.whenTimeIsOver, required this.whenTimeIsPaused, Key? key}) : super(key: key);
   @override
   _OtpTimerState createState() => _OtpTimerState();
 }
@@ -22,9 +25,7 @@ class _OtpTimerState extends State<OtpTimer> {
           seconds--;
         });
       } else {
-        this.widget.function();
-
-        //resetCountdown();
+        this.widget.whenTimeIsOver();
       }
     });
   }
@@ -53,18 +54,27 @@ class _OtpTimerState extends State<OtpTimer> {
 
   @override
   void didUpdateWidget(covariant OtpTimer oldWidget) {
-    /* if (seconds == 0) {
-      
-      startCountdown();
-    } else {
-      pauseCountDown();
-    } */
     resetCountdown();
+    if (!timer!.isActive) {
+      startCountdown();
+    }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          _timer(),
+          SizedBox(height: 10),
+          _button(),
+        ],
+      ),
+    );
+  }
+
+  Widget _timer() {
     return SizedBox(
       width: 80,
       height: 80,
@@ -86,6 +96,17 @@ class _OtpTimerState extends State<OtpTimer> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _button() {
+    return MatchButton(
+      title: "Enviar",
+      function: () {
+        this.widget.whenTimeIsPaused();
+        pauseCountDown();
+        //timerKey.currentState!.didUpdateWidget(timer);
+      },
     );
   }
 }
