@@ -19,6 +19,7 @@ class CardObject extends StatefulWidget {
 
 class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   late AnimationController controller;
+  late AnimationController controllerInGame;
   late Animation<double> animation;
   AnimationStatus animationStatus = AnimationStatus.dismissed;
   bool isFront = true;
@@ -28,7 +29,7 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   var initialControllerValue;
   Animation<Matrix4>? _animationReset;
   late final AnimationController _controllerReset;
-  bool showFront = false;
+  bool isToFlip = false;
 
   @override
   void initState() {
@@ -47,15 +48,15 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
       isFront = false;
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
-          showFront = true;
-          controller = AnimationController(
+          isToFlip = true;
+          controllerInGame = AnimationController(
             vsync: this,
             duration: Duration(milliseconds: 400),
           );
-          animation = Tween<double>(end: 1, begin: 0).animate(controller)
+          animation = Tween<double>(end: 1, begin: 0).animate(controllerInGame)
             ..addListener(() {
               setState(() {
-                if (controller.value >= 0.5) {
+                if (controllerInGame.value >= 0.5) {
                   isFront = true;
                 }
               });
@@ -63,7 +64,7 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
             ..addStatusListener((status) {
               animationStatus = status;
             });
-          controller.forward();
+          controllerInGame.forward();
         });
       });
     }
@@ -105,8 +106,11 @@ class _CardObjectState extends State<CardObject> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Widget body = Container();
-    if (showFront) {
+    if (isToFlip) {
       body = withAutomaticFlip();
+      setState(() {
+        isToFlip = false;
+      });
     } else {
       body = withGestureFlip();
     }

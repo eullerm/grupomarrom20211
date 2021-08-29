@@ -43,8 +43,14 @@ class _OtpTimerState extends State<OtpTimer> {
 
   @override
   void initState() {
-    startCountdown();
+    Future.delayed(Duration(seconds: 2), () => startCountdown());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -54,10 +60,14 @@ class _OtpTimerState extends State<OtpTimer> {
 
   @override
   void didUpdateWidget(covariant OtpTimer oldWidget) {
-    resetCountdown();
-    if (!timer!.isActive) {
-      startCountdown();
-    }
+    stopCountdown(reset: true);
+    Future.delayed(Duration(seconds: 2), () {
+      //resetCountdown();
+      if (!timer!.isActive) {
+        startCountdown();
+      }
+    });
+
     super.didUpdateWidget(oldWidget);
   }
 
