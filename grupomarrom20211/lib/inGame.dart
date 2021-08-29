@@ -130,33 +130,6 @@ class _inGameState extends State<inGame> {
     _savePoints();
   }
 
-  _card(String name, int index) {
-    return AnimatedPositioned(
-      bottom: positions[index],
-      left: index * distanceCard,
-      right: (4 - index) * distanceCard,
-      duration: Duration(milliseconds: 200),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (positions[index] != -83) {
-              positions[index] = -83;
-            } else {
-              positions[index] = 150;
-            }
-          });
-        },
-        child: Container(
-          height: 200,
-          child: CardObject(
-            urlFront: 'assets/images/cards/${name}.png',
-            urlBack: 'assets/images/Cardback.png',
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _winner() async {
     if (!this.widget.isLeader) {
       database.collection("inGame").doc("${this.widget.token}").get().then((DocumentSnapshot event) {
@@ -215,9 +188,40 @@ class _inGameState extends State<inGame> {
     );
   }
 
+  _card(String name, int index) {
+    UniqueKey key = UniqueKey();
+    return AnimatedPositioned(
+      bottom: positions[index],
+      left: index * distanceCard,
+      right: (4 - index) * distanceCard,
+      duration: Duration(milliseconds: 200),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            if (positions[index] != -83) {
+              positions[index] = -83;
+            } else {
+              positions[index] = 150;
+            }
+          });
+        },
+        child: Container(
+          height: 200,
+          child: CardObject(
+            urlFront: 'assets/images/cards/${name}.png',
+            urlBack: 'assets/images/Cardback.png',
+            isInGame: true,
+            key: key,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _resetTimer() {
     CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
     if (this.widget.isLeader) {
+      //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
       collection.snapshots().listen((QuerySnapshot event) {
         int countFinished = 0;
         event.docs.forEach((QueryDocumentSnapshot element) {
@@ -234,6 +238,7 @@ class _inGameState extends State<inGame> {
           }
         });
 
+        //O líder avisa quando é para resetar o timer e qual é a questão que deve ser buscada.
         bool isResetTimer = false;
         int currentQuestion = 0;
         collection.get().then((QuerySnapshot snapshot) {
@@ -248,6 +253,7 @@ class _inGameState extends State<inGame> {
         });
       });
     }
+    //Todos os jogadores ficam de olho no timer para sabe quando resetar e buscar uma nova questão.
     collection.parent!.snapshots().listen((DocumentSnapshot event) {
       if (event.get("resetTimer")) {
         _newQuestion();
@@ -264,6 +270,7 @@ class _inGameState extends State<inGame> {
     });
   }
 
+  //Busca a questão e as respostas para aquela questão
   void _newQuestion() {
     DocumentReference doc = database.collection("inGame").doc("${this.widget.token}");
     doc.get().then((DocumentSnapshot value) {
@@ -297,6 +304,7 @@ class _inGameState extends State<inGame> {
     });
   }
 
+  //Responsável por dizer o número de cartas que responde aquela pergunta.
   _numberOfAnswer() {
     return Container(
       padding: EdgeInsets.all(16),

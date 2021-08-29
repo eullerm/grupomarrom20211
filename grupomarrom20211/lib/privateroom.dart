@@ -514,7 +514,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       "createdAt": DateTime.now().millisecondsSinceEpoch,
       "resetTimer": false,
       "currentQuestion": 0,
-      "winningPlayer": ["", 0, ""],
+      "winningPlayer": ["", 0, ""], //[Nome do jogador, número de pontos, id do device]
     });
     //O líder fica responsavel por gerar a sala de jogo e levar todos os usuários.
     //Pega a sala
