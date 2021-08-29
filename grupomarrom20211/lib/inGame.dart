@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -93,6 +92,7 @@ class _inGameState extends State<inGame> {
     _winning();
     _resetTimer();
     return Container(
+      alignment: Alignment.topCenter,
       child: isGame ? _game() : _winner(),
     );
   }
@@ -363,61 +363,109 @@ class _inGameState extends State<inGame> {
   }
 
   _winner() {
+    GlobalKey titleKey = GlobalKey();
     return Container(
-      padding: EdgeInsets.only(left: 5, right: 5),
-      alignment: FractionalOffset.center,
-      child: Stack(
-        children: [
-          StreamBuilder<QuerySnapshot>(
-            stream: database.collection("inGame").doc("${this.widget.token}").collection("users").orderBy("points").snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              print("Snapshot ${snapshot.data}");
-              if (snapshot.hasError) _snapshotError(snapshot);
-
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-
-                case ConnectionState.none:
-                  return _snapshotEmpty();
-
-                case ConnectionState.active:
-                  return Center(
-                    child: ListView(
-                      children: _players(snapshot),
-                    ),
-                  );
-
-                default:
-                  return _snapshotEmpty();
-              }
-            },
+      //color: Colors.black,
+      child: Column(
+        children: <Widget>[
+          TextTitle(
+            title: "Jogadores:",
+            key: titleKey,
           ),
+          Flexible(
+            //color: Colors.black,
+            //constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height - titleKey.currentContext!.size!.height),
+            child: Stack(
+              children: <Widget>[
+                StreamBuilder<QuerySnapshot>(
+                  stream:
+                      database.collection("inGame").doc("${this.widget.token}").collection("users").orderBy("points", descending: true).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) _snapshotError(snapshot);
+
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+
+                      case ConnectionState.none:
+                        return _snapshotEmpty();
+
+                      case ConnectionState.active:
+                        return Center(
+                          child: ListView(
+                            children: _players(snapshot),
+                          ),
+                        );
+
+                      default:
+                        return _snapshotEmpty();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              MatchButton(
+                  title: "Tela inicial",
+                  function: () {
+                    print("object");
+                    context.router.popUntilRouteWithName("Landing");
+                  }),
+            ],
+          )
         ],
       ),
     );
   }
 
   _snapshotError(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-    return Container();
+    return Container(
+      child: Center(
+        child: GenericText(text: snapshot.error.toString(), textStyle: TextStyles.screenTitle),
+      ),
+    );
   }
 
-  _players(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-    return snapshot.data!.docs.map<Widget>((DocumentSnapshot doc) {
+  _players(AsyncSnapshot snapshot) {
+    List<List<String>> players = [];
+    snapshot.data!.docs.forEach((QueryDocumentSnapshot element) {
+      players.add([element.get("name"), element.get("points").toString(), element.get("id")]);
+    });
+    return players.map<Widget>((List<String> player) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          GenericText(text: doc.get("name"), textStyle: TextStyles.appTitle),
-          GenericText(text: doc.get("points").toString(), textStyle: TextStyles.plainText),
-          GenericText(text: doc.get("id"), textStyle: TextStyles.smallText),
+          _medal(players.indexOf(player) + 1),
+          GenericText(text: player[0], textStyle: TextStyles.appTitle),
+          GenericText(text: player[1], textStyle: TextStyles.plainText),
+          GenericText(text: player[2], textStyle: TextStyles.smallText),
         ],
       );
     }).toList();
   }
 
   _snapshotEmpty() {
-    return Container();
+    return Container(
+      child: Center(
+        child: GenericText(text: "Houve um problema de conexão.", textStyle: TextStyles.screenTitle),
+      ),
+    );
+  }
+
+  _medal(int pos) {
+    if (pos == 1) {
+      return Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png"));
+    } else if (pos == 2) {
+      return Container(width: 30, child: Image.asset("assets/images/medals/silverMedal.png"));
+    } else if (pos == 3) {
+      return Container(width: 30, child: Image.asset("assets/images/medals/bronzeMedal.png"));
+    } else {
+      return Container();
+    }
   }
 }
