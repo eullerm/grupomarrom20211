@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     OneSignal.shared.setAppId("6824ea51-892f-465b-a728-dc30991f1138");
 
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       builder: (BuildContext context, Widget? child) {
         return SafeArea(
           child: child!,

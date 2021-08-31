@@ -61,7 +61,7 @@ class _inGameState extends State<inGame> {
 
     for (int i = 0; i < numCardInGame; i++) {
       cardKey.add(UniqueKey());
-      positions.add(-83);
+      positions.add(-33);
     }
     while (ids.length != numQuestion) {
       ids.add(rand.nextInt(question.length));
@@ -73,7 +73,7 @@ class _inGameState extends State<inGame> {
 
   @override
   Widget build(BuildContext context) {
-    database.useFirestoreEmulator("localhost", 8080); //Emulador
+    // database.useFirestoreEmulator("localhost", 8080); //Emulador
     containerWidthCards = MediaQuery.of(context).size.width - 16;
     distanceCard = containerWidthCards / 5 - 16;
 
@@ -98,36 +98,40 @@ class _inGameState extends State<inGame> {
   }
 
   _game() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        //Quem ta ganhando
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
-              SizedBox(width: 10),
-              GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.questions)
-            ],
-          ),
-        ),
-        SizedBox(height: 10),
-        timer,
-
-        SizedBox(height: 10),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height + 70,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //Numero de perguntas corretas na partida
-            _numberOfAnswer(),
-            // Pergunta
-            _question(),
-            //Cartas
-            _cards(),
+            //Quem ta ganhando
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
+                  SizedBox(width: 10),
+                  GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.plainText)
+                ],
+              ),
+            ),
+            timer,
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                //Numero de perguntas corretas na partida
+                _numberOfAnswer(),
+                // Pergunta
+                _question(),
+                //Cartas
+                _cards(),
+              ],
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -197,7 +201,7 @@ class _inGameState extends State<inGame> {
             child: GenericText(
               textAlign: TextAlign.center,
               text: gameQuestion,
-              textStyle: TextStyles.questions,
+              textStyle: TextStyles.plainText,
             ),
           ),
         ],
@@ -225,8 +229,8 @@ class _inGameState extends State<inGame> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            if (positions[index] != -83) {
-              positions[index] = -83;
+            if (positions[index] != -33) {
+              positions[index] = -33;
               userAnswer.remove(name);
             } else if (userAnswer.length < numCorrectAnswer) {
               positions[index] = 150;
@@ -309,7 +313,7 @@ class _inGameState extends State<inGame> {
           positions = [];
           for (int i = 0; i < numCardInGame; i++) {
             cardKey.add(UniqueKey());
-            positions.add(-83);
+            positions.add(-33);
           }
           var rand = Random();
           while (numCardInGame - gameCards.length > 0) {
@@ -354,7 +358,7 @@ class _inGameState extends State<inGame> {
           Flexible(
             child: GenericText(
               text: "Respostas: ${userAnswer.length}/${numCorrectAnswer}",
-              textStyle: TextStyles.questions,
+              textStyle: TextStyles.plainText,
             ),
           ),
         ],

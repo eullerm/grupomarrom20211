@@ -5,16 +5,17 @@
 // **************************************************************************
 
 import 'package:auto_route/auto_route.dart' as _i1;
-import 'package:flutter/foundation.dart' as _i10;
+import 'package:flutter/foundation.dart' as _i11;
 import 'package:flutter/material.dart' as _i2;
 
-import '../countries.dart' as _i5;
-import '../countryDetail.dart' as _i6;
-import '../credits.dart' as _i4;
-import '../inGame.dart' as _i8;
+import '../countries.dart' as _i6;
+import '../countryDetail.dart' as _i7;
+import '../credits.dart' as _i5;
+import '../howToPlay.dart' as _i4;
+import '../inGame.dart' as _i9;
 import '../landing.dart' as _i3;
-import '../play.dart' as _i7;
-import '../privateroom.dart' as _i9;
+import '../play.dart' as _i8;
+import '../privateroom.dart' as _i10;
 
 class AppRouter extends _i1.RootStackRouter {
   AppRouter([_i2.GlobalKey<_i2.NavigatorState>? navigatorKey])
@@ -27,15 +28,20 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (_) {
           return _i3.Landing();
         }),
+    HowToPlay.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return _i4.HowToPlay();
+        }),
     Credits.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return _i4.Credits();
+          return _i5.Credits();
         }),
     Countries.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return _i5.Countries();
+          return _i6.Countries();
         }),
     CountryDetail.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
@@ -43,12 +49,12 @@ class AppRouter extends _i1.RootStackRouter {
           final pathParams = data.pathParams;
           final args = data.argsAs<CountryDetailArgs>(
               orElse: () => CountryDetailArgs(id: pathParams.getInt('id')));
-          return _i6.CountryDetail(id: args.id);
+          return _i7.CountryDetail(id: args.id);
         }),
     Play.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
-          return const _i7.Play();
+          return const _i8.Play();
         }),
     InGame.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
@@ -59,7 +65,7 @@ class AppRouter extends _i1.RootStackRouter {
                   id: pathParams.getString('id'),
                   token: pathParams.getString('token'),
                   isLeader: pathParams.getBool('isLeader')));
-          return _i8.inGame(
+          return _i9.inGame(
               id: args.id,
               token: args.token,
               isLeader: args.isLeader,
@@ -74,7 +80,7 @@ class AppRouter extends _i1.RootStackRouter {
                   player: pathParams.getString('player'),
                   id: pathParams.getString('id'),
                   token: pathParams.getString('token')));
-          return _i9.PrivateRoom(
+          return _i10.PrivateRoom(
               player: args.player,
               id: args.id,
               token: args.token,
@@ -85,6 +91,7 @@ class AppRouter extends _i1.RootStackRouter {
   @override
   List<_i1.RouteConfig> get routes => [
         _i1.RouteConfig(Landing.name, path: '/'),
+        _i1.RouteConfig(HowToPlay.name, path: '/how-to-play'),
         _i1.RouteConfig(Credits.name, path: '/Credits'),
         _i1.RouteConfig(Countries.name, path: '/Countries'),
         _i1.RouteConfig(CountryDetail.name, path: '/CountryDetail/:id'),
@@ -99,6 +106,12 @@ class Landing extends _i1.PageRouteInfo {
   const Landing() : super(name, path: '/');
 
   static const String name = 'Landing';
+}
+
+class HowToPlay extends _i1.PageRouteInfo {
+  const HowToPlay() : super(name, path: '/how-to-play');
+
+  static const String name = 'HowToPlay';
 }
 
 class Credits extends _i1.PageRouteInfo {
@@ -140,7 +153,7 @@ class InGame extends _i1.PageRouteInfo<InGameArgs> {
       {required String id,
       required String token,
       required bool isLeader,
-      _i10.Key? key})
+      _i11.Key? key})
       : super(name,
             path: '/inGame/:id/:token/:isLeader',
             args:
@@ -163,7 +176,7 @@ class InGameArgs {
 
   final bool isLeader;
 
-  final _i10.Key? key;
+  final _i11.Key? key;
 }
 
 class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
@@ -171,7 +184,7 @@ class PrivateRoom extends _i1.PageRouteInfo<PrivateRoomArgs> {
       {required String player,
       required String id,
       required String token,
-      _i10.Key? key})
+      _i11.Key? key})
       : super(name,
             path: '/PrivateRoom/:player/:id/:token',
             args:
@@ -191,5 +204,5 @@ class PrivateRoomArgs {
 
   final String token;
 
-  final _i10.Key? key;
+  final _i11.Key? key;
 }

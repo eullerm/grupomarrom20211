@@ -40,6 +40,7 @@ dependencies:
   video_player: ^2.1.10
   connectivity_plus: ^1.0.6
   onesignal_flutter: ^3.0.0
+  curved_navigation_bar: ^1.0.1
   
 
 dev_dependencies:
@@ -79,6 +80,9 @@ flutter:
     - assets/images/flags/
     - assets/images/cards/
     - assets/images/medals/
+    - assets/images/HowToPlay-CriandoPartida/
+    - assets/images/HowToPlay-EntrandoPartida/
+    - assets/images/HowToPlay-Jogando/
     - assets/videos/
     # - assets/images/maps
   

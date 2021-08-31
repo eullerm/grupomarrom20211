@@ -66,17 +66,10 @@ class TextStyles {
     ],
   );
 
-  static const TextStyle questions = const TextStyle(
+  static const TextStyle navigation = const TextStyle(
     color: AppColorScheme.appText,
     fontFamily: 'ElanITCStdBook',
-    fontSize: 26.0,
-    shadows: <Shadow>[
-      Shadow(
-        offset: Offset(2.0, 2.0),
-        blurRadius: 3.0,
-        color: Color(0xFF000000),
-      ),
-    ],
+    fontSize: 20.0,
   );
 
   static const TextStyle screenTitle = const TextStyle(

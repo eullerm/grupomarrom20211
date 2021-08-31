@@ -55,7 +55,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    database.useFirestoreEmulator("localhost", 8080); //Emulador
+    // database.useFirestoreEmulator("localhost", 8080); //Emulador
     SystemChrome.setEnabledSystemUIOverlays([]);
 
     return Scaffold(
