@@ -63,11 +63,15 @@ class _inGameState extends State<inGame> {
       cardKey.add(UniqueKey());
       positions.add(-33);
     }
-    while (ids.length != numQuestion) {
-      ids.add(rand.nextInt(question.length));
+    if (this.widget.isLeader) {
+      while (ids.length != numQuestion) {
+        ids.add(rand.nextInt(question.length));
+      }
+      _sendQuestion();
     }
-    _sendQuestion();
+
     _newQuestion();
+    _resetTimer();
     super.initState();
   }
 
@@ -90,7 +94,6 @@ class _inGameState extends State<inGame> {
 
   _body() {
     _winning();
-    _resetTimer();
     return Container(
       alignment: Alignment.topCenter,
       child: isGame ? _game() : _winner(),
@@ -260,7 +263,6 @@ class _inGameState extends State<inGame> {
         event.docs.forEach((QueryDocumentSnapshot element) {
           if (element.get("finished") && isGame) {
             countFinished++;
-            print("count ${countFinished}");
           }
           if (element.get("points") > winningPlayer[1]) {
             setState(() {
@@ -271,6 +273,7 @@ class _inGameState extends State<inGame> {
           }
         });
 
+        print("count ${countFinished}");
         //O líder avisa quando é para resetar o timer e qual é a questão que deve ser buscada.
         bool isResetTimer = false;
         int currentQuestion = 0;
@@ -280,13 +283,14 @@ class _inGameState extends State<inGame> {
             currentQuestion = value.get("currentQuestion");
           }).whenComplete(() {
             if (!isResetTimer && countFinished == snapshot.size) {
-              collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1});
+              collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1}).whenComplete(
+                  () => print("question: ${currentQuestion + 1}"));
             }
           });
         });
       });
     }
-    //Todos os jogadores ficam de olho no timer para sabe quando resetar e buscar uma nova questão.
+    //Todos os jogadores ficam de olho no timer para saber quando resetar e buscar uma nova questão.
     collection.parent!.snapshots().listen((DocumentSnapshot event) {
       if (event.get("resetTimer")) {
         _newQuestion();
@@ -323,12 +327,17 @@ class _inGameState extends State<inGame> {
             }
           }
           gameCards.shuffle();
-          doc.collection("users").doc("${this.widget.id}").update({"finished": false}).whenComplete(() {
-            timerKey.currentState!.didUpdateWidget(timer);
-            setState(() {
-              timer;
-              timerKey;
-            });
+          doc.collection("users").doc("${this.widget.id}").get().then((value) {
+            var finished = value.get("finished");
+            if (finished) {
+              value.reference.update({"finished": false}).whenComplete(() {
+                timerKey.currentState!.didUpdateWidget(timer);
+                setState(() {
+                  // timer;
+                  timerKey;
+                });
+              });
+            }
           });
           setState(() {
             gameCards;
@@ -382,8 +391,13 @@ class _inGameState extends State<inGame> {
             child: Stack(
               children: <Widget>[
                 StreamBuilder<QuerySnapshot>(
-                  stream:
-                      database.collection("inGame").doc("${this.widget.token}").collection("users").orderBy("points", descending: true).snapshots(),
+                  stream: database
+                      .collection("inGame")
+                      .doc("${this.widget.token}")
+                      .collection("users")
+                      .orderBy("points", descending: true)
+                      .snapshots()
+                      .asBroadcastStream(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) _snapshotError(snapshot);
 
@@ -419,6 +433,7 @@ class _inGameState extends State<inGame> {
                   function: () {
                     print("object");
                     context.router.popUntilRouteWithName("Landing");
+                    // *** Apagar documento da partida quando voltar para a página inicial ***
                   }),
             ],
           )

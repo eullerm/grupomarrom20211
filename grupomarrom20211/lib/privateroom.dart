@@ -541,7 +541,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
         context.router.pushNamed('/inGame/${this.widget.id}/${token}/${true}');
       });
-      //Exclui todas as mensagens da sala.
+      /* //Exclui todas as mensagens da sala.
       database.collection("privateRoom").doc("${token}").collection("messages").snapshots().forEach((QuerySnapshot element) {
         for (DocumentSnapshot ds in element.docs) {
           ds.reference.delete();
@@ -555,7 +555,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       });
 
       //Exclui toda sala.
-      database.collection("privateRoom").doc("${token}").delete();
+      database.collection("privateRoom").doc("${token}").delete(); */
     });
   }
 }
