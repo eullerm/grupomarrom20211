@@ -1,20 +1,16 @@
 import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:grupomarrom20211/AutoRoute/AutoRoute.gr.dart';
 import 'package:grupomarrom20211/Theme.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/button.dart';
 import 'package:grupomarrom20211/widgets/cardObject.dart';
 import 'package:grupomarrom20211/widgets/genericText.dart';
 import 'package:grupomarrom20211/widgets/timer.dart';
-import 'package:grupomarrom20211/widgets/title.dart';
 import 'const/cards.dart';
 import 'dart:math';
-
 import 'const/questions.dart';
 
 class inGame extends StatefulWidget {
@@ -89,6 +85,38 @@ class _inGameState extends State<inGame> {
     super.initState();
   }
 
+  Future<bool> _willPopScopeCall() async {
+    // code to show toast or modal
+    final shouldPop = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Sair do jogo'),
+        content: Text('Deseja realmente sair'),
+        actions: <Widget>[
+          MatchButton(
+            title: "Sim",
+            function: () {
+              _removePlayer().whenComplete(() {
+                setState(() {
+                  isGame = false;
+                });
+                context.router.popUntilRouteWithName("Landing");
+              });
+            },
+          ),
+          MatchButton(
+            title: "Não",
+            function: () {
+              context.router.pop();
+            },
+          ),
+        ],
+      ),
+    );
+    return shouldPop ?? false;
+    // return true to exit app or return false to cancel exit
+  }
+
   @override
   void dispose() {
     timerKey.currentState?.dispose();
@@ -101,13 +129,16 @@ class _inGameState extends State<inGame> {
     containerWidthCards = MediaQuery.of(context).size.width - 16;
     distanceCard = containerWidthCards / 5 - 16;
 
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          Background(background: "Background"),
-          _body(),
-        ],
+    return WillPopScope(
+      onWillPop: _willPopScopeCall,
+      child: Scaffold(
+        body: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Background(background: "Background"),
+            _body(),
+          ],
+        ),
       ),
     );
   }
@@ -129,16 +160,28 @@ class _inGameState extends State<inGame> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             //Quem ta ganhando
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
-                  SizedBox(width: 10),
-                  GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.plainText)
-                ],
-              ),
+            Stack(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: AppColorScheme.iconColor,
+                  ),
+                  onPressed: _willPopScopeCall,
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png")),
+                      SizedBox(width: 10),
+                      GenericText(text: "${winningPlayer[0]}", textStyle: TextStyles.plainText)
+                    ],
+                  ),
+                ),
+              ],
             ),
+
             timer,
 
             Column(
@@ -275,51 +318,55 @@ class _inGameState extends State<inGame> {
   }
 
   void _resetTimer() {
-    CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
-    if (leader) {
-      //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
-      listenFinishedPlayers = collection.snapshots().listen((QuerySnapshot event) {
-        int countFinished = 0;
-        event.docs.forEach((QueryDocumentSnapshot element) {
-          if (element.get("finished") && isGame) {
-            countFinished++;
-          }
-          if (element.get("points") > winningPlayer[1]) {
-            setState(() {
-              winningPlayer[0] = element.get("name");
-              winningPlayer[1] = element.get("points");
-              winningPlayer[2] = element.get("id");
-            });
-          }
-        });
-
-        print("count ${countFinished}");
-        //O líder avisa quando é para resetar o timer e qual é a questão que deve ser buscada.
-        bool isResetTimer = false;
-        int currentQuestion = 0;
-        collection.get().then((QuerySnapshot snapshot) {
-          collection.parent!.get().then((DocumentSnapshot value) {
-            isResetTimer = value.get("resetTimer");
-            currentQuestion = value.get("currentQuestion");
-          }).whenComplete(() {
-            if (!isResetTimer && countFinished == snapshot.size) {
-              collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1}).whenComplete(
-                  () => print("question: ${currentQuestion + 1}"));
+    try {
+      CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
+      if (leader) {
+        //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
+        listenFinishedPlayers = collection.snapshots().listen((QuerySnapshot event) {
+          int countFinished = 0;
+          event.docs.forEach((QueryDocumentSnapshot element) {
+            if (element.get("finished") && isGame) {
+              countFinished++;
+            }
+            if (element.get("points") > winningPlayer[1]) {
+              setState(() {
+                winningPlayer[0] = element.get("name");
+                winningPlayer[1] = element.get("points");
+                winningPlayer[2] = element.get("id");
+              });
             }
           });
-        });
-      });
-    }
-    //Todos os jogadores ficam de olho no timer para saber quando resetar e buscar uma nova questão.
-    listenResetTimer = collection.parent!.snapshots().listen((DocumentSnapshot event) {
-      if (event.get("resetTimer")) {
-        _newQuestion();
 
-        if (leader) {
-          event.reference.update({"resetTimer": false});
-        }
+          print("count ${countFinished}");
+          //O líder avisa quando é para resetar o timer e qual é a questão que deve ser buscada.
+          bool isResetTimer = false;
+          int currentQuestion = 0;
+          collection.get().then((QuerySnapshot snapshot) {
+            collection.parent!.get().then((DocumentSnapshot value) {
+              isResetTimer = value.get("resetTimer");
+              currentQuestion = value.get("currentQuestion");
+            }).whenComplete(() {
+              if (!isResetTimer && countFinished == snapshot.size) {
+                collection.parent!.update({"resetTimer": true, "winningPlayer": winningPlayer, "currentQuestion": currentQuestion + 1}).catchError(
+                    (object) => print("error: ${object.toString()}"));
+              }
+            });
+          });
+        });
       }
-    });
+      //Todos os jogadores ficam de olho no timer para saber quando resetar e buscar uma nova questão.
+      listenResetTimer = collection.parent!.snapshots().listen((DocumentSnapshot event) {
+        if (event.get("resetTimer")) {
+          _newQuestion();
+
+          if (leader) {
+            event.reference.update({"resetTimer": false});
+          }
+        }
+      });
+    } catch (e) {
+      print("Error: ${e.toString()}");
+    }
   }
 
   //Busca a questão e as respostas para aquela questão
@@ -396,5 +443,45 @@ class _inGameState extends State<inGame> {
         ],
       ),
     );
+  }
+
+  Future<void> _removePlayer() async {
+    // Recebe os valores do usuário no banco.
+    listenResetTimer.cancel();
+    listenFinishedPlayers.cancel();
+    CollectionReference collection = database.collection("privateRoom");
+    DocumentReference room = collection.doc("${this.widget.token}");
+    DocumentReference room2 = database.collection("inGame").doc("${this.widget.token}");
+    DocumentSnapshot user = await room.collection("users").doc("${this.widget.id}").get();
+    DocumentSnapshot user2 = await room2.collection("users").doc("${this.widget.id}").get();
+    await collection.doc("${this.widget.token}").collection("users").doc("${this.widget.id}").delete();
+    user2.reference.delete();
+    // Verifica se é o líder.
+    if (user.get("leader")) {
+      QuerySnapshot users = await collection.doc("${this.widget.token}").collection("users").get();
+
+      if (users.docs.isNotEmpty) {
+        users.docs.first.reference.update({"leader": true}); // Transforma o proximo da fila em lider
+      } else {
+        room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+          // Exclui todas as mensagens da sala caso não exista um proximo usuário
+          for (DocumentSnapshot ds in element.docs) {
+            ds.reference.delete();
+          }
+        });
+        // Exclui a sala vazia da coleção privateRoom
+
+        room.delete();
+
+        room2.collection("questions").snapshots().forEach((element) {
+          // Exclui todas as questões, caso não existe um outro usuário
+          for (DocumentSnapshot ds in element.docs) {
+            ds.reference.delete();
+          }
+        });
+        // Exclui a sala vazia da coleção inGame
+        room2.delete();
+      }
+    }
   }
 }
