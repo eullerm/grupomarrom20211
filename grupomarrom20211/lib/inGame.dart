@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -17,10 +18,12 @@ import 'dart:math';
 import 'const/questions.dart';
 
 class inGame extends StatefulWidget {
+  final String player;
   final String id;
   final String token;
   final bool isLeader;
   const inGame({
+    @PathParam('player') required this.player,
     @PathParam('id') required this.id,
     @PathParam('token') required this.token,
     @PathParam('isLeader') required this.isLeader,
@@ -54,16 +57,27 @@ class _inGameState extends State<inGame> {
   bool getQuestion = true;
   bool isGame = true;
   bool isReset = false;
+  late bool leader;
+
+  late StreamSubscription listenResetTimer;
+  late StreamSubscription listenFinishedPlayers;
 
   @override
   void initState() {
     var rand = new Random();
+    leader = this.widget.isLeader;
+
+    if (leader) {
+      database.collection("privateRoom").doc("${this.widget.token}").update({"startLevel": false, "count": 1});
+    } else {
+      database.collection("privateRoom").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").update({"isReady": false});
+    }
 
     for (int i = 0; i < numCardInGame; i++) {
       cardKey.add(UniqueKey());
       positions.add(-33);
     }
-    if (this.widget.isLeader) {
+    if (leader) {
       while (ids.length != numQuestion) {
         ids.add(rand.nextInt(question.length));
       }
@@ -73,6 +87,12 @@ class _inGameState extends State<inGame> {
     _newQuestion();
     _resetTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    timerKey.currentState?.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,7 +116,7 @@ class _inGameState extends State<inGame> {
     _winning();
     return Container(
       alignment: Alignment.topCenter,
-      child: isGame ? _game() : _winner(),
+      child: _game(),
     );
   }
 
@@ -162,7 +182,7 @@ class _inGameState extends State<inGame> {
   }
 
   Future<void> _winning() async {
-    if (!this.widget.isLeader) {
+    if (!leader) {
       database.collection("inGame").doc("${this.widget.token}").get().then((DocumentSnapshot event) {
         setState(() {
           winningPlayer = event.get("winningPlayer");
@@ -256,9 +276,9 @@ class _inGameState extends State<inGame> {
 
   void _resetTimer() {
     CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
-    if (this.widget.isLeader) {
+    if (leader) {
       //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
-      collection.snapshots().listen((QuerySnapshot event) {
+      listenFinishedPlayers = collection.snapshots().listen((QuerySnapshot event) {
         int countFinished = 0;
         event.docs.forEach((QueryDocumentSnapshot element) {
           if (element.get("finished") && isGame) {
@@ -291,11 +311,11 @@ class _inGameState extends State<inGame> {
       });
     }
     //Todos os jogadores ficam de olho no timer para saber quando resetar e buscar uma nova questão.
-    collection.parent!.snapshots().listen((DocumentSnapshot event) {
+    listenResetTimer = collection.parent!.snapshots().listen((DocumentSnapshot event) {
       if (event.get("resetTimer")) {
         _newQuestion();
 
-        if (this.widget.isLeader) {
+        if (leader) {
           event.reference.update({"resetTimer": false});
         }
       }
@@ -352,12 +372,15 @@ class _inGameState extends State<inGame> {
           setState(() {
             isGame = false;
           });
+          listenResetTimer.cancel();
+          listenFinishedPlayers.cancel();
+          context.router.pushNamed('/Winner/${this.widget.player}/${this.widget.id}/${this.widget.token}');
         }
       });
     });
   }
 
-  //Responsável por dizer o número de cartas que responde aquela pergunta.
+  // Responsável por dizer o número de cartas que responde aquela pergunta.
   _numberOfAnswer() {
     return Container(
       padding: EdgeInsets.all(16),
@@ -373,118 +396,5 @@ class _inGameState extends State<inGame> {
         ],
       ),
     );
-  }
-
-  _winner() {
-    GlobalKey titleKey = GlobalKey();
-    return Container(
-      //color: Colors.black,
-      child: Column(
-        children: <Widget>[
-          TextTitle(
-            title: "Jogadores:",
-            key: titleKey,
-          ),
-          Flexible(
-            //color: Colors.black,
-            //constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height - titleKey.currentContext!.size!.height),
-            child: Stack(
-              children: <Widget>[
-                StreamBuilder<QuerySnapshot>(
-                  stream: database
-                      .collection("inGame")
-                      .doc("${this.widget.token}")
-                      .collection("users")
-                      .orderBy("points", descending: true)
-                      .snapshots()
-                      .asBroadcastStream(),
-                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) _snapshotError(snapshot);
-
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-
-                      case ConnectionState.none:
-                        return _snapshotEmpty();
-
-                      case ConnectionState.active:
-                        return Center(
-                          child: ListView(
-                            children: _players(snapshot),
-                          ),
-                        );
-
-                      default:
-                        return _snapshotEmpty();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              MatchButton(
-                  title: "Tela inicial",
-                  function: () {
-                    print("object");
-                    context.router.popUntilRouteWithName("Landing");
-                    // *** Apagar documento da partida quando voltar para a página inicial ***
-                  }),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  _snapshotError(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-    return Container(
-      child: Center(
-        child: GenericText(text: snapshot.error.toString(), textStyle: TextStyles.screenTitle),
-      ),
-    );
-  }
-
-  _players(AsyncSnapshot snapshot) {
-    List<List<String>> players = [];
-    snapshot.data!.docs.forEach((QueryDocumentSnapshot element) {
-      players.add([element.get("name"), element.get("points").toString(), element.get("id")]);
-    });
-    return players.map<Widget>((List<String> player) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _medal(players.indexOf(player) + 1),
-          GenericText(text: player[0], textStyle: TextStyles.appTitle),
-          GenericText(text: player[1], textStyle: TextStyles.plainText),
-          GenericText(text: player[2], textStyle: TextStyles.smallText),
-        ],
-      );
-    }).toList();
-  }
-
-  _snapshotEmpty() {
-    return Container(
-      child: Center(
-        child: GenericText(text: "Houve um problema de conexão.", textStyle: TextStyles.screenTitle),
-      ),
-    );
-  }
-
-  _medal(int pos) {
-    if (pos == 1) {
-      return Container(width: 30, child: Image.asset("assets/images/medals/goldMedal.png"));
-    } else if (pos == 2) {
-      return Container(width: 30, child: Image.asset("assets/images/medals/silverMedal.png"));
-    } else if (pos == 3) {
-      return Container(width: 30, child: Image.asset("assets/images/medals/bronzeMedal.png"));
-    } else {
-      return Container();
-    }
   }
 }

@@ -7,6 +7,7 @@ import 'package:grupomarrom20211/countryDetail.dart';
 import 'package:grupomarrom20211/play.dart';
 import 'package:grupomarrom20211/privateroom.dart';
 import 'package:grupomarrom20211/inGame.dart';
+import 'package:grupomarrom20211/winners.dart';
 
 //Responsável por gerar as rotas das páginas.
 @MaterialAutoRouter(
@@ -18,8 +19,9 @@ import 'package:grupomarrom20211/inGame.dart';
     AutoRoute(page: HowToPlay),
     AutoRoute(path: '/CountryDetail/:id', page: CountryDetail),
     AutoRoute(page: Play),
-    AutoRoute(path: '/inGame/:id/:token/:isLeader', page: inGame),
-    AutoRoute(path: '/PrivateRoom/:player/:id/:token', page: PrivateRoom)
+    AutoRoute(path: '/inGame/:player/:id/:token/:isLeader', page: inGame),
+    AutoRoute(path: '/PrivateRoom/:player/:id/:token', page: PrivateRoom),
+    AutoRoute(path: '/Winner/:player/:id/:token', page: Winner)
   ],
 )
 class $AppRouter {}
