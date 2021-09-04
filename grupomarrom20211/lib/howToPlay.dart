@@ -1,7 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
-import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
 class HowToPlay extends StatefulWidget {
@@ -15,11 +14,18 @@ class _HowToPlayState extends State<HowToPlay> {
   List images1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
   List images2 = ['1', '2', '3', '4', '5', '6', '7'];
   final controller = PageController(initialPage: 0);
+  int page = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: _body(context),
       bottomNavigationBar: CurvedNavigationBar(
-        index: 0,
+        index: page,
         color: Color(0xFF03989e),
         backgroundColor: Color(0xFFe9fae8),
         height: 48,
@@ -38,10 +44,9 @@ class _HowToPlayState extends State<HowToPlay> {
           ),
         ],
         onTap: (index) {
-          controller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          controller.jumpToPage(index); //(index, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
         },
       ),
-      body: _body(context),
     );
   }
 
@@ -51,6 +56,11 @@ class _HowToPlayState extends State<HowToPlay> {
         children: <Widget>[
           PageView(
             controller: controller,
+            onPageChanged: (newPage) {
+              setState(() {
+                page = newPage;
+              });
+            },
             children: [
               Container(
                 width: double.infinity,
@@ -90,21 +100,25 @@ class _HowToPlayState extends State<HowToPlay> {
               ),
             ],
           ),
-          Container(
-            padding: EdgeInsets.all(10.0),
-            width: double.infinity,
-            child: Column(
-              children: <Widget>[
-                // Título
-                Flexible(
-                  flex: 2,
-                  child: TextTitle(
-                    title: "",
-                    textStyle: TextStyles.screenTitle,
-                  ).withArrowBack(context, screen: "Landing"),
-                ),
-              ],
-            ),
+          _backButton(),
+        ],
+      ),
+    );
+  }
+
+  _backButton() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      width: double.infinity,
+      child: Column(
+        children: <Widget>[
+          // Título
+          Flexible(
+            flex: 2,
+            child: TextTitle(
+              title: "",
+              textStyle: TextStyles.screenTitle,
+            ).withArrowBack(context, screen: "Landing"),
           ),
         ],
       ),
