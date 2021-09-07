@@ -1,3 +1,5 @@
+// Widget Timer, usado na tela da partida
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
@@ -14,7 +16,7 @@ class OtpTimer extends StatefulWidget {
 }
 
 class _OtpTimerState extends State<OtpTimer> {
-  static const maxSeconds = 60;
+  static const maxSeconds = 10; // Quantidade de segundos usada no contador
   int seconds = maxSeconds;
   Timer? timer;
 

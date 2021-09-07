@@ -44,7 +44,6 @@ class _LandingState extends State<Landing> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      //OtpTimer(),
                       Button(title: "Jogar", screen: "/Play").withShadow(context),
                       Button(title: "Como jogar", screen: "/how-to-play").withShadow(context),
                       Button(title: "Cartas", screen: "/Countries").withShadow(context),

@@ -1,3 +1,12 @@
+/* 
+  Este .dart representa a tela da partida, nela temos todo o funcionamento
+  do jogo em si. Cada partida tem 3 rodadas. O jogador pode enviar a resposta 
+  antes do tempo acabar ou esperar o timer chegar a zero, quando todos jogadores
+  enviarem a resposta ou o timer de todos chegar a zero, uma nova rodada começa. 
+  No final da terceira rodada, os jogadores são levados para a tela de final de partida,
+  onde os jogadores aparecem em ordem de pontos.
+*/
+
 import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -64,6 +73,7 @@ class _inGameState extends State<inGame> {
     var rand = new Random();
     leader = this.widget.isLeader;
 
+    // Cria os jogadores no banco
     if (leader) {
       //Serve para resetar a quantidade de usuários prontos na sala privada
       database.collection("privateRoom").doc("${this.widget.token}").update({"startLevel": false, "count": 1});
@@ -72,10 +82,12 @@ class _inGameState extends State<inGame> {
       database.collection("privateRoom").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").update({"isReady": false});
     }
 
+    // Coloca a posição de cada carta na tela
     for (int i = 0; i < numCardInGame; i++) {
       cardKey.add(UniqueKey());
       positions.add(-33);
     }
+
     if (leader) {
       while (ids.length != numQuestion) {
         ids.add(rand.nextInt(question.length));
@@ -88,29 +100,39 @@ class _inGameState extends State<inGame> {
     super.initState();
   }
 
+  // Pop up para sair da partida
   Future<bool> _willPopScopeCall() async {
     final shouldPop = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppColorScheme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Sair do jogo'),
-        content: Text('Deseja realmente sair'),
+        content: Text('Deseja realmente sair?'),
         actions: <Widget>[
-          MatchButton(
-            title: "Sim",
-            function: () {
-              _removePlayer().whenComplete(() {
-                setState(() {
-                  isGame = false;
-                });
-                context.router.popUntilRouteWithName("Landing");
-              });
-            },
-          ),
-          MatchButton(
-            title: "Não",
-            function: () {
-              context.router.pop();
-            },
+          Container(
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                MatchButton(
+                  title: "Sim",
+                  function: () {
+                    _removePlayer().whenComplete(() {
+                      setState(() {
+                        isGame = false;
+                      });
+                      context.router.popUntilRouteWithName("Landing");
+                    });
+                  },
+                ),
+                MatchButton(
+                  title: "Não",
+                  function: () {
+                    context.router.pop();
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -126,7 +148,6 @@ class _inGameState extends State<inGame> {
 
   @override
   Widget build(BuildContext context) {
-    //database.useFirestoreEmulator("localhost", 8080); //Emulador
     containerWidthCards = MediaQuery.of(context).size.width - 16;
     distanceCard = containerWidthCards / 5 - 16;
 
@@ -152,6 +173,7 @@ class _inGameState extends State<inGame> {
     );
   }
 
+  // Tela da partida em si, com as cartas, timer e jogador que está ganhando no momento
   _game() {
     return SingleChildScrollView(
       physics: NeverScrollableScrollPhysics(),
@@ -160,7 +182,7 @@ class _inGameState extends State<inGame> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //Quem ta ganhando
+            // Quem ta ganhando
             Stack(
               children: <Widget>[
                 IconButton(
@@ -202,11 +224,13 @@ class _inGameState extends State<inGame> {
     );
   }
 
+  // Responsável por salvar os pontos quando o botão "Enviar" é clicado
   _whenTimeIsPaused() {
     String seconds = timerKey.currentState!.toString();
     _savePoints(timer: int.parse(seconds), cards: _checkAnswer());
   }
 
+  // Responsável por salvar os pontos quando o tempo chega a zero
   _whenTimeIsOver() {
     _savePoints(cards: _checkAnswer());
   }
@@ -224,18 +248,21 @@ class _inGameState extends State<inGame> {
     return point;
   }
 
+  // Retorna o jogador que está ganhando no momento
   Future<void> _winning() async {
     if (!leader && isGame) {
       database.collection("inGame").doc("${this.widget.token}").get().then((DocumentSnapshot event) {
-        setState(() {
-          winningPlayer = event.get("winningPlayer");
-        });
+        if (event.exists) {
+          setState(() {
+            winningPlayer = event.get("winningPlayer");
+          });
+        }
       });
     }
   }
 
+  // Calcula o pontuação do jogador, usando o timer de acordo com a porcentagem de resposta correta.
   _savePoints({int timer = 0, int cards = 0}) {
-    // Calcula o pontuação do timer de acordo com a porcentagem de resposta correta.
     int correctAnswers = cards ~/ pointsPerCard;
     double correctPercent = correctAnswers / numCorrectAnswer;
     timer = (timer * correctPercent).toInt();
@@ -249,6 +276,7 @@ class _inGameState extends State<inGame> {
     });
   }
 
+  // Envia as questões para o banco
   _sendQuestion() {
     int count = 0;
     ids.forEach((index) {
@@ -257,6 +285,7 @@ class _inGameState extends State<inGame> {
     });
   }
 
+  // Responsável por exibir as questões na tela
   _question() {
     return Container(
       padding: EdgeInsets.all(16),
@@ -275,6 +304,7 @@ class _inGameState extends State<inGame> {
     );
   }
 
+  // Responsável pela exibição das cartas
   _cards() {
     return Container(
       height: 355,
@@ -323,11 +353,13 @@ class _inGameState extends State<inGame> {
       if (leader) {
         //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
         listenFinishedPlayers = collection.snapshots().listen((QuerySnapshot event) {
-          int countFinished = 0;
+          int countFinished = 0; // Contador usado para garantir que todos os jogadores estão prontos antes de iniciar a partida
           event.docs.forEach((QueryDocumentSnapshot element) {
             if (element.get("finished") && isGame) {
               countFinished++;
             }
+
+            // Se o ganhador jogador
             if (element.get("points") > winningPlayer[1]) {
               setState(() {
                 winningPlayer[0] = element.get("name");
@@ -394,6 +426,7 @@ class _inGameState extends State<inGame> {
             }
           }
           gameCards.shuffle();
+
           doc.collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
             var finished = value.get("finished");
             if (finished) {
@@ -419,8 +452,10 @@ class _inGameState extends State<inGame> {
             isGame = false;
           });
           listenResetTimer.cancel();
-          if (leader) listenFinishedPlayers.cancel();
           context.router.pushNamed('/Winner/${this.widget.player}/${this.widget.id}/${this.widget.token}');
+          if (leader) {
+            listenFinishedPlayers.cancel();
+          }
         }
       });
     });

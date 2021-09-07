@@ -1,3 +1,10 @@
+/* 
+  Este .dart representa a sala onde os jogadores esperam antes de entrar na partida,
+  nela temos o chat entre os usuários e os botões para começar a partida em si. O host
+  espera os outros jogadores clicarem nos seus botões "Pronto", para então poder clicar em "Começar",
+  iniciando a partida e levando todos os jogadores para a tela seguinte, definida em "inGame.dart".
+*/
+
 import 'dart:async';
 import 'dart:math';
 import 'package:auto_route/annotations.dart';
@@ -31,7 +38,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   final Connectivity _connectivity = Connectivity();
   final database = FirebaseFirestore.instance;
   ScrollController scrollController = ScrollController();
-  late StreamSubscription listenWaitingAdm;
+  late StreamSubscription
+      listenWaitingAdm; // listener usado pelos outros usuários (que não são o host) para saber quando trocar para a tela da partida
 
   void _typing() {
     setState(() {
@@ -57,7 +65,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    //database.useFirestoreEmulator("localhost", 8080); //Emulador
     SystemChrome.setEnabledSystemUIOverlays([]);
 
     return Scaffold(
@@ -92,6 +99,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                         if (snapshot!.hasData) {
                           return Column(
                             children: snapshot.data!.docs.map<Widget>((DocumentSnapshot doc) {
+                              bool leader = doc.get("leader");
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -105,19 +113,19 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                   IgnorePointer(
                                     ignoring: doc.get("id") != this.widget.id,
                                     child: MatchButton(
-                                      title: doc.get("leader") ? "Começar" : "Pronto",
+                                      title: leader ? "Começar" : "Pronto",
                                       function: () async {
                                         int count = await countUsers();
                                         print("${count}");
-                                        if (count >= 1 && doc.get("leader")) {
+                                        if (count >= 1 && leader) {
                                           start();
-                                        } else if (!doc.get("leader")) {
+                                        } else if (!leader) {
                                           waitingAdm();
                                         } else {
                                           _showSnackBar("Necessário mais de 1 jogador.");
                                         }
                                       },
-                                      isReady: doc.get("leader") ? false : doc.get("isReady"), //Botão de lider fica sem o highlight
+                                      isReady: leader ? false : doc.get("isReady"), // Botão de lider fica sem o highlight
                                     ),
                                   )
                                 ],
@@ -180,6 +188,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         isReady ? doc.reference.update({"count": doc.get("count") + 1}) : doc.reference.update({"count": doc.get("count") - 1});
         doc.reference.collection("users").doc("${this.widget.id}").update({"isReady": isReady});
         listenWaitingAdm = doc.reference.snapshots().listen((DocumentSnapshot event) {
+          // Quando o host define o campo startLevel como true, a partida começa e os outros usuários são direcionados para a tela da partida
           if (event.get('startLevel')) {
             context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
             listenWaitingAdm.cancel();
@@ -314,6 +323,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     }
   }
 
+  // Responsável pelo envio das mensagens para serem exibidas no chat da sala
   sendMessage() async {
     CollectionReference collection = await database.collection("privateRoom");
     int timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -340,6 +350,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     }
   }
 
+  // Responsável pelos snack bars de avisos do sistema
   _showSnackBar(String title) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -395,6 +406,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     );
   }
 
+  // Gera o token usado para identificar a sala privada e a da partida
   _createToken() {
     const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     const length = 5;

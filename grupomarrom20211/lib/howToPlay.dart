@@ -1,3 +1,8 @@
+/* 
+  Este .dart representa a tela onde há um breve manual de 3 páginas com os passos
+  para criar, entrar e jogar uma partida.
+*/
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:grupomarrom20211/Theme.dart';
@@ -44,7 +49,7 @@ class _HowToPlayState extends State<HowToPlay> {
           ),
         ],
         onTap: (index) {
-          controller.jumpToPage(index); //(index, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          controller.jumpToPage(index);
         },
       ),
     );
@@ -55,6 +60,7 @@ class _HowToPlayState extends State<HowToPlay> {
       child: Stack(
         children: <Widget>[
           PageView(
+            allowImplicitScrolling: true,
             controller: controller,
             onPageChanged: (newPage) {
               setState(() {

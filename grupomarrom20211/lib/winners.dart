@@ -1,3 +1,7 @@
+/* 
+  Tela responsável pela exibição do ranking no final de cada partida, mostrando os jogadores
+*/
+
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +52,7 @@ class _WinnerState extends State<Winner> {
     );
   }
 
+  // Busca o nome dos jogadores e a pontuação deles
   _getPlayers() {
     database.collection("inGame").doc("${this.widget.token}").collection("users").orderBy("points", descending: true).get().then((value) {
       value.docs.forEach((element) {
@@ -62,7 +67,6 @@ class _WinnerState extends State<Winner> {
 
   _body() {
     return Container(
-      //color: Colors.black,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -73,16 +77,16 @@ class _WinnerState extends State<Winner> {
           Flexible(
             child: Container(
               height: MediaQuery.of(context).size.height / 2,
-              //color: Colors.black,
-              //constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height - titleKey.currentContext!.size!.height),
-              child: Column(
-                children: hasPlayer
-                    ? _players()
-                    : [
-                        Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: hasPlayer
+                      ? _players()
+                      : [
+                          Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        ],
+                ),
               ),
             ),
           ),
@@ -102,7 +106,6 @@ class _WinnerState extends State<Winner> {
                           }));
                   context.router.popUntilRouteWithName("PrivateRoom");
                 },
-                // *** Apagar documento da partida quando voltar para a página inicial ***
               ),
               SizedBox(height: 10),
               MatchButton(
@@ -144,7 +147,6 @@ class _WinnerState extends State<Winner> {
                     }
                   }
                   context.router.popUntilRouteWithName("Landing");
-                  // *** Apagar documento da partida quando voltar para a página inicial ***
                 },
               ),
             ],
