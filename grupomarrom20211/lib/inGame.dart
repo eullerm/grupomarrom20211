@@ -45,6 +45,7 @@ class _inGameState extends State<inGame> {
   String gameQuestion = "";
   List gameCards = [];
   int numCorrectAnswer = 0;
+  int pointsPerCard = 15;
   var ids = new Set<int>();
   GlobalKey timerKey = GlobalKey();
   late OtpTimer timer = OtpTimer(whenTimeIsOver: () => _whenTimeIsOver(), whenTimeIsPaused: () => _whenTimeIsPaused(), key: timerKey);
@@ -64,8 +65,10 @@ class _inGameState extends State<inGame> {
     leader = this.widget.isLeader;
 
     if (leader) {
+      //Serve para resetar a quantidade de usuários prontos na sala privada
       database.collection("privateRoom").doc("${this.widget.token}").update({"startLevel": false, "count": 1});
     } else {
+      //Cada usuário reseta seu status da sala privada
       database.collection("privateRoom").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").update({"isReady": false});
     }
 
@@ -86,7 +89,6 @@ class _inGameState extends State<inGame> {
   }
 
   Future<bool> _willPopScopeCall() async {
-    // code to show toast or modal
     final shouldPop = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -114,7 +116,6 @@ class _inGameState extends State<inGame> {
       ),
     );
     return shouldPop ?? false;
-    // return true to exit app or return false to cancel exit
   }
 
   @override
@@ -125,7 +126,7 @@ class _inGameState extends State<inGame> {
 
   @override
   Widget build(BuildContext context) {
-    // database.useFirestoreEmulator("localhost", 8080); //Emulador
+    //database.useFirestoreEmulator("localhost", 8080); //Emulador
     containerWidthCards = MediaQuery.of(context).size.width - 16;
     distanceCard = containerWidthCards / 5 - 16;
 
@@ -203,7 +204,6 @@ class _inGameState extends State<inGame> {
 
   _whenTimeIsPaused() {
     String seconds = timerKey.currentState!.toString();
-    //print("segundos: ${seconds}");
     _savePoints(timer: int.parse(seconds), cards: _checkAnswer());
   }
 
@@ -216,7 +216,7 @@ class _inGameState extends State<inGame> {
     if (userAnswer.isNotEmpty) {
       for (int i = 0; i < userAnswer.length; i++) {
         if (correctAnswers.contains(userAnswer[i])) {
-          point += 15;
+          point += pointsPerCard;
         }
       }
     }
@@ -225,7 +225,7 @@ class _inGameState extends State<inGame> {
   }
 
   Future<void> _winning() async {
-    if (!leader) {
+    if (!leader && isGame) {
       database.collection("inGame").doc("${this.widget.token}").get().then((DocumentSnapshot event) {
         setState(() {
           winningPlayer = event.get("winningPlayer");
@@ -235,10 +235,10 @@ class _inGameState extends State<inGame> {
   }
 
   _savePoints({int timer = 0, int cards = 0}) {
-    if (userAnswer.length != numCorrectAnswer) {
-      //A pontuação do timer só valerá caso o usuário selecione todas as cartas que respondem a pergunta.
-      timer = 0;
-    }
+    // Calcula o pontuação do timer de acordo com a porcentagem de resposta correta.
+    int correctAnswers = cards ~/ pointsPerCard;
+    double correctPercent = correctAnswers / numCorrectAnswer;
+    timer = (timer * correctPercent).toInt();
     int point = 0;
     database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
       point = value.get("points");
@@ -337,7 +337,6 @@ class _inGameState extends State<inGame> {
             }
           });
 
-          print("count ${countFinished}");
           //O líder avisa quando é para resetar o timer e qual é a questão que deve ser buscada.
           bool isResetTimer = false;
           int currentQuestion = 0;
@@ -376,7 +375,8 @@ class _inGameState extends State<inGame> {
       int currentQuestion = value.get("currentQuestion");
       doc.collection("questions").doc("${currentQuestion}").get().then((DocumentSnapshot value) {
         if (value.exists) {
-          correctAnswers = gameCards = value.get("cards");
+          correctAnswers = value.get("cards");
+          gameCards = value.get("cards");
           numCorrectAnswer = gameCards.length;
           gameQuestion = value.get("question");
           userAnswer = [];
@@ -394,13 +394,12 @@ class _inGameState extends State<inGame> {
             }
           }
           gameCards.shuffle();
-          doc.collection("users").doc("${this.widget.id}").get().then((value) {
+          doc.collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
             var finished = value.get("finished");
             if (finished) {
               value.reference.update({"finished": false}).whenComplete(() {
                 timerKey.currentState!.didUpdateWidget(timer);
                 setState(() {
-                  // timer;
                   timerKey;
                 });
               });
@@ -420,7 +419,7 @@ class _inGameState extends State<inGame> {
             isGame = false;
           });
           listenResetTimer.cancel();
-          listenFinishedPlayers.cancel();
+          if (leader) listenFinishedPlayers.cancel();
           context.router.pushNamed('/Winner/${this.widget.player}/${this.widget.id}/${this.widget.token}');
         }
       });
@@ -448,7 +447,7 @@ class _inGameState extends State<inGame> {
   Future<void> _removePlayer() async {
     // Recebe os valores do usuário no banco.
     listenResetTimer.cancel();
-    listenFinishedPlayers.cancel();
+    if (leader) listenFinishedPlayers.cancel();
     CollectionReference collection = database.collection("privateRoom");
     DocumentReference room = collection.doc("${this.widget.token}");
     DocumentReference room2 = database.collection("inGame").doc("${this.widget.token}");

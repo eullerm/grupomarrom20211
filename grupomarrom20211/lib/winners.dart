@@ -35,6 +35,7 @@ class _WinnerState extends State<Winner> {
 
   @override
   Widget build(BuildContext context) {
+    //database.useFirestoreEmulator("localhost", 8080);
     if (!hasPlayer) _getPlayers();
     return Scaffold(
       body: Stack(
@@ -132,7 +133,7 @@ class _WinnerState extends State<Winner> {
                       // Exclui a sala vazia da coleção privateRoom
                       room.delete();
 
-                      room2.collection("questions").snapshots().forEach((element) {
+                      room2.collection("questions").snapshots().forEach((QuerySnapshot element) {
                         // Exclui todas as questões, caso não existe um outro usuário
                         for (DocumentSnapshot ds in element.docs) {
                           ds.reference.delete();
@@ -168,7 +169,6 @@ class _WinnerState extends State<Winner> {
   _players() {
     return players.map<Widget>((player) {
       return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SizedBox(width: 35),
           _medal(players.indexOf(player) + 1),
@@ -179,8 +179,13 @@ class _WinnerState extends State<Winner> {
           ),
           SizedBox(width: 15),
           Flexible(
-            flex: 1,
-            child: FittedBox(fit: BoxFit.fitWidth, child: GenericText(text: "(${player[1]})", textStyle: TextStyles.plainText)),
+            flex: 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FittedBox(fit: BoxFit.fitWidth, child: GenericText(text: "(${player[1]})", textStyle: TextStyles.plainText)),
+              ],
+            ),
           ),
           SizedBox(width: 30),
         ],

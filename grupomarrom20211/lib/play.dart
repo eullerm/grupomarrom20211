@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +25,14 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
   TextEditingController tokenController = TextEditingController();
   final database = FirebaseFirestore.instance;
   String? _deviceId;
+  String _idGuest = "";
+  String _nameGuest = "";
   bool waiting = false;
+  bool waitingAccept = false;
+  bool hasPopup = false;
   final Connectivity _connectivity = Connectivity();
+  late StreamSubscription inviteListener;
+  GlobalKey dialogKey = GlobalKey();
 
   @override
   void initState() {
@@ -57,6 +65,8 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    //database.useFirestoreEmulator("localhost", 8080); //Emulador
+
     SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -197,12 +207,14 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
     );
   }
 
-  Future _connect(String type) async {
+  // Conecta os jogadores no banco
+  Future _connect(String type, {bool host = false, bool invited = false}) async {
     CollectionReference collection = database.collection("${type}");
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none && nameController.text.isNotEmpty) {
-        if (waiting) {
+        if (waiting && !invited) {
+          inviteListener.cancel();
           await collection.doc("${_deviceId}").delete();
           setState(() {
             waiting = false;
@@ -210,12 +222,19 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
         } else {
           if (_deviceId != null) {
             if (type == "waiting") {
-              await collection.doc("${_deviceId}").set({"name": nameController.text});
-              setState(() {
-                waiting = true;
+              collection.get().then((QuerySnapshot snapshot) {
+                if (snapshot.docs.isEmpty) {
+                  _waitingInvite(collection);
+                } else {
+                  _playersInQueue(collection);
+                }
               });
             } else if (type == "privateRoom") {
               if (tokenController.text.isNotEmpty) {
+                int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+                collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
+
                 bool exist = false;
                 DocumentSnapshot<Object?> snapshot = await collection.doc("${tokenController.text}").get();
                 exist = snapshot.exists;
@@ -223,8 +242,8 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                   // Precisa checar se existe a sala com o token digitado
                   collection.doc("${tokenController.text}").collection("users").doc("${_deviceId}").set({
                     "name": nameController.text,
-                    "isReady": false,
-                    "leader": false,
+                    "isReady": host,
+                    "leader": host,
                     "id": _deviceId!,
                     "loggedAt": DateTime.now().millisecondsSinceEpoch,
                     "timestamp": DateTime.now().millisecondsSinceEpoch,
@@ -296,6 +315,243 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
 
       if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
+      }
+    });
+  }
+
+  Future<bool> _playersInQueue(CollectionReference collection) async {
+    List players = [];
+    collection.get().then((QuerySnapshot elements) {
+      elements.docs.forEach((element) {
+        players.add({"id": element.id, "name": element.get("name")});
+      });
+    }).whenComplete(() async {
+      //Dialog para exibir os jogadores que já estão na fila.
+      final shouldPop = await showDialog(
+          context: context,
+          builder: (context) {
+            return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return AlertDialog(
+                  key: dialogKey,
+                  backgroundColor: AppColorScheme.cardColor.withOpacity(0.2),
+                  title: GenericText(
+                    text: waitingAccept ? "Aguardando..." : "Jogadores na fila",
+                    textStyle: TextStyles.plainText,
+                  ),
+                  content: _players(players, collection, setState),
+                  actions: <Widget>[
+                    waitingAccept
+                        ? Container()
+                        : MatchButton(
+                            title: "Aguardar",
+                            function: () {
+                              _waitingInvite(collection);
+                              context.router.pop();
+                            },
+                          ),
+                    MatchButton(
+                      title: "Sair",
+                      function: () {
+                        if (waitingAccept) {
+                          collection.doc("${_idGuest}").update({"invited": false, "token": "", "hostName": ""}).then((value) {
+                            setState(() {
+                              _idGuest = "";
+                              _nameGuest = "";
+                              waitingAccept = false;
+                            });
+                          }); //Apaga seus dados caso feche o popup
+                        }
+                        context.router.pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          });
+      if (waitingAccept) {
+        //Apaga seus dados caso feche o popup
+        collection.doc("${_idGuest}").update({"invited": false, "token": "", "hostName": ""}).then((value) {
+          setState(() {
+            _idGuest = "";
+            _nameGuest = "";
+            waitingAccept = false;
+          });
+          return shouldPop ?? false;
+        });
+      }
+      return shouldPop ?? false;
+    });
+    return false;
+  }
+
+  // Exibe a lista de jogadores que podem ser convidados
+  _players(List players, CollectionReference collection, StateSetter setState) {
+    return Container(
+      width: double.maxFinite,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: players.map<Widget>((player) {
+          String id = player["id"];
+          String name = player["name"];
+          return _player(id, name, collection.doc("${id}"), setState);
+        }).toList(),
+      ),
+    );
+  }
+
+  // Exibe o widget com o nome do jogador que pode ser convidado
+  _player(String id, String name, DocumentReference doc, StateSetter setState) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: IgnorePointer(
+              ignoring: waitingAccept, //Caso já tenha convidado alguém não é possível convidar outro jogador.
+              child: GestureDetector(
+                onTap: () {
+                  //Antes de convidar verifica se alguém já convidou o jogador na fila
+                  doc.get().then((DocumentSnapshot value) {
+                    if (value.get("invited")) {
+                      _showSnackBar("Jogador já convidado!");
+                    } else {
+                      setState(() {
+                        waitingAccept = true;
+                        _idGuest = id;
+                        _nameGuest = name;
+                      });
+                      String token = _createToken();
+                      tokenController.text = token;
+                      doc.update({"invited": true, "token": token, "hostName": nameController.text});
+                      //Fica de olho para saber se o jogador vai aceitar ou recusar o convite
+                      inviteListener = doc.snapshots().listen((DocumentSnapshot event) {
+                        if (event.get("accepted")) {
+                          inviteListener.cancel();
+                          setState(() {
+                            waitingAccept = false;
+                            _idGuest = "";
+                            _nameGuest = "";
+                          });
+                          _connect("privateRoom", host: true);
+                        } else if (!event.get("invited")) {
+                          inviteListener.cancel();
+                          setState(() {
+                            waitingAccept = false;
+                            _idGuest = "";
+                            _nameGuest = "";
+                            //dialogKey = GlobalKey();
+                          });
+                        }
+                      });
+                    }
+                  });
+                },
+                child: AnimatedContainer(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColorScheme.cardColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0xFF000000),
+                        blurRadius: 10.0,
+                        offset: Offset(0.0, 5.0),
+                      ),
+                    ],
+                  ),
+                  duration: Duration(milliseconds: 200),
+                  child: Text(name),
+                ),
+              ),
+            ),
+          ),
+          _idGuest == id
+              ? IconButton(
+                  iconSize: 28,
+                  onPressed: () {
+                    doc.update({"invited": false, "token": ""});
+                    setState(() {
+                      waitingAccept = false;
+                      _idGuest = "";
+                      _nameGuest = "";
+                    });
+                  },
+                  icon: Icon(
+                    Icons.cancel,
+                    color: Colors.red,
+                  ),
+                )
+              : Container(),
+        ],
+      ),
+    );
+  }
+
+  _createToken() {
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    const length = 5;
+
+    return String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(Random().nextInt(_chars.length))));
+  }
+
+  // Usuário fica aguardando convite
+  void _waitingInvite(CollectionReference collection) {
+    collection.doc("${_deviceId}").set({"name": nameController.text, "invited": false, "accepted": false, "token": "", "hostName": ""});
+    setState(() {
+      waiting = true;
+    });
+    //Fica aguardando alguém convidar para uma partida
+    inviteListener = collection.doc("${_deviceId}").snapshots().listen((DocumentSnapshot event) {
+      setState(() {
+        tokenController.text = event.get("token");
+      });
+      String hostName = event.get("hostName");
+      if (event.get("invited")) {
+        setState(() {
+          hasPopup = true;
+        });
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                backgroundColor: AppColorScheme.cardColor.withOpacity(0.2),
+                title: GenericText(
+                  text: "Convidado pelo jogador: ${hostName}",
+                  textStyle: TextStyles.plainText,
+                ),
+                actions: <Widget>[
+                  MatchButton(
+                    title: "Aceitar",
+                    function: () {
+                      setState(() {
+                        waiting = false;
+                      });
+                      event.reference.update({"accepted": true});
+                      inviteListener.cancel();
+                      context.router.pop();
+                      event.reference.delete();
+                      _connect("privateRoom", invited: true);
+                    },
+                  ),
+                  MatchButton(
+                    title: "Recusar",
+                    function: () {
+                      setState(() {
+                        tokenController.text = "";
+                      });
+                      event.reference.update({"invited": false, "token": "", "hostName": ""});
+                    },
+                  ),
+                ],
+              );
+            });
+      } else if (hasPopup) {
+        context.router.pop();
+        setState(() {
+          hasPopup = false;
+        });
       }
     });
   }

@@ -57,7 +57,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // database.useFirestoreEmulator("localhost", 8080); //Emulador
+    //database.useFirestoreEmulator("localhost", 8080); //Emulador
     SystemChrome.setEnabledSystemUIOverlays([]);
 
     return Scaffold(
@@ -388,14 +388,14 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
           ),
           IgnorePointer(
             ignoring: isToken,
-            child: MatchButton(title: "Gerar token", function: () => createToken()),
+            child: MatchButton(title: "Gerar token", function: () => _createToken()),
           )
         ],
       ),
     );
   }
 
-  createToken() {
+  _createToken() {
     const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     const length = 5;
 
