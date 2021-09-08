@@ -205,8 +205,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         listenWaitingAdm = doc.reference.snapshots().listen((DocumentSnapshot event) {
           // Quando o host define o campo startLevel como true, a partida começa e os outros usuários são direcionados para a tela da partida
           if (event.get('startLevel')) {
-            _send.cancel();
-            _check.cancel();
             listenWaitingAdm.cancel();
             context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
           }
@@ -543,8 +541,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     }).whenComplete(() {
       //Troca o usuário de sala.
       database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
-        _send.cancel();
-        _check.cancel();
         context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${true}');
       });
     });
@@ -582,8 +578,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             room.delete();
           }
         }
-        _send.cancel();
-        _check.cancel();
       } catch (e) {}
     }
     context.router.pop();
@@ -602,7 +596,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             usersInPrivateRoom.docs.forEach((element) {
               var userInPrivateRoom = element.data();
               Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
-              if (timestamp.seconds - userInPrivateRoomTimestamp.seconds >= 10) {
+              if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
                 element.reference.delete();
 
                 if (userInPrivateRoom["leader"]) leaderDeleted = true;

@@ -107,6 +107,12 @@ class _WinnerState extends State<Winner> {
                       .then((value) => value.docs.forEach((element) {
                             element.reference.delete();
                           }));
+                  database
+                      .collection("privateRoom")
+                      .doc("${this.widget.token}")
+                      .collection("users")
+                      .doc("${this.widget.id}")
+                      .update({"timestamp": FieldValue.serverTimestamp()});
                   context.router.popUntilRouteWithName("PrivateRoom");
                 },
               ),

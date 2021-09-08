@@ -538,7 +538,7 @@ class _inGameState extends State<inGame> {
           usersInGame.docs.forEach((element) {
             var userInGame = element.data();
             Timestamp userInGameTimestamp = userInGame["timestamp"];
-            if (timestamp.seconds - userInGameTimestamp.seconds >= 12) {
+            if ((timestamp.seconds - userInGameTimestamp.seconds).abs() >= 12) {
               element.reference.delete();
 
               if (userInGame["leader"]) leaderDeleted = true;
