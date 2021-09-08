@@ -64,6 +64,7 @@ class _inGameState extends State<inGame> {
   bool isGame = true;
   bool isReset = false;
   late bool leader;
+  late Timer _check;
 
   late StreamSubscription listenResetTimer;
   late StreamSubscription listenFinishedPlayers;
@@ -97,6 +98,7 @@ class _inGameState extends State<inGame> {
 
     _newQuestion();
     _resetTimer();
+    _check = _checkConnection();
     super.initState();
   }
 
@@ -118,6 +120,7 @@ class _inGameState extends State<inGame> {
                   title: "Sim",
                   function: () {
                     _removePlayer().whenComplete(() {
+                      _check.cancel();
                       setState(() {
                         isGame = false;
                       });
@@ -270,8 +273,7 @@ class _inGameState extends State<inGame> {
     database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
       point = value.get("points");
       if (!value.get("finished")) {
-        value.reference.update({"points": point + timer + cards});
-        value.reference.update({"finished": true});
+        value.reference.update({"points": point + timer + cards, "finished": true, "timestamp": FieldValue.serverTimestamp()});
       }
     });
   }
@@ -350,6 +352,7 @@ class _inGameState extends State<inGame> {
   void _resetTimer() {
     try {
       CollectionReference collection = database.collection("inGame").doc("${this.widget.token}").collection("users");
+
       if (leader) {
         //O líder fica responsável por verificar se todos já estão pronto para a próxima partida
         listenFinishedPlayers = collection.snapshots().listen((QuerySnapshot event) {
@@ -389,10 +392,6 @@ class _inGameState extends State<inGame> {
       listenResetTimer = collection.parent!.snapshots().listen((DocumentSnapshot event) {
         if (event.get("resetTimer")) {
           _newQuestion();
-
-          if (leader) {
-            event.reference.update({"resetTimer": false});
-          }
         }
       });
     } catch (e) {
@@ -431,6 +430,9 @@ class _inGameState extends State<inGame> {
             var finished = value.get("finished");
             if (finished) {
               value.reference.update({"finished": false}).whenComplete(() {
+                if (leader) {
+                  doc.update({"resetTimer": false});
+                }
                 timerKey.currentState!.didUpdateWidget(timer);
                 setState(() {
                   timerKey;
@@ -452,6 +454,7 @@ class _inGameState extends State<inGame> {
             isGame = false;
           });
           listenResetTimer.cancel();
+          _check.cancel();
           context.router.pushNamed('/Winner/${this.widget.player}/${this.widget.id}/${this.widget.token}');
           if (leader) {
             listenFinishedPlayers.cancel();
@@ -517,5 +520,56 @@ class _inGameState extends State<inGame> {
         room2.delete();
       }
     }
+  }
+
+  Timer _checkConnection() {
+    return Timer.periodic(Duration(seconds: 14), (_) {
+      database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((usersInGame) {
+        database.collection("privateRoom").doc("${this.widget.token}").collection("users").get().then((users) async {
+          bool leaderDeleted = false;
+          DocumentSnapshot doc = await database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get();
+          Timestamp timestamp = doc.get("timestamp");
+
+          usersInGame.docs.forEach((element) {
+            var userInGame = element.data();
+            Timestamp userInGameTimestamp = userInGame["timestamp"];
+            if (timestamp.seconds - userInGameTimestamp.seconds >= 12) {
+              element.reference.delete();
+
+              if (userInGame["leader"]) leaderDeleted = true;
+
+              users.docs.forEach((userPrivateRoom) {
+                if (userPrivateRoom.id == userInGame["id"]) {
+                  userPrivateRoom.reference.delete();
+                }
+              });
+            }
+          });
+          if (leaderDeleted) {
+            database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((value) {
+              value.docs.first.reference.update({"leader": true}).whenComplete(() {
+                bool c = this.widget.id == value.docs.first.id;
+                // Verifica no banco se ele é o novo lider.
+                if (value.docs.first.id == this.widget.id) {
+                  setState(() {
+                    leader = true;
+                  });
+                  // Reseta o timer
+                  listenResetTimer.cancel();
+                  _resetTimer();
+                }
+              });
+            });
+
+            database
+                .collection("privateRoom")
+                .doc("${this.widget.token}")
+                .collection("users")
+                .get()
+                .then((value) => value.docs.first.reference.update({"leader": true}));
+          }
+        });
+      });
+    });
   }
 }

@@ -97,7 +97,13 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             children: [
               isToken
                   ? StreamBuilder<QuerySnapshot>(
-                      stream: database.collection("privateRoom").doc("${token}").collection("users").orderBy("loggedAt").snapshots(),
+                      stream: database
+                          .collection("privateRoom")
+                          .doc("${token}")
+                          .collection("users")
+                          .orderBy("leader", descending: true)
+                          .orderBy("loggedAt")
+                          .snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
                         if (snapshot!.hasData) {
                           return Column(
@@ -119,7 +125,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                       title: leader ? "Começar" : "Pronto",
                                       function: () async {
                                         int count = await countUsers();
-                                        print("${count}");
                                         if (count >= 1 && leader) {
                                           start();
                                         } else if (!leader) {
@@ -211,7 +216,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       var result = _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
         int total = await countUsers();
-        print("total: ${total}");
         collection.doc("${token}").get().then((DocumentSnapshot doc) {
           if (total == doc.get("count")) {
             _changingRoom();
@@ -298,7 +302,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   Future _createPrivateRoom() async {
     CollectionReference collection = await database.collection("privateRoom");
 
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    FieldValue timestamp = FieldValue.serverTimestamp();
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
@@ -474,7 +478,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
               Row(
                 children: <Widget>[
                   IconButton(
-                    onPressed: () async {
+                    onPressed: () {
                       _removePlayer();
                     },
                     icon: Icon(Icons.arrow_back),
@@ -516,8 +520,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       snapshot.reference.collection("users").snapshots().forEach((QuerySnapshot element) {
         // Envia para outra sala
         element.docs.forEach((QueryDocumentSnapshot user) {
-          var name = user.get("name");
-          print("${name}");
           doc.collection("users").doc(user.id).set({
             "name": user.get("name"),
             "points": 0,

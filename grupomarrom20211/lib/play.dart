@@ -231,7 +231,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
               });
             } else if (type == "privateRoom") {
               if (tokenController.text.isNotEmpty) {
-                int timestamp = DateTime.now().millisecondsSinceEpoch;
+                FieldValue timestamp = FieldValue.serverTimestamp();
 
                 // Caso tenha convidado um jogador na fila de espera é que esse set deve ser realizado.
                 // Tanto o host quanto o convidado realizam ele pois pode ser que um tente acessar o documento sem que ele exista.
@@ -247,8 +247,8 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                     "isReady": host,
                     "leader": host,
                     "id": _deviceId!,
-                    "loggedAt": DateTime.now().millisecondsSinceEpoch,
-                    "timestamp": DateTime.now().millisecondsSinceEpoch,
+                    "loggedAt": timestamp,
+                    "timestamp": timestamp,
                   });
 
                   context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId}/${tokenController.text}');
