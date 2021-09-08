@@ -38,8 +38,11 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   final Connectivity _connectivity = Connectivity();
   final database = FirebaseFirestore.instance;
   ScrollController scrollController = ScrollController();
-  late StreamSubscription
-      listenWaitingAdm; // listener usado pelos outros usuários (que não são o host) para saber quando trocar para a tela da partida
+
+  // listener usado pelos outros usuários (que não são o host) para saber quando trocar para a tela da partida
+  late StreamSubscription listenWaitingAdm;
+  late Timer _send;
+  late Timer _check;
 
   void _typing() {
     setState(() {
@@ -60,6 +63,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     } else {
       isToken = false;
     }
+
+    _send = _sendTimestamp();
+    _check = _checkConnection();
+
     super.initState();
   }
 
@@ -198,8 +205,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         listenWaitingAdm = doc.reference.snapshots().listen((DocumentSnapshot event) {
           // Quando o host define o campo startLevel como true, a partida começa e os outros usuários são direcionados para a tela da partida
           if (event.get('startLevel')) {
-            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
+            _send.cancel();
+            _check.cancel();
             listenWaitingAdm.cancel();
+            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
           }
         });
       }
@@ -534,6 +543,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     }).whenComplete(() {
       //Troca o usuário de sala.
       database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
+        _send.cancel();
+        _check.cancel();
         context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${true}');
       });
     });
@@ -571,9 +582,52 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             room.delete();
           }
         }
+        _send.cancel();
+        _check.cancel();
       } catch (e) {}
     }
     context.router.pop();
     return true;
+  }
+
+  Timer _checkConnection() {
+    return Timer.periodic(Duration(seconds: 10), (_) {
+      if (isToken) {
+        database.collection("privateRoom").doc("${token}").collection("users").get().then((usersInPrivateRoom) async {
+          bool leaderDeleted = false;
+          DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
+          print("timestamp");
+          try {
+            Timestamp timestamp = doc.get("timestamp");
+            usersInPrivateRoom.docs.forEach((element) {
+              var userInPrivateRoom = element.data();
+              Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
+              if (timestamp.seconds - userInPrivateRoomTimestamp.seconds >= 10) {
+                element.reference.delete();
+
+                if (userInPrivateRoom["leader"]) leaderDeleted = true;
+              }
+            });
+            if (leaderDeleted) {
+              database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                value.docs.first.reference.update({"leader": true});
+              });
+            }
+          } catch (e) {
+            print("${e.toString()}");
+          }
+        });
+      }
+    });
+  }
+
+  Timer _sendTimestamp() {
+    return Timer.periodic(Duration(seconds: 5), (_) {
+      if (isToken) {
+        database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get().then((value) {
+          value.reference.update({"timestamp": FieldValue.serverTimestamp()});
+        });
+      }
+    });
   }
 }

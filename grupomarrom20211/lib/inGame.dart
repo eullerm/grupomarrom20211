@@ -4,7 +4,11 @@
   antes do tempo acabar ou esperar o timer chegar a zero, quando todos jogadores
   enviarem a resposta ou o timer de todos chegar a zero, uma nova rodada começa. 
   No final da terceira rodada, os jogadores são levados para a tela de final de partida,
-  onde os jogadores aparecem em ordem de pontos.
+  onde os jogadores aparecem em ordem de pontos. O método checkConnection apaga os dados 
+  de um jogador no banco, caso o mesmo fique inativo por alguns segundos. A cada rodada todos "n"
+  jogadores enviam um timestamp para o servidor e todos jogadores checam se o timestamp do servidor
+  menos o timestamp do jogador "i" é maior que 12, caso sim, é considerado que o jogador perdeu 
+  a conexão e ele é excluído do banco e da partida.
 */
 
 import 'dart:async';
@@ -522,6 +526,7 @@ class _inGameState extends State<inGame> {
     }
   }
 
+  // Método responsável por checar e tratar caso um jogador, host ou não, perca a conexão
   Timer _checkConnection() {
     return Timer.periodic(Duration(seconds: 14), (_) {
       database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((usersInGame) {
@@ -548,7 +553,6 @@ class _inGameState extends State<inGame> {
           if (leaderDeleted) {
             database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((value) {
               value.docs.first.reference.update({"leader": true}).whenComplete(() {
-                bool c = this.widget.id == value.docs.first.id;
                 // Verifica no banco se ele é o novo lider.
                 if (value.docs.first.id == this.widget.id) {
                   setState(() {
