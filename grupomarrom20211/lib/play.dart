@@ -233,7 +233,9 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
               if (tokenController.text.isNotEmpty) {
                 int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-                collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
+                // Caso tenha convidado um jogador na fila de espera é que esse set deve ser realizado.
+                // Tanto o host quanto o convidado realizam ele pois pode ser que um tente acessar o documento sem que ele exista.
+                if (host || invited) collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
 
                 bool exist = false;
                 DocumentSnapshot<Object?> snapshot = await collection.doc("${tokenController.text}").get();

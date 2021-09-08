@@ -1,7 +1,7 @@
 /* 
   Tela responsável pela exibição do ranking no final de cada partida, mostrando os jogadores
 */
-
+import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +41,16 @@ class _WinnerState extends State<Winner> {
   Widget build(BuildContext context) {
     //database.useFirestoreEmulator("localhost", 8080);
     if (!hasPlayer) _getPlayers();
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          Background(background: "Background"),
-          _body(),
-        ],
+    return WillPopScope(
+      onWillPop: _willPopScopeCall,
+      child: Scaffold(
+        body: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Background(background: "Background"),
+            _body(),
+          ],
+        ),
       ),
     );
   }
@@ -110,44 +113,7 @@ class _WinnerState extends State<Winner> {
               SizedBox(height: 10),
               MatchButton(
                 title: "Tela inicial",
-                function: () async {
-                  // Recebe os valores do usuário no banco.
-                  CollectionReference collection = database.collection("privateRoom");
-                  DocumentReference room = collection.doc("${this.widget.token}");
-                  DocumentReference room2 = database.collection("inGame").doc("${this.widget.token}");
-                  DocumentSnapshot user = await room.collection("users").doc("${this.widget.id}").get();
-                  DocumentSnapshot user2 = await room2.collection("users").doc("${this.widget.id}").get();
-
-                  await collection.doc("${this.widget.token}").collection("users").doc("${this.widget.id}").delete();
-                  user2.reference.delete();
-                  // Verifica se é o líder.
-                  if (user.get("leader")) {
-                    QuerySnapshot users = await collection.doc("${this.widget.token}").collection("users").get();
-
-                    if (users.docs.isNotEmpty) {
-                      users.docs.first.reference.update({"leader": true}); // Transforma o proximo da fila em lider
-                    } else {
-                      room.collection("messages").snapshots().forEach((QuerySnapshot element) {
-                        // Exclui todas as mensagens da sala caso não exista um proximo usuário
-                        for (DocumentSnapshot ds in element.docs) {
-                          ds.reference.delete();
-                        }
-                      });
-                      // Exclui a sala vazia da coleção privateRoom
-                      room.delete();
-
-                      room2.collection("questions").snapshots().forEach((QuerySnapshot element) {
-                        // Exclui todas as questões, caso não existe um outro usuário
-                        for (DocumentSnapshot ds in element.docs) {
-                          ds.reference.delete();
-                        }
-                      });
-                      // Exclui a sala vazia da coleção inGame
-                      room2.delete();
-                    }
-                  }
-                  context.router.popUntilRouteWithName("Landing");
-                },
+                function: () => _removePlayer(),
               ),
             ],
           )
@@ -193,5 +159,80 @@ class _WinnerState extends State<Winner> {
         ],
       );
     }).toList();
+  }
+
+  Future<void> _removePlayer() async {
+    // Recebe os valores do usuário no banco.
+    CollectionReference collection = database.collection("privateRoom");
+    DocumentReference room = collection.doc("${this.widget.token}");
+    DocumentReference room2 = database.collection("inGame").doc("${this.widget.token}");
+    DocumentSnapshot user = await room.collection("users").doc("${this.widget.id}").get();
+    DocumentSnapshot user2 = await room2.collection("users").doc("${this.widget.id}").get();
+
+    await collection.doc("${this.widget.token}").collection("users").doc("${this.widget.id}").delete();
+    user2.reference.delete();
+    // Verifica se é o líder.
+    if (user.get("leader")) {
+      QuerySnapshot users = await collection.doc("${this.widget.token}").collection("users").get();
+
+      if (users.docs.isNotEmpty) {
+        users.docs.first.reference.update({"leader": true}); // Transforma o proximo da fila em lider
+      } else {
+        room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+          // Exclui todas as mensagens da sala caso não exista um proximo usuário
+          for (DocumentSnapshot ds in element.docs) {
+            ds.reference.delete();
+          }
+        });
+        // Exclui a sala vazia da coleção privateRoom
+        room.delete();
+
+        room2.collection("questions").snapshots().forEach((QuerySnapshot element) {
+          // Exclui todas as questões, caso não existe um outro usuário
+          for (DocumentSnapshot ds in element.docs) {
+            ds.reference.delete();
+          }
+        });
+        // Exclui a sala vazia da coleção inGame
+        room2.delete();
+      }
+    }
+    context.router.popUntilRouteWithName("Landing");
+  }
+
+// Pop up para sair da partida
+  Future<bool> _willPopScopeCall() async {
+    final shouldPop = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColorScheme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Sair do jogo'),
+        content: Text('Deseja realmente sair?'),
+        actions: <Widget>[
+          Container(
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                MatchButton(
+                  title: "Sim",
+                  function: () async {
+                    await _removePlayer();
+                    context.router.popUntilRouteWithName("Landing");
+                  },
+                ),
+                MatchButton(
+                  title: "Não",
+                  function: () {
+                    context.router.pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    return shouldPop ?? false;
   }
 }
