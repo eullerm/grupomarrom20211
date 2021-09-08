@@ -2,43 +2,43 @@ class Questions {
   final List _questions = [
     {
       "id": 0,
-      "question": "Quais países fazem parte do G-20?",
-      "cards": ["Brasil", "Alemanha", "Rússia"],
+      "question": "À qual país pertenciam os \"Samurais\"?",
+      "cards": ["Japão"],
     },
     {
       "id": 1,
-      "question": "Quais países não fazem parte do G7?",
-      "cards": ["Egito"]
+      "question": "Com a adição de qual país, o então conhecido G7 veio a se chamar G8?",
+      "cards": ["Rússia"]
     },
     {
       "id": 2,
-      "question": "Qual país possui a maior extensão territorial?",
-      "cards": ["Rússia"],
+      "question": "Qual dos seguintes países possui a menor extensão territorial?",
+      "cards": ["Alemanha"],
     },
     {
       "id": 3,
-      "question": "Qual país possui o maior produto interno bruto nominal?",
+      "question": "Qual país possui o maior produto interno bruto nominal do mundo?",
       "cards": ["EUA"],
     },
     {
       "id": 4,
-      "question": "Qual país possui uma muralha de 21196 Km de extensão?",
+      "question": "Qual país é famoso por possuir uma muralha de mais de 21000 Km de extensão?",
       "cards": ["China"],
     },
     {
       "id": 5,
-      "question": "Qual país possui o menor produto interno nominal?",
+      "question": "Qual dos seguintes países possui o menor produto interno nominal?",
       "cards": ["Angola"],
     },
     {
       "id": 6,
-      "question": "Dentre os seguintes países, qual é considerado o mais antigo?",
-      "cards": ["China"],
+      "question": "Dentre os seguintes países, qual faz parte da \"Aliança do Pacífico\"?",
+      "cards": ["México"],
     },
     {
       "id": 7,
-      "question": "Quais dos seguintes países fizeram parte dos \"Aliados\" na 2ª Guerra?",
-      "cards": ["França", "China", "EUA"],
+      "question": "Quais dos seguintes países foram parte dos \"Quatro Grandes\" durante a 2ª Guerra?",
+      "cards": ["China", "EUA"],
     },
     {
       "id": 8,
@@ -47,17 +47,17 @@ class Questions {
     },
     {
       "id": 9,
-      "question": "Quais países possuem alguma das \"Novas Maravilhas do Mundo\"?",
-      "cards": ["Brasil", "México", "Índia"],
+      "question": "Anunciado em 2007 como uma das \"Novas Maravilhas do Mundo\", onde está situado o Taj Mahal?",
+      "cards": ["Índia"],
     },
     {
       "id": 10,
-      "question": "Quais países não fazem parte do G20?",
-      "cards": ["Angola"],
+      "question": "Quais dos seguintes países não fazem parte do G20?",
+      "cards": ["Angola", "Nigéria", "Egito"],
     },
     {
       "id": 11,
-      "question": "De onde origina o \"Kuduro\"?",
+      "question": "De onde origina o movimento cultural conhecido como \"Kuduro\"?",
       "cards": ["Angola"],
     },
     {

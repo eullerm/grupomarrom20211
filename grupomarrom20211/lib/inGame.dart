@@ -97,6 +97,52 @@ class _inGameState extends State<inGame> {
 
     _newQuestion();
     _resetTimer();
+
+    Timer.periodic(Duration(seconds: 12), (_) {
+      database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((usersInGame) {
+        database.collection("privateRoom").doc("${this.widget.token}").collection("users").get().then((users) async {
+          bool leaderDeleted = false;
+          DocumentSnapshot doc = await database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get();
+          DateTime timestamp = DateTime.parse(doc.get("timestamp").toString());
+
+          usersInGame.docs.forEach((element) {
+            var userInGame = element.data();
+            DateTime userInGameTimestamp = DateTime.parse(userInGame["timestamp"].toString());
+            if (timestamp.second - userInGameTimestamp.second >= 12) {
+              element.reference.delete();
+
+              if (userInGame["leader"]) leaderDeleted = true;
+
+              users.docs.forEach((userPrivateRoom) {
+                if (userPrivateRoom.id == userInGame["id"]) {
+                  print("${userPrivateRoom.id}");
+                  userPrivateRoom.reference.delete();
+                }
+              });
+            }
+          });
+          if (leaderDeleted) {
+            print("Malkai dormindo: Pão");
+            database
+                .collection("inGame")
+                .doc("${this.widget.token}")
+                .collection("users")
+                .get()
+                .then((value) => value.docs.first.reference.update({"leader": true}));
+
+            database
+                .collection("privateRoom")
+                .doc("${this.widget.token}")
+                .collection("users")
+                .get()
+                .then((value) => value.docs.first.reference.update({"leader": true}));
+
+            listenResetTimer.cancel();
+            _resetTimer();
+          }
+        });
+      });
+    });
     super.initState();
   }
 
@@ -270,8 +316,7 @@ class _inGameState extends State<inGame> {
     database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get().then((DocumentSnapshot value) {
       point = value.get("points");
       if (!value.get("finished")) {
-        value.reference.update({"points": point + timer + cards});
-        value.reference.update({"finished": true});
+        value.reference.update({"points": point + timer + cards, "finished": true, "timestamp": FieldValue.serverTimestamp()});
       }
     });
   }
