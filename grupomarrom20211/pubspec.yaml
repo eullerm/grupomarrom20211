@@ -84,6 +84,7 @@ flutter:
     - assets/images/HowToPlay-CriandoPartida/
     - assets/images/HowToPlay-EntrandoPartida/
     - assets/images/HowToPlay-Jogando/
+    - assets/images/HowToPlay-ProcurandoUmaPartida/
     - assets/videos/
     # - assets/images/maps
   

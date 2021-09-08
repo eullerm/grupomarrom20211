@@ -47,6 +47,10 @@ class _HowToPlayState extends State<HowToPlay> {
             "3",
             style: TextStyles.navigation,
           ),
+          Text(
+            "4",
+            style: TextStyles.navigation,
+          ),
         ],
         onTap: (index) {
           controller.jumpToPage(index);
@@ -100,6 +104,18 @@ class _HowToPlayState extends State<HowToPlay> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: images2.map<Widget>((e) {
                       return Image.asset("assets/images/HowToPlay-Jogando/${e}.png");
+                    }).toList(),
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: images1.map<Widget>((e) {
+                      return Image.asset("assets/images/HowToPlay-ProcurandoUmaPartida/${e}.png");
                     }).toList(),
                   ),
                 ),
