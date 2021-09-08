@@ -231,9 +231,11 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
               });
             } else if (type == "privateRoom") {
               if (tokenController.text.isNotEmpty) {
+                FieldValue timestamp = FieldValue.serverTimestamp();
+
                 // Caso tenha convidado um jogador na fila de espera é que esse set deve ser realizado.
                 // Tanto o host quanto o convidado realizam ele pois pode ser que um tente acessar o documento sem que ele exista.
-                if (host || invited) collection.doc("${tokenController.text}").set({"createdAt": Timestamp.now(), "startLevel": false, "count": 1});
+                if (host || invited) collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
 
                 bool exist = false;
                 DocumentSnapshot<Object?> snapshot = await collection.doc("${tokenController.text}").get();
@@ -245,8 +247,8 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                     "isReady": host,
                     "leader": host,
                     "id": _deviceId!,
-                    "loggedAt": Timestamp.now(),
-                    "timestamp": Timestamp.now(),
+                    "loggedAt": timestamp,
+                    "timestamp": timestamp,
                   });
 
                   context.router.pushNamed('/PrivateRoom/${nameController.text}/${_deviceId}/${tokenController.text}');

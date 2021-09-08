@@ -38,8 +38,11 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   final Connectivity _connectivity = Connectivity();
   final database = FirebaseFirestore.instance;
   ScrollController scrollController = ScrollController();
-  late StreamSubscription
-      listenWaitingAdm; // listener usado pelos outros usuários (que não são o host) para saber quando trocar para a tela da partida
+
+  // listener usado pelos outros usuários (que não são o host) para saber quando trocar para a tela da partida
+  late StreamSubscription listenWaitingAdm;
+  late Timer _send;
+  late Timer _check;
 
   void _typing() {
     setState(() {
@@ -60,6 +63,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     } else {
       isToken = false;
     }
+
+    _send = _sendTimestamp();
+    _check = _checkConnection();
+
     super.initState();
   }
 
@@ -67,12 +74,15 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Background(background: "Background"),
-          _body(),
-        ],
+    return WillPopScope(
+      onWillPop: _removePlayer,
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Background(background: "Background"),
+            _body(),
+          ],
+        ),
       ),
     );
   }
@@ -94,7 +104,13 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             children: [
               isToken
                   ? StreamBuilder<QuerySnapshot>(
-                      stream: database.collection("privateRoom").doc("${token}").collection("users").orderBy("loggedAt").snapshots(),
+                      stream: database
+                          .collection("privateRoom")
+                          .doc("${token}")
+                          .collection("users")
+                          .orderBy("leader", descending: true)
+                          .orderBy("loggedAt")
+                          .snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>? snapshot) {
                         if (snapshot!.hasData) {
                           return Column(
@@ -116,7 +132,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                       title: leader ? "Começar" : "Pronto",
                                       function: () async {
                                         int count = await countUsers();
-                                        print("${count}");
                                         if (count >= 1 && leader) {
                                           start();
                                         } else if (!leader) {
@@ -190,8 +205,10 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         listenWaitingAdm = doc.reference.snapshots().listen((DocumentSnapshot event) {
           // Quando o host define o campo startLevel como true, a partida começa e os outros usuários são direcionados para a tela da partida
           if (event.get('startLevel')) {
-            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
+            _send.cancel();
+            _check.cancel();
             listenWaitingAdm.cancel();
+            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
           }
         });
       }
@@ -208,7 +225,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       var result = _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
         int total = await countUsers();
-        print("total: ${total}");
         collection.doc("${token}").get().then((DocumentSnapshot doc) {
           if (total == doc.get("count")) {
             _changingRoom();
@@ -295,17 +311,18 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   Future _createPrivateRoom() async {
     CollectionReference collection = await database.collection("privateRoom");
 
+    FieldValue timestamp = FieldValue.serverTimestamp();
     try {
       var result = await _connectivity.checkConnectivity();
       if (result != ConnectivityResult.none) {
-        collection.doc("${token}").set({"createdAt": FieldValue.serverTimestamp(), "startLevel": false, "count": 1});
+        collection.doc("${token}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
         collection.doc("${token}").collection("users").doc("${this.widget.id}").set({
           "name": this.widget.player,
           "isReady": true,
           "leader": true,
           "id": this.widget.id,
-          "loggedAt": FieldValue.serverTimestamp(),
-          "timestamp": FieldValue.serverTimestamp(),
+          "loggedAt": timestamp,
+          "timestamp": timestamp,
         });
       } else {
         _showSnackBar("Cheque sua conexão com a internet.");
@@ -470,34 +487,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
               Row(
                 children: <Widget>[
                   IconButton(
-                    onPressed: () async {
-                      if (isToken) {
-                        try {
-                          // Recebe os valores do usuário no banco.
-                          CollectionReference collection = database.collection("privateRoom");
-                          DocumentReference room = collection.doc("${token}");
-                          DocumentSnapshot user = await room.collection("users").doc("${this.widget.id}").get();
-
-                          await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
-                          // Verifica se é o líder.
-                          if (user.get("leader")) {
-                            QuerySnapshot users = await collection.doc("${token}").collection("users").get();
-
-                            if (users.docs.isNotEmpty) {
-                              users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
-                            } else {
-                              room.collection("messages").snapshots().forEach((QuerySnapshot element) {
-                                //Exclui todas as mensagens da sala caso não exista um proximo usuário
-                                for (DocumentSnapshot ds in element.docs) {
-                                  ds.reference.delete();
-                                }
-                              });
-                              room.delete();
-                            }
-                          }
-                        } catch (e) {}
-                      }
-                      context.router.pop();
+                    onPressed: () {
+                      _removePlayer();
                     },
                     icon: Icon(Icons.arrow_back),
                     color: AppColorScheme.iconColor,
@@ -526,7 +517,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   void _changingRoom() {
     DocumentReference doc = database.collection("inGame").doc("${token}");
     doc.set({
-      "createdAt": FieldValue.serverTimestamp(),
+      "createdAt": DateTime.now().millisecondsSinceEpoch,
       "resetTimer": false,
       "currentQuestion": 0,
       "winningPlayer": ["", 0, ""], //[Nome do jogador, número de pontos, id do device]
@@ -538,8 +529,6 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       snapshot.reference.collection("users").snapshots().forEach((QuerySnapshot element) {
         // Envia para outra sala
         element.docs.forEach((QueryDocumentSnapshot user) {
-          var name = user.get("name");
-          print("${name}");
           doc.collection("users").doc(user.id).set({
             "name": user.get("name"),
             "points": 0,
@@ -554,8 +543,91 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     }).whenComplete(() {
       //Troca o usuário de sala.
       database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
+        _send.cancel();
+        _check.cancel();
         context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${true}');
       });
+    });
+  }
+
+  Future<bool> _removePlayer() async {
+    if (isToken) {
+      try {
+        // Recebe os valores do usuário no banco.
+        CollectionReference collection = database.collection("privateRoom");
+        DocumentReference room = collection.doc("${token}");
+        DocumentSnapshot user = await room.collection("users").doc("${this.widget.id}").get();
+        // Deleta ele na privateRoom
+        await collection.doc("${token}").collection("users").doc("${this.widget.id}").delete();
+
+        CollectionReference collectionInGame = database.collection("inGame");
+        DocumentSnapshot roomInGame = await collectionInGame.doc("${token}").get();
+        // Deleta ele na inGame caso exista.
+        if (roomInGame.exists) await roomInGame.reference.collection("users").doc("${this.widget.id}").delete();
+
+        // Verifica se é o líder.
+        if (user.get("leader")) {
+          QuerySnapshot users = await collection.doc("${token}").collection("users").get();
+
+          if (users.docs.isNotEmpty) {
+            users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
+          } else {
+            if (roomInGame.exists) await roomInGame.reference.delete();
+            room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+              //Exclui todas as mensagens da sala caso não exista um proximo usuário
+              for (DocumentSnapshot ds in element.docs) {
+                ds.reference.delete();
+              }
+            });
+            room.delete();
+          }
+        }
+        _send.cancel();
+        _check.cancel();
+      } catch (e) {}
+    }
+    context.router.pop();
+    return true;
+  }
+
+  Timer _checkConnection() {
+    return Timer.periodic(Duration(seconds: 10), (_) {
+      if (isToken) {
+        database.collection("privateRoom").doc("${token}").collection("users").get().then((usersInPrivateRoom) async {
+          bool leaderDeleted = false;
+          DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
+          print("timestamp");
+          try {
+            Timestamp timestamp = doc.get("timestamp");
+            usersInPrivateRoom.docs.forEach((element) {
+              var userInPrivateRoom = element.data();
+              Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
+              if (timestamp.seconds - userInPrivateRoomTimestamp.seconds >= 10) {
+                element.reference.delete();
+
+                if (userInPrivateRoom["leader"]) leaderDeleted = true;
+              }
+            });
+            if (leaderDeleted) {
+              database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                value.docs.first.reference.update({"leader": true});
+              });
+            }
+          } catch (e) {
+            print("${e.toString()}");
+          }
+        });
+      }
+    });
+  }
+
+  Timer _sendTimestamp() {
+    return Timer.periodic(Duration(seconds: 5), (_) {
+      if (isToken) {
+        database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get().then((value) {
+          value.reference.update({"timestamp": FieldValue.serverTimestamp()});
+        });
+      }
     });
   }
 }
