@@ -533,23 +533,27 @@ class _inGameState extends State<inGame> {
         database.collection("privateRoom").doc("${this.widget.token}").collection("users").get().then((users) async {
           bool leaderDeleted = false;
           DocumentSnapshot doc = await database.collection("inGame").doc("${this.widget.token}").collection("users").doc("${this.widget.id}").get();
-          Timestamp timestamp = doc.get("timestamp");
+          try {
+            Timestamp timestamp = doc.get("timestamp");
 
-          usersInGame.docs.forEach((element) {
-            var userInGame = element.data();
-            Timestamp userInGameTimestamp = userInGame["timestamp"];
-            if ((timestamp.seconds - userInGameTimestamp.seconds).abs() >= 12) {
-              element.reference.delete();
+            usersInGame.docs.forEach((element) {
+              var userInGame = element.data();
+              Timestamp userInGameTimestamp = userInGame["timestamp"];
+              if ((timestamp.seconds - userInGameTimestamp.seconds).abs() >= 12) {
+                element.reference.delete();
 
-              if (userInGame["leader"]) leaderDeleted = true;
+                if (userInGame["leader"]) leaderDeleted = true;
 
-              users.docs.forEach((userPrivateRoom) {
-                if (userPrivateRoom.id == userInGame["id"]) {
-                  userPrivateRoom.reference.delete();
-                }
-              });
-            }
-          });
+                users.docs.forEach((userPrivateRoom) {
+                  if (userPrivateRoom.id == userInGame["id"]) {
+                    userPrivateRoom.reference.delete();
+                  }
+                });
+              }
+            });
+          } catch (e) {
+            print("${e.toString()}");
+          }
           if (leaderDeleted) {
             database.collection("inGame").doc("${this.widget.token}").collection("users").get().then((value) {
               value.docs.first.reference.update({"leader": true}).whenComplete(() {

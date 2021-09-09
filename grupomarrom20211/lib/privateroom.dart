@@ -46,6 +46,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   late Timer _send;
   late Timer _check;
 
+  bool toStart = false;
+
   void _typing() {
     setState(() {
       FocusScopeNode currentFocus = FocusScope.of(context);
@@ -135,6 +137,9 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                                       function: () async {
                                         int count = await countUsers();
                                         if (count >= 1 && leader) {
+                                          setState(() {
+                                            toStart = true;
+                                          });
                                           start();
                                         } else if (!leader) {
                                           waitingAdm();
@@ -207,8 +212,16 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         listenWaitingAdm = doc.reference.snapshots().listen((DocumentSnapshot event) {
           // Quando o host define o campo startLevel como true, a partida começa e os outros usuários são direcionados para a tela da partida
           if (event.get('startLevel')) {
+            setState(() {
+              toStart = false;
+            });
             listenWaitingAdm.cancel();
-            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}');
+            _send.cancel();
+            _check.cancel();
+            context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${false}').whenComplete(() {
+              _check = _checkConnection();
+              _send = _sendTimestamp();
+            });
           }
         });
       }
@@ -229,10 +242,16 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
           if (total == doc.get("count")) {
             _changingRoom();
           } else {
+            setState(() {
+              toStart = false;
+            });
             _showSnackBar("Nem todos jogadores estão prontos.");
           }
         });
       } else {
+        setState(() {
+          toStart = false;
+        });
         _showSnackBar("Cheque sua conexão.");
       }
     } on PlatformException catch (e) {
@@ -488,7 +507,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
                 children: <Widget>[
                   IconButton(
                     onPressed: () {
-                      _removePlayer();
+                      //_removePlayer();
+                      context.router.pop();
                     },
                     icon: Icon(Icons.arrow_back),
                     color: AppColorScheme.iconColor,
@@ -529,21 +549,31 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
       snapshot.reference.collection("users").snapshots().forEach((QuerySnapshot element) {
         // Envia para outra sala
         element.docs.forEach((QueryDocumentSnapshot user) {
-          doc.collection("users").doc(user.id).set({
-            "name": user.get("name"),
-            "points": 0,
-            "finished": false, // Se o jogador terminou a jogada
-            "leader": user.get("leader"),
-            "id": user.get("id"),
-            "loggedAt": user.get("loggedAt"),
-            "timestamp": user.get("timestamp"),
-          });
+          if (toStart) {
+            doc.collection("users").doc(user.id).set({
+              "name": user.get("name"),
+              "points": 0,
+              "finished": false, // Se o jogador terminou a jogada
+              "leader": user.get("leader"),
+              "id": user.get("id"),
+              "loggedAt": user.get("loggedAt"),
+              "timestamp": user.get("timestamp"),
+            }).whenComplete(() => print("alabauco"));
+          }
         });
       });
     }).whenComplete(() {
       //Troca o usuário de sala.
       database.collection("privateRoom").doc("${token}").update({"startLevel": true}).whenComplete(() {
-        context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${true}');
+        setState(() {
+          toStart = false;
+        });
+        _check.cancel();
+        _send.cancel();
+        context.router.pushNamed('/inGame/${this.widget.player}/${this.widget.id}/${token}/${true}').whenComplete(() {
+          _check = _checkConnection();
+          _send = _sendTimestamp();
+        });
       });
     });
   }
@@ -580,9 +610,11 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             room.delete();
           }
         }
+
+        _check.cancel();
+        _send.cancel();
       } catch (e) {}
     }
-    context.router.pop();
     return true;
   }
 
