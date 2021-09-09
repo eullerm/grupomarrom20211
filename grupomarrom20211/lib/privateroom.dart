@@ -628,21 +628,23 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
             bool leaderDeleted = false;
             DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
             if (doc.exists) {
-              Timestamp timestamp = doc.get("timestamp");
-              usersInPrivateRoom.docs.forEach((element) {
-                var userInPrivateRoom = element.data();
-                Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
-                if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
-                  element.reference.delete();
+              try {
+                Timestamp timestamp = doc.get("timestamp");
+                usersInPrivateRoom.docs.forEach((element) {
+                  var userInPrivateRoom = element.data();
+                  Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
+                  if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
+                    element.reference.delete();
 
-                  if (userInPrivateRoom["leader"]) leaderDeleted = true;
-                }
-              });
-              if (leaderDeleted) {
-                database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
-                  value.docs.first.reference.update({"leader": true});
+                    if (userInPrivateRoom["leader"]) leaderDeleted = true;
+                  }
                 });
-              }
+                if (leaderDeleted) {
+                  database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                    value.docs.first.reference.update({"leader": true});
+                  });
+                }
+              } catch (e) {}
             }
           });
         } catch (e) {
