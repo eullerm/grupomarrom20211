@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grupomarrom20211/widgets/background.dart';
 import 'package:grupomarrom20211/widgets/button.dart';
-import 'package:grupomarrom20211/widgets/timer.dart';
 import 'package:grupomarrom20211/widgets/title.dart';
 
 //Tela inicial

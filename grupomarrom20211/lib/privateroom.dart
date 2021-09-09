@@ -558,7 +558,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
               "id": user.get("id"),
               "loggedAt": user.get("loggedAt"),
               "timestamp": user.get("timestamp"),
-            }).whenComplete(() => print("alabauco"));
+            });
           }
         });
       });
@@ -623,30 +623,31 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   Timer _checkConnection() {
     return Timer.periodic(Duration(seconds: 10), (_) {
       if (isToken) {
-        database.collection("privateRoom").doc("${token}").collection("users").get().then((usersInPrivateRoom) async {
-          bool leaderDeleted = false;
-          DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
-          print("timestamp");
-          try {
-            Timestamp timestamp = doc.get("timestamp");
-            usersInPrivateRoom.docs.forEach((element) {
-              var userInPrivateRoom = element.data();
-              Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
-              if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
-                element.reference.delete();
+        try {
+          database.collection("privateRoom").doc("${token}").collection("users").get().then((usersInPrivateRoom) async {
+            bool leaderDeleted = false;
+            DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
+            if (doc.exists) {
+              Timestamp timestamp = doc.get("timestamp");
+              usersInPrivateRoom.docs.forEach((element) {
+                var userInPrivateRoom = element.data();
+                Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
+                if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
+                  element.reference.delete();
 
-                if (userInPrivateRoom["leader"]) leaderDeleted = true;
-              }
-            });
-            if (leaderDeleted) {
-              database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
-                value.docs.first.reference.update({"leader": true});
+                  if (userInPrivateRoom["leader"]) leaderDeleted = true;
+                }
               });
+              if (leaderDeleted) {
+                database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                  value.docs.first.reference.update({"leader": true});
+                });
+              }
             }
-          } catch (e) {
-            print("${e.toString()}");
-          }
-        });
+          });
+        } catch (e) {
+          print("${e.toString()}");
+        }
       }
     });
   }
@@ -655,9 +656,23 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
   Timer _sendTimestamp() {
     return Timer.periodic(Duration(seconds: 5), (_) {
       if (isToken) {
-        database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get().then((value) {
-          value.reference.update({"timestamp": FieldValue.serverTimestamp()});
-        });
+        try {
+          database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get().then((value) {
+            if (value.exists) {
+              value.reference.update({"timestamp": FieldValue.serverTimestamp()}).catchError((onError) {});
+            } else {
+              _check.cancel();
+              _send.cancel();
+            }
+          });
+        } catch (e) {
+          database.collection("privateRoom").doc("${token}").get().then((value) {
+            if (!value.exists) {
+              _check.cancel();
+              _send.cancel();
+            }
+          });
+        }
       }
     });
   }

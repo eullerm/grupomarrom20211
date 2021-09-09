@@ -153,20 +153,3 @@ class InfoCountry {
     return _key;
   }
 }
-
-/*
-for (key, value) in CARDS{
-  database
-          .collection("cards")
-          .document(key)
-          .setData(value)
-          .timeout(Duration(seconds: 10))
-          .whenComplete(
-            () => setState(() {
-              send = true;
-            }),
-          )
-          .catchError((error) => print("$error"));}
-
-
-  dataBase.collection('cards').snapshot();*/
