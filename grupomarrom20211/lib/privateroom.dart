@@ -656,7 +656,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
 
   // Responsável por mandar o timestamp dos jogadores, mostrando que eles estão conectados no app
   Timer _sendTimestamp() {
-    return Timer.periodic(Duration(seconds: 5), (_) {
+    return Timer.periodic(Duration(seconds: 8), (_) {
       if (isToken) {
         try {
           database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get().then((value) {
