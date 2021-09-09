@@ -3,6 +3,8 @@
   nela temos o chat entre os usuários e os botões para começar a partida em si. O host
   espera os outros jogadores clicarem nos seus botões "Pronto", para então poder clicar em "Começar",
   iniciando a partida e levando todos os jogadores para a tela seguinte, definida em "inGame.dart".
+  Assim como na inGame.dart, usamos o método checkConnection para tratar os valores do banco, caso 
+  o jogador perca a conexão com o app.
 */
 
 import 'dart:async';
@@ -584,6 +586,8 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     return true;
   }
 
+  // Responsável por verificar a conexão dos jogadores e fazer as operações de exclusão e a de passar o líder para outro jogador,
+  // caso quem desconectou tenha sido o líder
   Timer _checkConnection() {
     return Timer.periodic(Duration(seconds: 10), (_) {
       if (isToken) {
@@ -615,6 +619,7 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
     });
   }
 
+  // Responsável por mandar o timestamp dos jogadores, mostrando que eles estão conectados no app
   Timer _sendTimestamp() {
     return Timer.periodic(Duration(seconds: 5), (_) {
       if (isToken) {
