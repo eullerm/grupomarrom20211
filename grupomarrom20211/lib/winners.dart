@@ -136,7 +136,7 @@ class _WinnerState extends State<Winner> {
     } else if (pos == 3) {
       return Container(width: 30, child: Image.asset("assets/images/medals/bronzeMedal.png"));
     } else {
-      return Container();
+      return Container(width: 30);
     }
   }
 

@@ -132,7 +132,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                       ),
                       MatchButton(
                         title: waiting ? "Cancelar" : "Procurar uma partida",
-                        width: waiting ? 150 : 250,
+                        width: waiting ? 160 : 250,
                         function: () => _connect("waiting"),
                       ),
                       MatchButton(
@@ -235,7 +235,9 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
 
                 // Caso tenha convidado um jogador na fila de espera é que esse set deve ser realizado.
                 // Tanto o host quanto o convidado realizam ele pois pode ser que um tente acessar o documento sem que ele exista.
-                if (host || invited) collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
+                if (host || invited) {
+                  collection.doc("${tokenController.text}").set({"createdAt": timestamp, "startLevel": false, "count": 1});
+                }
 
                 bool exist = false;
                 DocumentSnapshot<Object?> snapshot = await collection.doc("${tokenController.text}").get();
@@ -416,41 +418,48 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                 onTap: () {
                   //Antes de convidar verifica se alguém já convidou o jogador na fila
                   doc.get().then((DocumentSnapshot value) {
-                    if (value.get("invited")) {
-                      _showSnackBar("Jogador já convidado!");
-                    } else {
-                      setState(() {
-                        waitingAccept = true;
-                        _idGuest = id;
-                        _nameGuest = name;
-                      });
-                      String token = _createToken();
-                      tokenController.text = token;
-                      doc.update({"invited": true, "token": token, "hostName": nameController.text});
-                      //Fica de olho para saber se o jogador vai aceitar ou recusar o convite
-                      inviteListener = doc.snapshots().listen((DocumentSnapshot event) {
-                        if (event.get("accepted")) {
-                          inviteListener.cancel();
-                          setState(() {
-                            waitingAccept = false;
-                            _idGuest = "";
-                            _nameGuest = "";
-                          });
-                          _connect("privateRoom", host: true);
-                        } else if (!event.get("invited")) {
-                          inviteListener.cancel();
-                          setState(() {
-                            waitingAccept = false;
-                            _idGuest = "";
-                            _nameGuest = "";
-                            //dialogKey = GlobalKey();
-                          });
-                        }
-                      });
+                    try {
+                      if (value.get("invited")) {
+                        _showSnackBar("Jogador já convidado!");
+                      } else {
+                        setState(() {
+                          waitingAccept = true;
+                          _idGuest = id;
+                          _nameGuest = name;
+                        });
+                        String token = _createToken();
+                        tokenController.text = token;
+                        doc.update({"invited": true, "token": token, "hostName": nameController.text});
+                        //Fica de olho para saber se o jogador vai aceitar ou recusar o convite
+
+                        inviteListener = doc.snapshots().listen((DocumentSnapshot event) {
+                          if (event.get("accepted")) {
+                            inviteListener.cancel();
+                            setState(() {
+                              waitingAccept = false;
+                              _idGuest = "";
+                              _nameGuest = "";
+                            });
+                            context.router.pop();
+                            _connect("privateRoom", host: true);
+                          } else if (!event.get("invited")) {
+                            inviteListener.cancel();
+                            setState(() {
+                              waitingAccept = false;
+                              _idGuest = "";
+                              _nameGuest = "";
+                              //dialogKey = GlobalKey();
+                            });
+                          }
+                        });
+                      }
+                    } catch (e) {
+                      context.router.pop();
+                      _showSnackBar("Houve um problema ao convidar este jogador.");
                     }
                   });
                 },
-                child: AnimatedContainer(
+                child: Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColorScheme.cardColor,
@@ -463,7 +472,6 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                       ),
                     ],
                   ),
-                  duration: Duration(milliseconds: 200),
                   child: Text(name),
                 ),
               ),
@@ -529,6 +537,7 @@ class _PlayState extends State<Play> with WidgetsBindingObserver {
                     function: () {
                       setState(() {
                         waiting = false;
+                        hasPopup = false;
                       });
                       event.reference.update({"accepted": true});
                       inviteListener.cancel();

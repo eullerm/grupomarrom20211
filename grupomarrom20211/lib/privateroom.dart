@@ -593,22 +593,32 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         // Deleta ele na inGame caso exista.
         if (roomInGame.exists) await roomInGame.reference.collection("users").doc("${this.widget.id}").delete();
 
-        // Verifica se é o líder.
-        if (user.get("leader")) {
-          QuerySnapshot users = await collection.doc("${token}").collection("users").get();
-
-          if (users.docs.isNotEmpty) {
-            users.docs.first.reference.update({"leader": true}); //Transforma o proximo da fila em lider
-          } else {
-            if (roomInGame.exists) await roomInGame.reference.delete();
-            room.collection("messages").snapshots().forEach((QuerySnapshot element) {
-              //Exclui todas as mensagens da sala caso não exista um proximo usuário
-              for (DocumentSnapshot ds in element.docs) {
-                ds.reference.delete();
-              }
+        QuerySnapshot users = await collection.doc("${token}").collection("users").get();
+        if (users.docs.isNotEmpty) {
+          room.collection("users").get().then((value) {
+            value.docs.forEach((element) {
+              element.reference.update({"isReady": false});
             });
-            room.delete();
-          }
+          }).whenComplete(() {
+            room.update({"count": 1});
+
+            // Verifica se é o líder.
+            if (user.get("leader")) {
+              database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                value.docs.first.reference.update({"leader": true, "isReady": true}); // Transforma o proximo da fila em lider
+              });
+            }
+          });
+        } else {
+          if (roomInGame.exists) await roomInGame.reference.delete();
+
+          room.collection("messages").snapshots().forEach((QuerySnapshot element) {
+            //Exclui todas as mensagens da sala caso não exista um proximo usuário
+            for (DocumentSnapshot ds in element.docs) {
+              ds.reference.delete();
+            }
+          });
+          room.delete();
         }
 
         _check.cancel();
@@ -626,22 +636,51 @@ class _PrivateRoomState extends State<PrivateRoom> with WidgetsBindingObserver {
         try {
           database.collection("privateRoom").doc("${token}").collection("users").get().then((usersInPrivateRoom) async {
             bool leaderDeleted = false;
+            bool playerDeleted = false;
             DocumentSnapshot doc = await database.collection("privateRoom").doc("${token}").collection("users").doc("${this.widget.id}").get();
+            CollectionReference doc2 = database.collection("inGame").doc("${token}").collection("users");
             if (doc.exists) {
               try {
                 Timestamp timestamp = doc.get("timestamp");
                 usersInPrivateRoom.docs.forEach((element) {
                   var userInPrivateRoom = element.data();
                   Timestamp userInPrivateRoomTimestamp = userInPrivateRoom["timestamp"];
+
+                  // Se o timestamp do usuário for 12 segundos maior que o do usuário testado, o usuário testado é deletado da sala
                   if ((timestamp.seconds - userInPrivateRoomTimestamp.seconds) >= 12) {
                     element.reference.delete();
 
-                    if (userInPrivateRoom["leader"]) leaderDeleted = true;
+                    playerDeleted = true;
+
+                    doc2.doc("${userInPrivateRoom['id']}").get().then((value) {
+                      if (value.exists) {
+                        value.reference.delete();
+                      }
+                    });
+
+                    if (userInPrivateRoom["leader"]) {
+                      leaderDeleted = true;
+                    }
                   }
                 });
-                if (leaderDeleted) {
-                  database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
-                    value.docs.first.reference.update({"leader": true});
+
+                if (playerDeleted) {
+                  doc.reference.parent
+                      .get()
+                      .then((value) => value.docs.forEach((element) {
+                            // O estado dos botões de "Pronto" dos jogadores são resetados
+                            element.reference.update({"isReady": false});
+                          }))
+                      .whenComplete(() {
+                    // O número de jogadores "prontos" é resetado
+                    doc.reference.parent.parent?.update({"count": 1});
+                    if (leaderDeleted) {
+                      listenWaitingAdm.cancel().catchError((onError) => print("${onError.toString()}"));
+
+                      database.collection("privateRoom").doc("${token}").collection("users").get().then((value) {
+                        value.docs.first.reference.update({"leader": true, "isReady": true});
+                      });
+                    }
                   });
                 }
               } catch (e) {}

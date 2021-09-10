@@ -8,7 +8,7 @@ class Button extends StatelessWidget {
   final String screen;
   final bool pop;
   final double width;
-  Button({required this.title, this.screen = "", this.pop = false, this.width = 150});
+  Button({required this.title, this.screen = "", this.pop = false, this.width = 160});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class MatchButton extends StatelessWidget {
   final double width;
   final Function function;
   final bool isReady;
-  const MatchButton({required this.title, this.width = 150, required this.function, this.isReady = false, Key? key}) : super(key: key);
+  const MatchButton({required this.title, this.width = 160, required this.function, this.isReady = false, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

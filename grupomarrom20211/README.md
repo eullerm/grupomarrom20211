@@ -1,16 +1,45 @@
-# grupomarrom20211
+# Geocard
+ Projeto da matéria de Dispositivos Móveis 2021.1
 
-A new Flutter project.
+*Arthur Zampirolli*
+*Euller Macena*
+*Hiaggo Bezerra*
+*João Matheus Tavares*
+*Malkai Oliveira*
 
-## Getting Started
+*Ciência da Computação*
+*UFF*
+*Niteroi, 2021*
 
-This project is a starting point for a Flutter application.
+Projeto desenvolvido para a disciplina de **Redes de Computadores I**, **UFF**.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Stack
+  * **Dart**
+  * **Flutter**
+  * **Firebase**
+  * **Visual Code**
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+### App
+O trabalho se trata de um jogo de cartas chamado GeoCard desenvolvido para a disciplina de Dispositivos Móveis. Ele consiste de um jogo multiplayer onde dois ou mais jogadores se enfrentam respondendo perguntas sobre países do mundo. O jogo está sendo implementado em Flutter e utilizará o Firebase como banco de dados em tempo real para armazenar o estado corrente do jogo.
+
+
+### Como executar
+
+Para executar, execute o seguinte comando dentro da pasta do projeto:
+```sh
+$ cd .\grupomarrom20211\
+$ flutter pub get
+$ flutter run
+```
+
+
+Créditos
+----
+
+[@Zamp98](https://github.com/Zamp98)
+[@eullerm](https://github.com/eullerm)
+[@Hiaggo](https://github.com/Hiaggo/)
+[@JGuerra97](https://github.com/JGuerra97) 
+[@MalkaiOliveira](https://github.com/MalkaiOliveira)
