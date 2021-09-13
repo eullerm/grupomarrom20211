@@ -1,5 +1,5 @@
 # Geocard
- Projeto da matéria de Dispositivos Móveis 2021.1
+ Projeto da matéria de Dispositivos Móveis 2021.1, **UFF**.
 
 *Arthur Zampirolli*
 *Euller Macena*
@@ -10,9 +10,6 @@
 *Ciência da Computação*
 *UFF*
 *Niteroi, 2021*
-
-Projeto desenvolvido para a disciplina de **Redes de Computadores I**, **UFF**.
-
 
 ### Stack
   * **Dart**
